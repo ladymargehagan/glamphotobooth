@@ -15,7 +15,7 @@ if (isset($_SESSION['user_id'])) {
     <title>Create Account - Glam PhotoBooth Accra</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lavishly+Yours&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <style>
@@ -167,7 +167,7 @@ if (isset($_SESSION['user_id'])) {
     <div class="auth-container">
         <!-- Left Side - Branding -->
         <div class="auth-left">
-            <h1 style="font-family: 'Lavishly Yours', serif; font-size: 2.5rem; margin-bottom: 2rem;">
+            <h1 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 2rem; font-weight: 800;">
                 <span style="color: var(--gold-primary);">&</span> Glam PhotoBooth Accra
             </h1>
             <h2>Join Our Community</h2>

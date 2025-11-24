@@ -3,7 +3,7 @@
     <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0;">
             <!-- Logo -->
-            <a href="<?php echo (strpos($_SERVER['REQUEST_URI'], 'views/') !== false) ? '../../index.php' : 'index.php'; ?>" style="font-family: 'Lavishly Yours', serif; font-size: 1.75rem; font-weight: 700; color: var(--navy-dark); display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+            <a href="<?php echo (strpos($_SERVER['REQUEST_URI'], 'views/') !== false) ? '../../index.php' : 'index.php'; ?>" style="font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 800; color: var(--navy-dark); display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
                 <span style="color: var(--gold-primary);">&</span> Glam PhotoBooth Accra
             </a>
 

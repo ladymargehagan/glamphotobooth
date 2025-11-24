@@ -204,10 +204,10 @@ session_start();
 
     <!-- Hero Section -->
     <div class="hero">
-        <h1>
+        <h1 style="font-family: 'Playfair Display', serif; font-weight: 800;">
             <span style="color: var(--gold-primary);">&</span> Glam PhotoBooth Accra
         </h1>
-        <p style="font-family: 'Lavishly Yours', serif; font-size: 1.5rem; margin-bottom: 1rem;">Ghana's Premier Photography Marketplace</p>
+        <p style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 1rem; font-weight: 600;">Ghana's Premier Photography Marketplace</p>
         <p>Discover and book professional photographers, videographers, and photobooths for your special events.</p>
         <div class="btn-group" style="margin-top: 2rem;">
             <?php if(!isset($_SESSION['user_id'])): ?>

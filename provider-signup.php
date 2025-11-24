@@ -3,7 +3,8 @@ session_start();
 
 // If already logged in, redirect
 if (isset($_SESSION['user_id'])) {
-    if ($_SESSION['user_role'] === 'provider') {
+    $userType = $_SESSION['user_type'] ?? 'customer';
+    if ($userType === 'photographer' || $userType === 'vendor') {
         header('Location: views/provider/dashboard.php');
     } else {
         header('Location: index.php');
@@ -16,180 +17,282 @@ if (isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Service Provider Application - Glam PhotoBooth Accra</title>
+    <title>Become a Service Provider - Glam PhotoBooth Accra</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/global.css">
-    <link rel="stylesheet" href="assets/css/auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .provider-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+
+        .provider-left {
+            background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-medium) 100%);
+            color: white;
+            padding: 4rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .provider-left h2 {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .provider-left p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .benefit {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .benefit i {
+            color: var(--gold-primary);
+            font-size: 1.5rem;
+            margin-top: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .provider-right {
+            padding: 4rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: var(--cream);
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .form-wrapper h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .form-wrapper > p {
+            color: var(--medium-gray);
+            margin-bottom: 2rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            color: var(--navy-dark);
+            font-weight: 700;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            color: var(--navy-dark);
+        }
+
+        .back-link:hover {
+            color: var(--gold-primary);
+        }
+
+        .note {
+            background: rgba(212, 175, 120, 0.1);
+            border-left: 4px solid var(--gold-primary);
+            padding: 1rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            color: var(--dark-gray);
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .provider-container {
+                grid-template-columns: 1fr;
+            }
+
+            .provider-left {
+                padding: 2rem;
+                display: none;
+            }
+
+            .provider-right {
+                padding: 2rem;
+                max-height: none;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row.full {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="auth-wrapper">
-        <!-- Left Side - Branding -->
-        <div class="auth-branding">
-            <div class="auth-branding-content">
-                <h1 class="brand-logo"><span>✦</span> Glam PhotoBooth <span>Accra</span></h1>
-                <h2>Become a Service Provider</h2>
-                <p>Join Ghana's premier photography services marketplace and grow your business with us.</p>
+    <!-- Navigation -->
+    <?php include 'views/components/navbar.php'; ?>
 
-                <div class="provider-benefits" style="background: rgba(255, 255, 255, 0.1); border-left-color: var(--gold-primary);">
-                    <h4 style="color: var(--gold-primary);">Why Join Our Platform?</h4>
-                    <ul>
-                        <li style="color: rgba(255, 255, 255, 0.9);">Access to thousands of potential clients</li>
-                        <li style="color: rgba(255, 255, 255, 0.9);">Secure payment processing</li>
-                        <li style="color: rgba(255, 255, 255, 0.9);">Flexible pricing and packages</li>
-                        <li style="color: rgba(255, 255, 255, 0.9);">Professional portfolio showcase</li>
-                        <li style="color: rgba(255, 255, 255, 0.9);">Built-in booking management</li>
-                        <li style="color: rgba(255, 255, 255, 0.9);">Marketing and promotional support</li>
-                    </ul>
-                </div>
+    <div class="provider-container">
+        <!-- Left Side -->
+        <div class="provider-left">
+            <h1 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 2rem; font-weight: 800;">
+                <span style="color: var(--gold-primary);">&</span> Glam PhotoBooth Accra
+            </h1>
+            <h2>Become a Service Provider</h2>
+            <p>Join Ghana's premier photography services marketplace and grow your business with us.</p>
 
-                <div style="background: rgba(212, 175, 120, 0.2); padding: 1rem; border-radius: var(--radius-md); margin-top: 1.5rem;">
-                    <p style="margin: 0; font-size: 0.875rem; color: rgba(255, 255, 255, 0.9);">
-                        <strong style="color: var(--gold-primary);">Note:</strong> All provider applications are reviewed by our team within 48 hours. We'll contact you via email once your application is approved.
-                    </p>
-                </div>
+            <div class="benefit">
+                <i class="fas fa-users"></i>
+                <span>Access to thousands of potential clients</span>
+            </div>
+
+            <div class="benefit">
+                <i class="fas fa-lock"></i>
+                <span>Secure payment processing</span>
+            </div>
+
+            <div class="benefit">
+                <i class="fas fa-dollar-sign"></i>
+                <span>Flexible pricing and packages</span>
+            </div>
+
+            <div class="benefit">
+                <i class="fas fa-image"></i>
+                <span>Professional portfolio showcase</span>
+            </div>
+
+            <div class="benefit">
+                <i class="fas fa-calendar"></i>
+                <span>Built-in booking management</span>
+            </div>
+
+            <div class="benefit">
+                <i class="fas fa-bullhorn"></i>
+                <span>Marketing and promotional support</span>
+            </div>
+
+            <div class="note">
+                <strong>Note:</strong> All provider applications are reviewed within 48 hours. We'll contact you via email once approved.
             </div>
         </div>
 
-        <!-- Right Side - Application Form -->
-        <div class="auth-form-container">
-            <div class="auth-form-wrapper" style="max-width: 600px;">
-                <div class="auth-header">
-                    <h2>Provider Application</h2>
-                    <p>Complete the form below to apply as a service provider</p>
-                </div>
+        <!-- Right Side -->
+        <div class="provider-right">
+            <div class="form-wrapper">
+                <h2>Apply as a Service Provider</h2>
+                <p>Complete the form below to apply</p>
 
-                <div id="authMessage" class="auth-message" style="display: none;"></div>
+                <div id="authMessage" class="message" style="display: none;"></div>
 
-                <form id="providerSignupForm" class="auth-form" action="controllers/auth_controller.php" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="provider_signup">
-
+                <form id="providerForm">
                     <!-- Personal Information -->
-                    <h4 style="color: var(--navy-dark); margin-bottom: 1rem; font-size: 1.125rem;">Personal Information</h4>
-
-                    <div class="form-group">
-                        <label for="fullName" class="form-label">Full Name</label>
-                        <input type="text" id="fullName" name="full_name" class="form-control" placeholder="John Doe" required>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div class="form-group">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" id="email" name="email" class="form-control" placeholder="you@example.com" required>
+                    <div class="form-section">
+                        <h4>Personal Information</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fullName" class="form-label">Full Name</label>
+                                <input type="text" id="fullName" name="full_name" class="form-control" placeholder="Your name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" id="email" name="email" class="form-control" placeholder="your@email.com" required>
+                            </div>
                         </div>
-
-                        <div class="form-group">
-                            <label for="phone" class="form-label">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" class="form-control" placeholder="+233 24 123 4567" required>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" class="form-control" placeholder="+233 24 123 4567" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" id="password" name="password" class="form-control" placeholder="Minimum 8 characters" required minlength="8">
+                            </div>
                         </div>
                     </div>
 
                     <!-- Business Information -->
-                    <h4 style="color: var(--navy-dark); margin: 2rem 0 1rem; font-size: 1.125rem;">Business Information</h4>
-
-                    <div class="form-group">
-                        <label for="businessName" class="form-label">Business Name</label>
-                        <input type="text" id="businessName" name="business_name" class="form-control" placeholder="Your Photography Business" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="serviceType" class="form-label">Service Type</label>
-                        <select id="serviceType" name="service_type" class="form-control" required>
-                            <option value="">Select service type</option>
-                            <option value="photography">Professional Photography</option>
-                            <option value="photobooth">Photobooth Rental</option>
-                            <option value="both">Both Photography & Photobooth</option>
-                            <option value="videography">Videography</option>
-                            <option value="other">Other Services</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="experience" class="form-label">Years of Experience</label>
-                        <select id="experience" name="years_experience" class="form-control" required>
-                            <option value="">Select experience level</option>
-                            <option value="0-1">Less than 1 year</option>
-                            <option value="1-3">1-3 years</option>
-                            <option value="3-5">3-5 years</option>
-                            <option value="5-10">5-10 years</option>
-                            <option value="10+">10+ years</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="description" class="form-label">Business Description</label>
-                        <textarea id="description" name="business_description" class="form-control" rows="4" placeholder="Tell us about your business, services, and what makes you unique..." required></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="location" class="form-label">Service Location</label>
-                        <input type="text" id="location" name="location" class="form-control" placeholder="Accra, Ghana" required>
-                    </div>
-
-                    <!-- Portfolio -->
-                    <h4 style="color: var(--navy-dark); margin: 2rem 0 1rem; font-size: 1.125rem;">Portfolio & Credentials</h4>
-
-                    <div class="form-group">
-                        <label for="website" class="form-label">Website URL (Optional)</label>
-                        <input type="url" id="website" name="website" class="form-control" placeholder="https://yourwebsite.com">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="instagram" class="form-label">Instagram Handle (Optional)</label>
-                        <input type="text" id="instagram" name="instagram" class="form-control" placeholder="@yourhandle">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Portfolio Images (Upload 5-10 images)</label>
-                        <div class="file-upload-area" id="portfolioUpload">
-                            <div class="file-upload-icon">📷</div>
-                            <p style="margin: 0 0 0.5rem; font-weight: 600;">Click to upload or drag and drop</p>
-                            <p style="margin: 0; font-size: 0.875rem; color: var(--medium-gray);">PNG, JPG up to 5MB each</p>
-                            <input type="file" name="portfolio_images[]" id="portfolioFiles" accept="image/*" multiple style="display: none;">
+                    <div class="form-section">
+                        <h4>Business Information</h4>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label for="businessName" class="form-label">Business Name</label>
+                                <input type="text" id="businessName" name="business_name" class="form-control" placeholder="Your business name" required>
+                            </div>
                         </div>
-                        <div id="selectedFiles" style="margin-top: 1rem; font-size: 0.875rem; color: var(--medium-gray);"></div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="serviceType" class="form-label">Service Type</label>
+                                <select id="serviceType" name="service_type" class="form-control" required>
+                                    <option value="">Select service type</option>
+                                    <option value="photographer">Photographer</option>
+                                    <option value="videographer">Videographer</option>
+                                    <option value="vendor">Vendor (Booth/Props)</option>
+                                    <option value="other">Other Services</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="experience" class="form-label">Years of Experience</label>
+                                <input type="number" id="experience" name="experience_years" class="form-control" placeholder="e.g., 5" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label for="description" class="form-label">Business Description</label>
+                                <textarea id="description" name="description" class="form-control" placeholder="Tell us about your business..." rows="4" required></textarea>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Account Security -->
-                    <h4 style="color: var(--navy-dark); margin: 2rem 0 1rem; font-size: 1.125rem;">Account Security</h4>
-
-                    <div class="form-group">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Minimum 8 characters" required minlength="8">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="confirmPassword" class="form-label">Confirm Password</label>
-                        <input type="password" id="confirmPassword" name="confirm_password" class="form-control" placeholder="Re-enter password" required>
-                    </div>
-
-                    <!-- Terms Agreement -->
-                    <div class="form-group">
-                        <label style="display: flex; align-items: flex-start; gap: 0.5rem; font-weight: normal; text-transform: none;">
-                            <input type="checkbox" name="terms" required style="width: auto; margin-top: 0.25rem;">
-                            <span style="font-size: 0.875rem;">
-                                I agree to the <a href="terms.php" style="color: var(--gold-primary);">Service Provider Terms</a>,
-                                <a href="privacy.php" style="color: var(--gold-primary);">Privacy Policy</a>, and understand that my application will be reviewed before approval.
-                            </span>
-                        </label>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Submit Application</button>
+                    <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 1rem;">Submit Application</button>
                 </form>
 
-                <div class="auth-footer">
-                    <p>Already have a provider account? <a href="login.php">Sign in here</a></p>
-                    <p>Looking to book services? <a href="register.php">Sign up as a customer</a></p>
-                </div>
+                <p style="font-size: 0.875rem; color: var(--medium-gray); margin-top: 1.5rem; text-align: center;">
+                    Already registered? <a href="login.php" style="color: var(--gold-primary); font-weight: 600;">Sign in here</a>
+                </p>
 
-                <div class="auth-back-home">
-                    <a href="index.php">← Back to Home</a>
-                </div>
+                <a href="index.php" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back to Home
+                </a>
             </div>
         </div>
     </div>
 
-    <script src="assets/js/auth.js"></script>
+    <!-- Footer -->
+    <?php include 'views/components/footer.php'; ?>
+
+    <script src="js/provider-signup.js"></script>
 </body>
 </html>
