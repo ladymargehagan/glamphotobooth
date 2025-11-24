@@ -26,26 +26,7 @@ if (isset($_SESSION['user_id'])) {
         <div class="auth-branding">
             <div class="auth-branding-content">
                 <h1 class="brand-logo"><span>&</span> Glam PhotoBooth <span>Accra</span></h1>
-                <h2>Join Our Community!</h2>
-                <p>Create an account to book professional photography services and manage your events.</p>
-                <div class="auth-features">
-                    <div class="feature-item">
-                        <span class="feature-icon"><i class="fas fa-clock"></i></span>
-                        <span>Easy Booking Process</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon"><i class="fas fa-lock"></i></span>
-                        <span>Secure Payments</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon"><i class="fas fa-mobile-alt"></i></span>
-                        <span>Instant Gallery Access</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon"><i class="fas fa-star"></i></span>
-                        <span>Loyalty Rewards</span>
-                    </div>
-                </div>
+                <h2>Create Account</h2>
             </div>
         </div>
 
@@ -53,8 +34,8 @@ if (isset($_SESSION['user_id'])) {
         <div class="auth-form-container">
             <div class="auth-form-wrapper">
                 <div class="auth-header">
-                    <h2>Create Account</h2>
-                    <p>Sign up as a customer to start booking services</p>
+                    <h2>Sign Up</h2>
+                    <p>Join us to start booking services</p>
                 </div>
 
                 <div id="authMessage" class="auth-message" style="display: none;"></div>

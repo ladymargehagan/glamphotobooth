@@ -27,22 +27,7 @@ if (isset($_SESSION['user_id'])) {
         <div class="auth-branding">
             <div class="auth-branding-content">
                 <h1 class="brand-logo"><span>&</span> Glam PhotoBooth <span>Accra</span></h1>
-                <h2>Welcome Back!</h2>
-                <p>Sign in to access your dashboard and manage your photography services.</p>
-                <div class="auth-features">
-                    <div class="feature-item">
-                        <span class="feature-icon"><i class="fas fa-camera"></i></span>
-                        <span>Book Professional Services</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon"><i class="fas fa-images"></i></span>
-                        <span>Access Photo Galleries</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon"><i class="fas fa-calendar-check"></i></span>
-                        <span>Manage Your Bookings</span>
-                    </div>
-                </div>
+                <h2>Welcome Back</h2>
             </div>
         </div>
 
@@ -73,7 +58,6 @@ if (isset($_SESSION['user_id'])) {
                             <input type="checkbox" name="remember" style="width: auto;">
                             <span>Remember me</span>
                         </label>
-                        <a href="forgot-password.php" style="color: var(--gold-primary); font-size: 0.875rem;">Forgot Password?</a>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Sign In</button>

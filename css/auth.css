@@ -43,6 +43,7 @@
     font-weight: 700;
     color: var(--white);
     margin-bottom: 2rem;
+    letter-spacing: -0.02em;
 }
 
 .brand-logo span {
@@ -50,9 +51,12 @@
 }
 
 .auth-branding h2 {
+    font-family: var(--font-heading);
     color: var(--white);
     font-size: 2.5rem;
+    font-weight: 700;
     margin-bottom: 1rem;
+    letter-spacing: -0.01em;
 }
 
 .auth-branding p {
@@ -117,9 +121,12 @@
 }
 
 .auth-header h2 {
+    font-family: var(--font-heading);
     color: var(--navy-dark);
     font-size: 2rem;
+    font-weight: 700;
     margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
 }
 
 .auth-header p {
