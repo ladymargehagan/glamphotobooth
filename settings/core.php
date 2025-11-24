@@ -15,18 +15,18 @@ require_once __DIR__ . '/db_cred.php';
 // Include database class
 require_once __DIR__ . '/../db/db_class.php';
 
-// Define user roles
-if (!defined('ROLE_CUSTOMER')) {
-    define('ROLE_CUSTOMER', 1);
-    define('ROLE_ADMIN', 2);
-    define('ROLE_PROVIDER', 3);
+// Define user types (enums from pb_users table)
+if (!defined('USER_TYPE_CUSTOMER')) {
+    define('USER_TYPE_CUSTOMER', 'customer');
+    define('USER_TYPE_PHOTOGRAPHER', 'photographer');
+    define('USER_TYPE_VENDOR', 'vendor');
 }
 
 // Define user status
-if (!defined('STATUS_ACTIVE')) {
-    define('STATUS_ACTIVE', 'active');
-    define('STATUS_INACTIVE', 'inactive');
-    define('STATUS_SUSPENDED', 'suspended');
+if (!defined('USER_STATUS_ACTIVE')) {
+    define('USER_STATUS_ACTIVE', 'active');
+    define('USER_STATUS_SUSPENDED', 'suspended');
+    define('USER_STATUS_PENDING', 'pending_approval');
 }
 
 // Define site paths
@@ -63,24 +63,24 @@ function getCurrentUserId()
 }
 
 /**
- * Get current user role
+ * Get current user type
  */
-function getCurrentUserRole()
+function getCurrentUserType()
 {
-    return isset($_SESSION['user_role']) ? $_SESSION['user_role'] : null;
+    return isset($_SESSION['user_type']) ? $_SESSION['user_type'] : null;
 }
 
 /**
- * Redirect user based on role
+ * Redirect user based on user type
  */
-function redirectByRole($role)
+function redirectByUserType($userType)
 {
-    switch ($role) {
-        case ROLE_ADMIN:
-            header('Location: ' . SITE_URL . '/admin/dashboard.php');
-            break;
-        case ROLE_PROVIDER:
+    switch ($userType) {
+        case USER_TYPE_PHOTOGRAPHER:
             header('Location: ' . SITE_URL . '/provider/dashboard.php');
+            break;
+        case USER_TYPE_VENDOR:
+            header('Location: ' . SITE_URL . '/vendor/dashboard.php');
             break;
         default:
             header('Location: ' . SITE_URL . '/customer/dashboard.php');
@@ -100,12 +100,12 @@ function requireLogin()
 }
 
 /**
- * Require specific role
+ * Require specific user type
  */
-function requireRole($role)
+function requireUserType($userType)
 {
     requireLogin();
-    if (getCurrentUserRole() != $role) {
+    if (getCurrentUserType() != $userType) {
         header('Location: ' . SITE_URL . '/index.php');
         exit();
     }

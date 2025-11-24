@@ -46,10 +46,10 @@ class auth_controller
         }
 
         // Set session variables
-        $_SESSION['user_id'] = $customer['id'];
+        $_SESSION['user_id'] = $customer['user_id'];
         $_SESSION['user_name'] = $customer['full_name'];
         $_SESSION['user_email'] = $customer['email'];
-        $_SESSION['user_role'] = $customer['role'];
+        $_SESSION['user_type'] = $customer['user_type'];
 
         // Handle remember me
         if ($rememberMe) {
@@ -112,10 +112,10 @@ class auth_controller
         // Auto-login after registration
         $customer = $this->customer->get_customer_by_id($customerId);
 
-        $_SESSION['user_id'] = $customer['id'];
+        $_SESSION['user_id'] = $customer['user_id'];
         $_SESSION['user_name'] = $customer['full_name'];
         $_SESSION['user_email'] = $customer['email'];
-        $_SESSION['user_role'] = $customer['role'];
+        $_SESSION['user_type'] = $customer['user_type'];
 
         $response['success'] = true;
         $response['message'] = 'Account created successfully';

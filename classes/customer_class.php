@@ -2,6 +2,7 @@
 /**
  * Customer Class
  * Handles customer-related database operations
+ * Maps to pb_users table with user_type = 'customer'
  */
 
 class customer_class extends db_connection
@@ -24,14 +25,14 @@ class customer_class extends db_connection
         $hashedPassword = hashPassword($password);
 
         // Insert customer
-        $query = "INSERT INTO users (full_name, email, phone, password, role, status, created_at)
+        $query = "INSERT INTO pb_users (full_name, email, phone, password_hash, user_type, status, created_at)
                   VALUES (
                       '" . mysqli_real_escape_string($this->db, sanitize($fullName)) . "',
                       '" . mysqli_real_escape_string($this->db, sanitize($email)) . "',
                       '" . mysqli_real_escape_string($this->db, sanitize($phone)) . "',
                       '" . $hashedPassword . "',
-                      " . ROLE_CUSTOMER . ",
-                      '" . STATUS_ACTIVE . "',
+                      'customer',
+                      'active',
                       NOW()
                   )";
 
@@ -51,10 +52,10 @@ class customer_class extends db_connection
             return false;
         }
 
-        $query = "SELECT id, full_name, email, phone, password, role, status, created_at
-                  FROM users
+        $query = "SELECT user_id, full_name, email, phone, password_hash, user_type, status, created_at
+                  FROM pb_users
                   WHERE email = '" . mysqli_real_escape_string($this->db, sanitize($email)) . "'
-                  AND role = " . ROLE_CUSTOMER;
+                  AND user_type = 'customer'";
 
         return $this->db_fetch_one($query);
     }
@@ -68,10 +69,10 @@ class customer_class extends db_connection
             return false;
         }
 
-        $query = "SELECT id, full_name, email, phone, role, status, created_at
-                  FROM users
-                  WHERE id = " . intval($customerId) . "
-                  AND role = " . ROLE_CUSTOMER;
+        $query = "SELECT user_id, full_name, email, phone, user_type, status, created_at
+                  FROM pb_users
+                  WHERE user_id = " . intval($customerId) . "
+                  AND user_type = 'customer'";
 
         return $this->db_fetch_one($query);
     }
@@ -87,11 +88,11 @@ class customer_class extends db_connection
             return false;
         }
 
-        if ($customer['status'] !== STATUS_ACTIVE) {
+        if ($customer['status'] !== 'active') {
             return false;
         }
 
-        if (!verifyPassword($password, $customer['password'])) {
+        if (!verifyPassword($password, $customer['password_hash'])) {
             return false;
         }
 
@@ -107,12 +108,12 @@ class customer_class extends db_connection
             return false;
         }
 
-        $query = "UPDATE users
+        $query = "UPDATE pb_users
                   SET full_name = '" . mysqli_real_escape_string($this->db, sanitize($fullName)) . "',
                       phone = '" . mysqli_real_escape_string($this->db, sanitize($phone)) . "',
                       updated_at = NOW()
-                  WHERE id = " . intval($customerId) . "
-                  AND role = " . ROLE_CUSTOMER;
+                  WHERE user_id = " . intval($customerId) . "
+                  AND user_type = 'customer'";
 
         return $this->db_write_query($query);
     }
@@ -128,11 +129,11 @@ class customer_class extends db_connection
 
         $hashedPassword = hashPassword($newPassword);
 
-        $query = "UPDATE users
-                  SET password = '" . $hashedPassword . "',
+        $query = "UPDATE pb_users
+                  SET password_hash = '" . $hashedPassword . "',
                       updated_at = NOW()
-                  WHERE id = " . intval($customerId) . "
-                  AND role = " . ROLE_CUSTOMER;
+                  WHERE user_id = " . intval($customerId) . "
+                  AND user_type = 'customer'";
 
         return $this->db_write_query($query);
     }
@@ -146,9 +147,9 @@ class customer_class extends db_connection
             return false;
         }
 
-        $query = "DELETE FROM users
-                  WHERE id = " . intval($customerId) . "
-                  AND role = " . ROLE_CUSTOMER;
+        $query = "DELETE FROM pb_users
+                  WHERE user_id = " . intval($customerId) . "
+                  AND user_type = 'customer'";
 
         return $this->db_write_query($query);
     }
@@ -162,9 +163,9 @@ class customer_class extends db_connection
             return false;
         }
 
-        $query = "SELECT id, full_name, email, phone, status, created_at
-                  FROM users
-                  WHERE role = " . ROLE_CUSTOMER . "
+        $query = "SELECT user_id, full_name, email, phone, status, created_at
+                  FROM pb_users
+                  WHERE user_type = 'customer'
                   ORDER BY created_at DESC
                   LIMIT " . intval($limit) . " OFFSET " . intval($offset);
 
@@ -180,7 +181,7 @@ class customer_class extends db_connection
             return 0;
         }
 
-        $query = "SELECT COUNT(*) as total FROM users WHERE role = " . ROLE_CUSTOMER;
+        $query = "SELECT COUNT(*) as total FROM pb_users WHERE user_type = 'customer'";
         $result = $this->db_fetch_one($query);
 
         return $result ? $result['total'] : 0;
