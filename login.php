@@ -3,15 +3,11 @@ session_start();
 
 // If already logged in, redirect to appropriate dashboard
 if (isset($_SESSION['user_id'])) {
-    switch ($_SESSION['user_role']) {
-        case 'admin':
-            header('Location: views/admin/dashboard.php');
-            break;
-        case 'provider':
-            header('Location: views/provider/dashboard.php');
-            break;
-        default:
-            header('Location: views/customer/dashboard.php');
+    $userType = $_SESSION['user_type'] ?? 'customer';
+    if ($userType === 'photographer' || $userType === 'vendor') {
+        header('Location: views/provider/dashboard.php');
+    } else {
+        header('Location: views/customer/dashboard.php');
     }
     exit();
 }
@@ -21,56 +17,191 @@ if (isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Glam PhotoBooth Accra</title>
+    <title>Sign In - Glam PhotoBooth Accra</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/global.css">
-    <link rel="stylesheet" href="assets/css/auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lavishly+Yours&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .auth-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+
+        .auth-left {
+            background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-medium) 100%);
+            color: white;
+            padding: 4rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-left h2 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .auth-left p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .feature i {
+            color: var(--gold-primary);
+            font-size: 1.5rem;
+            margin-top: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .auth-right {
+            padding: 4rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: var(--cream);
+        }
+
+        .auth-form-wrapper h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-form-wrapper > p {
+            color: var(--medium-gray);
+            margin-bottom: 2rem;
+        }
+
+        .divider {
+            position: relative;
+            margin: 2rem 0;
+            text-align: center;
+            color: var(--medium-gray);
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: var(--light-gray);
+        }
+
+        .divider span {
+            position: relative;
+            background-color: var(--cream);
+            padding: 0 1rem;
+        }
+
+        .auth-footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: var(--medium-gray);
+        }
+
+        .auth-footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-footer a {
+            color: var(--gold-primary);
+            font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            color: var(--navy-dark);
+        }
+
+        .back-link:hover {
+            color: var(--gold-primary);
+        }
+
+        @media (max-width: 768px) {
+            .auth-container {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-left {
+                padding: 2rem;
+                display: none;
+            }
+
+            .auth-right {
+                padding: 2rem;
+            }
+
+            .auth-left h2 {
+                font-size: 1.875rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Auth Container -->
-    <div class="auth-wrapper">
+    <div class="auth-container">
         <!-- Left Side - Branding -->
-        <div class="auth-branding">
-            <div class="auth-branding-content">
-                <h1 class="brand-logo"><span>&</span> Glam PhotoBooth <span>Accra</span></h1>
-                <h2>Welcome Back!</h2>
-                <p>Sign in to access your dashboard and manage your photography services.</p>
-                <div class="auth-features">
-                    <div class="feature-item">
-                        <span class="feature-icon">=¯</span>
-                        <span>Book Professional Services</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon"><≠</span>
-                        <span>Access Photo Galleries</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon">P</span>
-                        <span>Manage Your Bookings</span>
-                    </div>
-                </div>
+        <div class="auth-left">
+            <h1 style="font-family: 'Lavishly Yours', serif; font-size: 2.5rem; margin-bottom: 2rem;">
+                <span style="color: var(--gold-primary);">&</span> Glam PhotoBooth Accra
+            </h1>
+            <h2>Welcome Back</h2>
+            <p>Access your account to book professional photography services, manage your gallery, and more.</p>
+
+            <div class="feature">
+                <i class="fas fa-camera"></i>
+                <span>Browse professional photographers and vendors</span>
+            </div>
+
+            <div class="feature">
+                <i class="fas fa-calendar-check"></i>
+                <span>Manage your bookings and events</span>
+            </div>
+
+            <div class="feature">
+                <i class="fas fa-image"></i>
+                <span>Access your photo galleries</span>
+            </div>
+
+            <div class="feature">
+                <i class="fas fa-star"></i>
+                <span>Rate and review service providers</span>
             </div>
         </div>
 
         <!-- Right Side - Login Form -->
-        <div class="auth-form-container">
+        <div class="auth-right">
             <div class="auth-form-wrapper">
-                <div class="auth-header">
-                    <h2>Sign In</h2>
-                    <p>Enter your credentials to access your account</p>
-                </div>
+                <h2>Sign In</h2>
+                <p>Enter your credentials to access your account</p>
 
-                <!-- Error/Success Messages -->
-                <div id="authMessage" class="auth-message" style="display: none;"></div>
+                <div id="authMessage" class="message" style="display: none;"></div>
 
-                <form id="loginForm" class="auth-form" action="controllers/auth_controller.php" method="POST">
-                    <input type="hidden" name="action" value="login">
-
+                <form id="loginForm">
                     <div class="form-group">
                         <label for="email" class="form-label">Email Address</label>
-                        <input type="email" id="email" name="email" class="form-control" placeholder="you@example.com" required>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="your@email.com" required>
                     </div>
 
                     <div class="form-group">
@@ -78,42 +209,26 @@ if (isset($_SESSION['user_id'])) {
                         <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
                     </div>
 
-                    <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
-                        <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; text-transform: none;">
-                            <input type="checkbox" name="remember" style="width: auto;">
-                            <span>Remember me</span>
-                        </label>
-                        <a href="forgot-password.php" style="color: var(--gold-primary); font-size: 0.875rem;">Forgot Password?</a>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Sign In</button>
+                    <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 1rem;">Sign In</button>
                 </form>
 
-                <div class="auth-divider">
-                    <span>Or continue with</span>
+                <div class="divider">
+                    <span>New to Glam PhotoBooth?</span>
                 </div>
 
-                <div class="social-auth">
-                    <button class="social-btn google-btn">
-                        <span>G</span> Google
-                    </button>
-                    <button class="social-btn facebook-btn">
-                        <span>f</span> Facebook
-                    </button>
-                </div>
+                <a href="register.php" class="btn btn-outline btn-lg" style="width: 100%; text-align: center;">Create Account</a>
 
                 <div class="auth-footer">
-                    <p>Don't have an account? <a href="register.php">Sign up as a customer</a></p>
-                    <p>Are you a photographer or vendor? <a href="provider-signup.php">Apply as a service provider</a></p>
+                    <p>Are you a service provider? <a href="provider-signup.php">Apply here</a></p>
                 </div>
 
-                <div class="auth-back-home">
-                    <a href="index.php">ê Back to Home</a>
-                </div>
+                <a href="index.php" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back to Home
+                </a>
             </div>
         </div>
     </div>
 
-    <script src="assets/js/auth.js"></script>
+    <script src="js/login.js"></script>
 </body>
 </html>
