@@ -29,7 +29,8 @@
 
                 <nav class="navbar-menu">
                     <ul class="navbar-items">
-                        <li><a href="/" class="nav-link">Home</a></li>
+                        <li><a href="<?php echo SITE_URL; ?>/index.php" class="nav-link">Home</a></li>
+                        <li><a href="<?php echo SITE_URL; ?>/shop.php" class="nav-link">Shop</a></li>
                         <li><a href="/services" class="nav-link">Services</a></li>
                         <li><a href="/equipment" class="nav-link">Equipment</a></li>
                         <li><a href="/gallery" class="nav-link">Gallery</a></li>
