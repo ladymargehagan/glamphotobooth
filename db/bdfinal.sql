@@ -12,10 +12,11 @@ DROP TABLE IF EXISTS pb_bookings;
 DROP TABLE IF EXISTS pb_products;
 DROP TABLE IF EXISTS pb_service_providers;
 DROP TABLE IF EXISTS pb_categories;
+DROP TABLE IF EXISTS pb_admin;
 DROP TABLE IF EXISTS pb_customer;
 
 -- Table: pb_customer
--- Stores all users (customers, photographers, vendors, admin)
+-- Stores all users (customers, photographers, vendors)
 CREATE TABLE pb_customer (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -25,11 +26,27 @@ CREATE TABLE pb_customer (
     city VARCHAR(100),
     contact VARCHAR(50),
     image VARCHAR(500),
-    user_role TINYINT NOT NULL DEFAULT 4 COMMENT '1=admin, 2=photographer, 3=vendor, 4=customer',
+    user_role TINYINT NOT NULL DEFAULT 4 COMMENT '2=photographer, 3=vendor, 4=customer',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email),
     INDEX idx_user_role (user_role)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table: pb_admin
+-- Stores admin users separately
+CREATE TABLE pb_admin (
+    admin_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) DEFAULT 'admin' COMMENT 'admin role type',
+    is_active TINYINT(1) DEFAULT 1,
+    last_login TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_email (email),
+    INDEX idx_is_active (is_active)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table: pb_categories

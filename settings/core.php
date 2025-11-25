@@ -98,20 +98,26 @@ function getCurrentUserType()
  */
 function getDashboardUrl()
 {
+    // Check if admin is logged in
+    if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true) {
+        return SITE_URL . '/admin/dashboard.php';
+    }
+
     if (!isLoggedIn()) {
         return SITE_URL . '/auth/login.php';
     }
-    
+
     $user_role = isset($_SESSION['user_role']) ? intval($_SESSION['user_role']) : 4;
-    
+
     switch ($user_role) {
-        case 1: // Admin
-        case 4: // Customer
-            return SITE_URL . '/customer/dashboard.php';
+        case 1: // Admin (via customer login, redirect to admin)
+            return SITE_URL . '/admin/dashboard.php';
         case 2: // Photographer
             return SITE_URL . '/photographer/dashboard.php';
         case 3: // Vendor
             return SITE_URL . '/vendor/dashboard.php';
+        case 4: // Customer
+            return SITE_URL . '/customer/dashboard.php';
         default:
             return SITE_URL . '/customer/dashboard.php';
     }
