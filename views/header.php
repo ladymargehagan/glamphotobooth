@@ -39,7 +39,7 @@
 
                 <div class="navbar-actions flex gap-sm">
                     <?php if (isLoggedIn()): ?>
-                        <a href="<?php echo SITE_URL; ?>/dashboard.php" class="btn btn-sm btn-outline">Dashboard</a>
+                        <a href="<?php echo getDashboardUrl(); ?>" class="btn btn-sm btn-outline">Dashboard</a>
                         <a href="<?php echo SITE_URL; ?>/actions/logout.php" class="btn btn-sm btn-primary">Logout</a>
                     <?php else: ?>
                         <a href="<?php echo SITE_URL; ?>/auth/login.php" class="btn btn-sm btn-outline">Login</a>

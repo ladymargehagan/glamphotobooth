@@ -77,7 +77,44 @@ function getCurrentUserId()
  */
 function getCurrentUserType()
 {
-    return isset($_SESSION['user_type']) ? $_SESSION['user_type'] : null;
+    // Check both user_type and user_role for compatibility
+    if (isset($_SESSION['user_type'])) {
+        return $_SESSION['user_type'];
+    }
+    if (isset($_SESSION['user_role'])) {
+        $role = intval($_SESSION['user_role']);
+        switch ($role) {
+            case 1: return 'admin';
+            case 2: return 'photographer';
+            case 3: return 'vendor';
+            case 4: return 'customer';
+        }
+    }
+    return null;
+}
+
+/**
+ * Get dashboard URL for current user
+ */
+function getDashboardUrl()
+{
+    if (!isLoggedIn()) {
+        return SITE_URL . '/auth/login.php';
+    }
+    
+    $user_role = isset($_SESSION['user_role']) ? intval($_SESSION['user_role']) : 4;
+    
+    switch ($user_role) {
+        case 1: // Admin
+        case 4: // Customer
+            return SITE_URL . '/customer/dashboard.php';
+        case 2: // Photographer
+            return SITE_URL . '/photographer/dashboard.php';
+        case 3: // Vendor
+            return SITE_URL . '/vendor/dashboard.php';
+        default:
+            return SITE_URL . '/customer/dashboard.php';
+    }
 }
 
 /**
@@ -87,9 +124,11 @@ function redirectByUserType($userType)
 {
     switch ($userType) {
         case USER_TYPE_PHOTOGRAPHER:
-            header('Location: ' . SITE_URL . '/provider/dashboard.php');
+        case 'photographer':
+            header('Location: ' . SITE_URL . '/photographer/dashboard.php');
             break;
         case USER_TYPE_VENDOR:
+        case 'vendor':
             header('Location: ' . SITE_URL . '/vendor/dashboard.php');
             break;
         default:
