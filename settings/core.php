@@ -13,7 +13,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/db_cred.php';
 
 // Include database class
-require_once __DIR__ . '/../db/db_class.php';
+require_once __DIR__ . '/db_class.php';
 
 // Define user types (enums from pb_users table)
 if (!defined('USER_TYPE_CUSTOMER')) {
@@ -32,7 +32,9 @@ if (!defined('USER_STATUS_ACTIVE')) {
 // Define site paths
 if (!defined('SITE_ROOT')) {
     define('SITE_ROOT', dirname(dirname(__FILE__)));
-    define('SITE_URL', 'http://localhost/glamphotobooth');
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    define('SITE_URL', $protocol . '://' . $host . '/~lady.hagan/glamphotobooth');
     define('UPLOADS_DIR', SITE_ROOT . '/uploads/');
 }
 
