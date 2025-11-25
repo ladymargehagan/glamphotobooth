@@ -21,7 +21,7 @@ $cssPath = SITE_URL . '/css/style.css';
             <p class="hero-subtitle">
                 Ghana's premier photography marketplace connecting you with creative professionals.
             </p>
-            <a href="#services" class="btn btn-lg btn-primary mt-lg">Explore Services</a>
+            <a href="<?php echo SITE_URL; ?>/auth/register.php" class="btn btn-lg btn-primary mt-lg">Get Started</a>
         </div>
     </section>
 
@@ -142,7 +142,7 @@ $cssPath = SITE_URL . '/css/style.css';
         <div class="container text-center">
             <h2>Ready to Create Something Beautiful?</h2>
             <p>Join thousands of clients who've found their perfect photographer or equipment partner.</p>
-            <a href="/auth/signup" class="btn btn-lg btn-primary">Get Started</a>
+            <a href="<?php echo SITE_URL; ?>/auth/register.php" class="btn btn-lg btn-primary">Get Started</a>
         </div>
     </section>
 

@@ -39,11 +39,11 @@
 
                 <div class="navbar-actions flex gap-sm">
                     <?php if (isLoggedIn()): ?>
-                        <a href="/account/dashboard" class="btn btn-sm btn-outline">Dashboard</a>
-                        <a href="/account/logout" class="btn btn-sm btn-primary">Logout</a>
+                        <a href="<?php echo SITE_URL; ?>/dashboard.php" class="btn btn-sm btn-outline">Dashboard</a>
+                        <a href="<?php echo SITE_URL; ?>/actions/logout.php" class="btn btn-sm btn-primary">Logout</a>
                     <?php else: ?>
-                        <a href="/auth/login" class="btn btn-sm btn-outline">Login</a>
-                        <a href="/auth/signup" class="btn btn-sm btn-primary">Sign Up</a>
+                        <a href="<?php echo SITE_URL; ?>/auth/login.php" class="btn btn-sm btn-outline">Login</a>
+                        <a href="<?php echo SITE_URL; ?>/auth/register.php" class="btn btn-sm btn-primary">Register</a>
                     <?php endif; ?>
                 </div>
             </div>
