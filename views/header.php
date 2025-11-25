@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Allura&display=swap" rel="stylesheet">
 
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="<?php echo isset($cssPath) ? htmlspecialchars($cssPath) : '/css/style.css'; ?>">
+    <link rel="stylesheet" href="<?php echo isset($cssPath) ? htmlspecialchars($cssPath) : SITE_URL . '/css/style.css'; ?>">
 </head>
 <body>
     <header class="navbar">
