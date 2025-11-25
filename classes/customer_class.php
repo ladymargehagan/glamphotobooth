@@ -10,9 +10,19 @@ class customer_class extends db_connection {
      * Add new customer (register)
      */
     public function add_customer($name, $email, $password, $user_role = 4) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+        
         $password_hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
         $email = strtolower(trim($email));
-        $name = htmlspecialchars(trim($name));
+        $name = trim($name);
+        
+        // Escape SQL inputs
+        $name = mysqli_real_escape_string($this->db, $name);
+        $email = mysqli_real_escape_string($this->db, $email);
+        $password_hash = mysqli_real_escape_string($this->db, $password_hash);
+        $user_role = intval($user_role);
 
         $sql = "INSERT INTO pb_customer (name, email, password, user_role, created_at)
                 VALUES ('$name', '$email', '$password_hash', $user_role, NOW())";
@@ -27,7 +37,12 @@ class customer_class extends db_connection {
      * Check if email exists
      */
     public function check_email_exists($email) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+        
         $email = strtolower(trim($email));
+        $email = mysqli_real_escape_string($this->db, $email);
         $sql = "SELECT id FROM pb_customer WHERE email = '$email' LIMIT 1";
         $result = $this->db_fetch_one($sql);
         return $result ? true : false;
@@ -37,7 +52,12 @@ class customer_class extends db_connection {
      * Get customer by email
      */
     public function get_customer_by_email($email) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+        
         $email = strtolower(trim($email));
+        $email = mysqli_real_escape_string($this->db, $email);
         $sql = "SELECT id, name, email, password, user_role FROM pb_customer WHERE email = '$email' LIMIT 1";
         return $this->db_fetch_one($sql);
     }
@@ -46,6 +66,11 @@ class customer_class extends db_connection {
      * Get customer by ID
      */
     public function get_customer_by_id($id) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+        
+        $id = intval($id);
         $sql = "SELECT id, name, email, country, city, contact, image, user_role, created_at FROM pb_customer WHERE id = $id LIMIT 1";
         return $this->db_fetch_one($sql);
     }
@@ -54,10 +79,21 @@ class customer_class extends db_connection {
      * Update customer profile
      */
     public function update_customer($id, $name, $country, $city, $contact) {
-        $name = htmlspecialchars(trim($name));
-        $country = htmlspecialchars(trim($country));
-        $city = htmlspecialchars(trim($city));
-        $contact = htmlspecialchars(trim($contact));
+        if (!$this->db_connect()) {
+            return false;
+        }
+        
+        $name = trim($name);
+        $country = trim($country);
+        $city = trim($city);
+        $contact = trim($contact);
+        
+        // Escape SQL inputs
+        $name = mysqli_real_escape_string($this->db, $name);
+        $country = mysqli_real_escape_string($this->db, $country);
+        $city = mysqli_real_escape_string($this->db, $city);
+        $contact = mysqli_real_escape_string($this->db, $contact);
+        $id = intval($id);
 
         $sql = "UPDATE pb_customer SET name = '$name', country = '$country', city = '$city', contact = '$contact', updated_at = NOW() WHERE id = $id";
 
@@ -68,7 +104,13 @@ class customer_class extends db_connection {
      * Change password
      */
     public function change_password($id, $new_password) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+        
         $password_hash = password_hash($new_password, PASSWORD_BCRYPT, ['cost' => 12]);
+        $password_hash = mysqli_real_escape_string($this->db, $password_hash);
+        $id = intval($id);
         $sql = "UPDATE pb_customer SET password = '$password_hash', updated_at = NOW() WHERE id = $id";
         return $this->db_write_query($sql);
     }

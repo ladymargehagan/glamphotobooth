@@ -31,12 +31,31 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.textContent = 'Creating Account...';
 
         try {
-            const response = await fetch('/~lady.hagan/glamphotobooth/actions/register_customer_action.php', {
+            // Use relative path to action file
+            const actionUrl = '../actions/register_customer_action.php';
+            
+            const response = await fetch(actionUrl, {
                 method: 'POST',
                 body: formData
             });
 
-            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const text = await response.text();
+            if (!text) {
+                throw new Error('Empty response from server');
+            }
+
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.error('JSON parse error:', e);
+                console.error('Response text:', text);
+                throw new Error('Invalid response from server');
+            }
 
             if (data.success) {
                 // Show success message
@@ -46,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Redirect after 2 seconds
                 setTimeout(() => {
-                    window.location.href = '/~lady.hagan/glamphotobooth/index.php';
+                    window.location.href = '../index.php';
                 }, 2000);
             } else {
                 // Show error

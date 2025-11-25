@@ -39,12 +39,20 @@ if (!defined('SITE_ROOT')) {
 }
 
 /**
- * Auto-load classes from classes folder
+ * Auto-load classes from classes and controllers folders
  */
 spl_autoload_register(function ($class) {
+    // Try classes folder first
     $file = SITE_ROOT . '/classes/' . $class . '.php';
     if (file_exists($file)) {
         require_once $file;
+        return;
+    }
+    // Try controllers folder
+    $file = SITE_ROOT . '/controllers/' . $class . '.php';
+    if (file_exists($file)) {
+        require_once $file;
+        return;
     }
 });
 
