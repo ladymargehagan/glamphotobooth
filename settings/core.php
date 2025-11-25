@@ -161,6 +161,18 @@ function requireUserType($userType)
 }
 
 /**
+ * Require admin access
+ */
+function requireAdmin()
+{
+    requireLogin();
+    if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] != 1) {
+        header('Location: ' . SITE_URL . '/index.php');
+        exit();
+    }
+}
+
+/**
  * Sanitize input
  */
 function sanitize($input)
