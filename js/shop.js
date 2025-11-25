@@ -36,21 +36,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
         productsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem;"><p>Loading products...</p></div>';
 
-        fetch('../actions/fetch_products_action.php', {
+        // Use relative path - shop.php is in root, so actions/ is correct
+        fetch('actions/fetch_products_action.php', {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                renderProducts(data.data);
-            } else {
-                showEmpty('No products found');
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(text => {
+            try {
+                const data = JSON.parse(text);
+                if (data.success) {
+                    renderProducts(data.data);
+                } else {
+                    showEmpty(data.message || 'No products found');
+                }
+            } catch (e) {
+                console.error('JSON parse error:', e);
+                console.error('Response text:', text);
+                showEmpty('Error loading products');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showEmpty('Error loading products');
+            showEmpty('Error loading products. Please try again.');
         });
     }
 
@@ -66,25 +79,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         products.forEach(product => {
-            const productCard = document.createElement('a');
-            productCard.href = `../product_details.php?id=${product.product_id}`;
+            const productCard = document.createElement('div');
             productCard.className = 'product-card';
 
             const imageHtml = product.image
                 ? `<img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.title)}">`
                 : '📸';
 
+            const description = product.description ?
+                (product.description.length > 60 ? product.description.substring(0, 60) + '...' : product.description) :
+                'No description available';
+
+            const productTitle = escapeHtml(product.title || 'Untitled Product');
+            const productPrice = parseFloat(product.price || 0);
+
             productCard.innerHTML = `
-                <div class="product-image">
-                    ${imageHtml}
-                </div>
-                <div class="product-info">
-                    <span class="product-category">Category</span>
-                    <div class="product-title">${escapeHtml(product.title)}</div>
-                    <div class="product-type">${product.product_type}</div>
-                    <p class="product-description">${escapeHtml(product.description.substring(0, 60))}...</p>
-                    <div class="product-price">₵${parseFloat(product.price).toFixed(2)}</div>
-                </div>
+                <a href="product_details.php?id=${product.product_id}" class="product-card-link">
+                    <div class="product-image">
+                        ${imageHtml}
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Category</span>
+                        <div class="product-title">${productTitle}</div>
+                        <div class="product-type">${product.product_type || 'N/A'}</div>
+                        <p class="product-description">${escapeHtml(description)}</p>
+                        <div class="product-price">₵${productPrice.toFixed(2)}</div>
+                    </div>
+                </a>
+                <button class="product-card-btn-add-to-cart" onclick="addToCart(${product.product_id}, '${productTitle}', ${productPrice}); event.stopPropagation();">Add to Cart</button>
             `;
 
             productsGrid.appendChild(productCard);

@@ -16,6 +16,14 @@
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="<?php echo isset($cssPath) ? htmlspecialchars($cssPath) : SITE_URL . '/css/style.css'; ?>">
+
+    <!-- Global variables for cart script -->
+    <script>
+        window.isLoggedIn = <?php echo isLoggedIn() ? 'true' : 'false'; ?>;
+        window.loginUrl = '<?php echo SITE_URL; ?>/auth/login.php';
+        window.siteUrl = '<?php echo SITE_URL; ?>';
+    </script>
+    <script src="<?php echo SITE_URL; ?>/js/cart.js"></script>
 </head>
 <body>
     <header class="navbar">
@@ -40,6 +48,14 @@
 
                 <div class="navbar-actions flex gap-sm">
                     <?php if (isLoggedIn()): ?>
+                        <a href="<?php echo SITE_URL; ?>/customer/cart.php" class="cart-icon" title="Shopping Cart" style="position: relative; display: flex; align-items: center;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <span id="cartBadge" class="cart-badge" style="display: none;"></span>
+                        </a>
                         <a href="<?php echo getDashboardUrl(); ?>" class="btn btn-sm btn-outline">Dashboard</a>
                         <a href="<?php echo SITE_URL; ?>/actions/logout.php" class="btn btn-sm btn-primary">Logout</a>
                     <?php else: ?>
@@ -112,5 +128,25 @@
         flex-direction: column;
         gap: var(--spacing-md);
     }
+}
+
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 24px;
+    text-align: center;
+    display: none !important;
+}
+
+.cart-badge[style*="display: block"] {
+    display: block !important;
 }
 </style>

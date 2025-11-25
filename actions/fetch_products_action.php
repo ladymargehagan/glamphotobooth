@@ -4,8 +4,17 @@
  * actions/fetch_products_action.php
  */
 
+// Set error reporting for debugging (remove in production)
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
 header('Content-Type: application/json');
 require_once __DIR__ . '/../settings/core.php';
+
+// Ensure classes are loaded
+if (!class_exists('product_class')) {
+    require_once __DIR__ . '/../classes/product_class.php';
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
@@ -21,6 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Get products based on filters
         if ($cat_id > 0) {
             $products = $product_class->get_products_by_category($cat_id, true);
+            if ($products === false) {
+                $products = [];
+            }
         } else {
             // Get all active products
             $db = new db_connection();
@@ -31,34 +43,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ORDER BY created_at DESC
                         LIMIT $per_page OFFSET $offset";
                 $products = $db->db_fetch_all($sql);
+                if ($products === false) {
+                    $products = [];
+                }
             }
         }
 
         // Filter by product type if specified
-        if (!empty($product_type) && $products) {
+        if (!empty($product_type) && $products && is_array($products)) {
             $products = array_filter($products, function($p) use ($product_type) {
-                return $p['product_type'] === $product_type;
+                return isset($p['product_type']) && $p['product_type'] === $product_type;
             });
         }
 
-        // Apply pagination to filtered results
-        if ($products && count($products) > $per_page) {
+        // Apply pagination to filtered results (only if we got all products, not already paginated)
+        if ($cat_id > 0 && $products && is_array($products) && count($products) > $per_page) {
             $products = array_slice($products, $offset, $per_page);
+        }
+
+        // Ensure products is an array
+        if (!is_array($products)) {
+            $products = [];
         }
 
         echo json_encode([
             'success' => true,
-            'data' => $products ? array_values($products) : [],
-            'count' => $products ? count($products) : 0
+            'data' => array_values($products),
+            'count' => count($products)
         ]);
         exit;
 
     } catch (Exception $e) {
         error_log('Fetch products error: ' . $e->getMessage());
-        echo json_encode(['success' => false, 'message' => 'Error fetching products']);
+        error_log('Stack trace: ' . $e->getTraceAsString());
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Error fetching products: ' . $e->getMessage()
+        ]);
         exit;
     }
 }
 
-echo json_encode(['success' => false, 'message' => 'Invalid request']);
+echo json_encode(['success' => false, 'message' => 'Invalid request method']);
 ?>

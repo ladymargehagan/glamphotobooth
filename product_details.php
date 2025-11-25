@@ -322,23 +322,18 @@ $cssPath = SITE_URL . '/css/style.css';
 
             <!-- Action Buttons -->
             <div class="action-buttons">
-                <button class="btn-add-to-cart">Add to Cart</button>
+                <button class="btn-add-to-cart" onclick="addToCart(<?php echo $product['product_id']; ?>, '<?php echo htmlspecialchars($product['title']); ?>', <?php echo $product['price']; ?>)">Add to Cart</button>
                 <button class="btn-contact">Contact Provider</button>
             </div>
+
+            <!-- Hidden CSRF token for cart operations -->
+            <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
         </div>
     </section>
 
     <?php require_once __DIR__ . '/views/footer.php'; ?>
 
     <script>
-        document.querySelector('.btn-add-to-cart').addEventListener('click', function() {
-            if (<?php echo isLoggedIn() ? 'true' : 'false'; ?>) {
-                alert('Cart functionality coming soon!');
-            } else {
-                window.location.href = '<?php echo SITE_URL; ?>/auth/login.php';
-            }
-        });
-
         document.querySelector('.btn-contact').addEventListener('click', function() {
             alert('Contact functionality coming soon!');
         });

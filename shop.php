@@ -5,12 +5,20 @@
  */
 require_once __DIR__ . '/settings/core.php';
 
+// Ensure category class is loaded
+if (!class_exists('category_class')) {
+    require_once __DIR__ . '/classes/category_class.php';
+}
+
 $pageTitle = 'Shop - PhotoMarket';
 $cssPath = SITE_URL . '/css/style.css';
 
 // Get all categories for filter
 $category_class = new category_class();
 $categories = $category_class->get_all_categories();
+if ($categories === false) {
+    $categories = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -116,16 +124,47 @@ $categories = $category_class->get_all_categories();
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             transition: var(--transition);
-            cursor: pointer;
             display: flex;
             flex-direction: column;
-            text-decoration: none;
             color: inherit;
         }
 
         .product-card:hover {
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-            transform: translateY(-8px);
+        }
+
+        .product-card-link {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .product-card-link:hover {
+            transform: translateY(-4px);
+        }
+
+        .product-card-btn-add-to-cart {
+            padding: 0.75rem 1rem;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .product-card-btn-add-to-cart:hover {
+            background: #0d1a3a;
+        }
+
+        .product-card-btn-add-to-cart:active {
+            transform: scale(0.98);
         }
 
         .product-image {
@@ -318,6 +357,9 @@ $categories = $category_class->get_all_categories();
     </div>
 
     <?php require_once __DIR__ . '/views/footer.php'; ?>
+
+    <!-- Hidden CSRF token for cart operations -->
+    <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
 
     <script src="<?php echo SITE_URL; ?>/js/shop.js"></script>
 </body>
