@@ -78,12 +78,24 @@ class customer_controller {
         // Get customer
         $customer = $this->customer->get_customer_by_email($email);
 
-        if (!$customer) {
+        if (!$customer || !isset($customer['password'])) {
             return ['success' => false, 'message' => 'Invalid email or password'];
         }
 
+        // Debug: Check if password hash exists (remove in production)
+        if (empty($customer['password'])) {
+            error_log('Login error: Password hash is empty for email: ' . $email);
+            return ['success' => false, 'message' => 'Account error. Please contact support.'];
+        }
+
         // Verify password
-        if (!$this->customer->verify_password($password, $customer['password'])) {
+        $password_valid = $this->customer->verify_password($password, $customer['password']);
+        
+        if (!$password_valid) {
+            // Debug logging (remove in production)
+            error_log('Login failed for email: ' . $email);
+            error_log('Hash from DB length: ' . strlen($customer['password']));
+            error_log('Hash starts with: ' . substr($customer['password'], 0, 10));
             return ['success' => false, 'message' => 'Invalid email or password'];
         }
 

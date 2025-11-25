@@ -21,7 +21,8 @@ class customer_class extends db_connection {
         // Escape SQL inputs
         $name = mysqli_real_escape_string($this->db, $name);
         $email = mysqli_real_escape_string($this->db, $email);
-        $password_hash = mysqli_real_escape_string($this->db, $password_hash);
+        // Password hash should NOT be escaped - it's already a safe 60-character string from password_hash()
+        // Escaping it can corrupt the hash and break password verification
         $user_role = intval($user_role);
 
         $sql = "INSERT INTO pb_customer (name, email, password, user_role, created_at)
@@ -109,7 +110,8 @@ class customer_class extends db_connection {
         }
         
         $password_hash = password_hash($new_password, PASSWORD_BCRYPT, ['cost' => 12]);
-        $password_hash = mysqli_real_escape_string($this->db, $password_hash);
+        // Password hash should NOT be escaped - it's already a safe 60-character string from password_hash()
+        // Escaping it can corrupt the hash and break password verification
         $id = intval($id);
         $sql = "UPDATE pb_customer SET password = '$password_hash', updated_at = NOW() WHERE id = $id";
         return $this->db_write_query($sql);
