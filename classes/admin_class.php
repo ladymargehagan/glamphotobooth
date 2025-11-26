@@ -21,7 +21,7 @@ class admin_class extends db_connection {
         // Escape SQL inputs
         $name = mysqli_real_escape_string($this->db, $name);
         $email = mysqli_real_escape_string($this->db, $email);
-        $password_hash = mysqli_real_escape_string($this->db, $password_hash);
+        // Password hash should NOT be escaped - it's already a safe 60-character string from password_hash()
 
         $sql = "INSERT INTO pb_admin (name, email, password, role, is_active, created_at)
                 VALUES ('$name', '$email', '$password_hash', 'admin', 1, NOW())";
