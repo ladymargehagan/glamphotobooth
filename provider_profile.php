@@ -313,7 +313,7 @@ $cssPath = SITE_URL . '/css/style.css';
         <h2 class="section-title">Services & Products</h2>
         <div class="products-grid">
             <?php foreach ($products as $product): ?>
-                <a href="<?php echo SITE_URL; ?>/product_details.php?id=<?php echo $product['product_id']; ?>" class="product-card">
+                <div class="product-card">
                     <div class="product-image">
                         <?php if ($product['image']): ?>
                             <img src="<?php echo SITE_URL . '/uploads/products/' . htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['title']); ?>">
@@ -326,7 +326,7 @@ $cssPath = SITE_URL . '/css/style.css';
                         <div class="product-type"><?php echo ucfirst(htmlspecialchars($product['product_type'])); ?></div>
                         <div class="product-price">₵<?php echo number_format($product['price'], 2); ?></div>
                     </div>
-                </a>
+                </div>
             <?php endforeach; ?>
         </div>
     <?php endif; ?>

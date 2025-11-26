@@ -330,8 +330,8 @@ $cssPath = SITE_URL . '/css/style.css';
                         <h2>When would you like to book?</h2>
                         
                         <div class="form-group">
-                            <label for="bookingDate">Select Date</label>
-                            <input type="date" id="bookingDate" name="bookingDate" required>
+                            <label for="booking_date">Select Date</label>
+                            <input type="date" id="booking_date" name="booking_date" required>
                         </div>
 
                         <div class="form-group">
@@ -339,7 +339,7 @@ $cssPath = SITE_URL . '/css/style.css';
                             <div class="time-slots" id="timeSlots">
                                 <p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">Please select a date first</p>
                             </div>
-                            <input type="hidden" id="bookingTime" name="bookingTime" value="">
+                            <input type="hidden" id="booking_time" name="booking_time" value="">
                         </div>
                     </div>
 
@@ -348,8 +348,8 @@ $cssPath = SITE_URL . '/css/style.css';
                         <h2>Service Details</h2>
                         
                         <div class="form-group">
-                            <label for="serviceDescription">What service do you need? *</label>
-                            <textarea id="serviceDescription" name="serviceDescription" placeholder="Describe the photography service you need (e.g., Wedding photoshoot, Product photography, etc.)" required></textarea>
+                            <label for="service_description">What service do you need? *</label>
+                            <textarea id="service_description" name="service_description" placeholder="Describe the photography service you need (e.g., Wedding photoshoot, Product photography, etc.)" required></textarea>
                         </div>
 
                         <div class="form-group">

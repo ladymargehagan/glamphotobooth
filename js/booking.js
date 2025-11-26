@@ -5,10 +5,10 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     const bookingForm = document.getElementById('bookingForm');
-    const bookingDateInput = document.getElementById('bookingDate');
+    const bookingDateInput = document.getElementById('booking_date');
     const timeSlotsContainer = document.getElementById('timeSlots');
-    const bookingTimeInput = document.getElementById('bookingTime');
-    const serviceDescriptionInput = document.getElementById('serviceDescription');
+    const bookingTimeInput = document.getElementById('booking_time');
+    const serviceDescriptionInput = document.getElementById('service_description');
     const submitBtn = document.getElementById('submitBtn');
 
     // Set minimum date to today
