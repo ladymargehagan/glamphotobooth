@@ -150,21 +150,11 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         </a>
                     </li>
                     <li class="sidebar-nav-item">
-                        <a href="#bookings" class="sidebar-nav-link">
+                        <a href="<?php echo SITE_URL; ?>/customer/manage_bookings.php" class="sidebar-nav-link">
                             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
                             </svg>
                             Booking Requests
-                        </a>
-                    </li>
-                    <li class="sidebar-nav-item">
-                        <a href="#portfolio" class="sidebar-nav-link">
-                            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                <polyline points="21 15 16 10 5 21"></polyline>
-                            </svg>
-                            My Portfolio
                         </a>
                     </li>
                     <li class="sidebar-nav-item">
@@ -178,7 +168,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         </a>
                     </li>
                     <li class="sidebar-nav-item">
-                        <a href="#galleries" class="sidebar-nav-link">
+                        <a href="<?php echo SITE_URL; ?>/customer/upload_photos.php" class="sidebar-nav-link">
                             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"></path>
                             </svg>
@@ -191,7 +181,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <div class="sidebar-section-title">Business</div>
                     <ul class="sidebar-nav">
                         <li class="sidebar-nav-item">
-                            <a href="#profile" class="sidebar-nav-link">
+                            <a href="<?php echo SITE_URL; ?>/customer/edit_profile.php" class="sidebar-nav-link">
                                 <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="12" cy="7" r="4"></circle>
@@ -200,7 +190,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                             </a>
                         </li>
                         <li class="sidebar-nav-item">
-                            <a href="#earnings" class="sidebar-nav-link">
+                            <a href="<?php echo SITE_URL; ?>/customer/earnings.php" class="sidebar-nav-link">
                                 <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <line x1="12" y1="1" x2="12" y2="23"></line>
                                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
@@ -284,18 +274,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     </svg>
                     <h3 class="card-title">Manage Bookings</h3>
                     <p class="card-subtitle">Review and respond to client booking requests</p>
-                    <a href="#" class="card-action">View Requests →</a>
-                </div>
-
-                <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <polyline points="21 15 16 10 5 21"></polyline>
-                    </svg>
-                    <h3 class="card-title">Upload Portfolio</h3>
-                    <p class="card-subtitle">Showcase your best work to attract more clients</p>
-                    <a href="#" class="card-action">Upload Photos →</a>
+                    <a href="<?php echo SITE_URL; ?>/customer/manage_bookings.php" class="card-action">View Requests →</a>
                 </div>
 
                 <div class="dashboard-card">
@@ -305,7 +284,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     </svg>
                     <h3 class="card-title">View Earnings</h3>
                     <p class="card-subtitle">Track your income and payment history</p>
-                    <a href="#" class="card-action">View Earnings →</a>
+                    <a href="<?php echo SITE_URL; ?>/customer/earnings.php" class="card-action">View Earnings →</a>
                 </div>
             </div>
 

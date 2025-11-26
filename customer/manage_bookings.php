@@ -9,18 +9,18 @@ requireLogin();
 
 $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 
-// Check if user is a photographer/provider
+// Check if user is a photographer/provider (role 2) or vendor (role 3)
 $customer_class = new customer_class();
 $customer = $customer_class->get_customer_by_id($user_id);
 
-if (!$customer || $customer['user_role'] != 2) {
+if (!$customer || ($customer['user_role'] != 2 && $customer['user_role'] != 3)) {
     header('Location: ' . SITE_URL . '/index.php');
     exit;
 }
 
 // Get provider details
 $provider_class = new provider_class();
-$provider = $provider_class->get_provider_by_customer_id($user_id);
+$provider = $provider_class->get_provider_by_customer($user_id);
 
 if (!$provider) {
     header('Location: ' . SITE_URL . '/customer/dashboard.php');

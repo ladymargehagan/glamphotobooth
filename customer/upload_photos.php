@@ -27,7 +27,7 @@ if (!$booking) {
 
 // Check if user is the provider
 $provider_class = new provider_class();
-$provider = $provider_class->get_provider_by_customer_id($user_id);
+$provider = $provider_class->get_provider_by_customer($user_id);
 
 if (!$provider || intval($provider['provider_id']) !== intval($booking['provider_id'])) {
     header('Location: ' . SITE_URL . '/customer/manage_bookings.php');

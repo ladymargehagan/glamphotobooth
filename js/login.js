@@ -47,18 +47,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Redirect based on user role
                 setTimeout(() => {
                     const userRole = data.user_role;
-                    let redirectUrl = '/~lady.hagan/glamphotobooth/index.php';
+                    const baseUrl = window.location.origin + '/~lady.hagan/glamphotobooth';
+                    let redirectUrl = baseUrl + '/index.php';
 
                     // Route based on role
                     // 1 = admin, 2 = photographer, 3 = vendor, 4 = customer
                     if (userRole === 1) {
-                        redirectUrl = '/~lady.hagan/glamphotobooth/admin/dashboard.php';
+                        redirectUrl = baseUrl + '/admin/dashboard.php';
                     } else if (userRole === 2) {
-                        redirectUrl = '/~lady.hagan/glamphotobooth/photographer/dashboard.php';
+                        redirectUrl = baseUrl + '/photographer/dashboard.php';
                     } else if (userRole === 3) {
-                        redirectUrl = '/~lady.hagan/glamphotobooth/vendor/dashboard.php';
+                        redirectUrl = baseUrl + '/vendor/dashboard.php';
                     } else if (userRole === 4) {
-                        redirectUrl = '/~lady.hagan/glamphotobooth/shop.php';
+                        redirectUrl = baseUrl + '/shop.php';
                     }
 
                     window.location.href = redirectUrl;
