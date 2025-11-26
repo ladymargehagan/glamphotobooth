@@ -289,5 +289,27 @@ class review_class extends db_connection {
         }
         return false;
     }
+
+    /**
+     * Get all reviews for admin dashboard
+     */
+    public function get_all_reviews() {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
+        $query = "SELECT r.* FROM pb_reviews r ORDER BY r.review_date DESC";
+
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            return false;
+        }
+
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
+        return false;
+    }
 }
 ?>

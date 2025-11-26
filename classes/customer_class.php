@@ -123,5 +123,43 @@ class customer_class extends db_connection {
     public function verify_password($plain_password, $hash) {
         return password_verify($plain_password, $hash);
     }
+
+    /**
+     * Get all customers
+     */
+    public function get_all_customers() {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
+        $sql = "SELECT id, name, email, country, city, contact, user_role, created_at, updated_at FROM pb_customer ORDER BY created_at DESC";
+        return $this->db_fetch_all($sql);
+    }
+
+    /**
+     * Get customers by role
+     */
+    public function get_customers_by_role($role) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
+        $role = intval($role);
+        $sql = "SELECT id, name, email, country, city, contact, user_role, created_at FROM pb_customer WHERE user_role = $role ORDER BY created_at DESC";
+        return $this->db_fetch_all($sql);
+    }
+
+    /**
+     * Get total customer count
+     */
+    public function get_total_customers() {
+        if (!$this->db_connect()) {
+            return 0;
+        }
+
+        $sql = "SELECT COUNT(*) as total FROM pb_customer";
+        $result = $this->db_fetch_one($sql);
+        return $result ? intval($result['total']) : 0;
+    }
 }
 ?>

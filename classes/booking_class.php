@@ -239,5 +239,27 @@ class booking_class extends db_connection {
         }
         return false;
     }
+
+    /**
+     * Get all bookings for admin dashboard
+     */
+    public function get_all_bookings() {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
+        $query = "SELECT b.* FROM pb_bookings b ORDER BY b.created_at DESC";
+
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            return false;
+        }
+
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
+        return false;
+    }
 }
 ?>

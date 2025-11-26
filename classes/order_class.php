@@ -172,7 +172,7 @@ class order_class extends db_connection {
         if (!$this->db_connect()) {
             return false;
         }
-        
+
         $order_id = intval($order_id);
         $reference = $this->db->real_escape_string($reference);
 
@@ -185,6 +185,28 @@ class order_class extends db_connection {
 
         $stmt->bind_param("si", $reference, $order_id);
         return $stmt->execute();
+    }
+
+    /**
+     * Get all orders
+     */
+    public function get_all_orders() {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
+        $query = "SELECT o.* FROM pb_orders o ORDER BY o.order_date DESC";
+
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            return false;
+        }
+
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
+        return false;
     }
 }
 ?>
