@@ -51,12 +51,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Route based on role
                     // 1 = admin, 2 = photographer, 3 = vendor, 4 = customer
-                    if (userRole === 2) {
+                    if (userRole === 1) {
+                        redirectUrl = '/~lady.hagan/glamphotobooth/admin/dashboard.php';
+                    } else if (userRole === 2) {
                         redirectUrl = '/~lady.hagan/glamphotobooth/photographer/dashboard.php';
                     } else if (userRole === 3) {
                         redirectUrl = '/~lady.hagan/glamphotobooth/vendor/dashboard.php';
                     } else if (userRole === 4) {
-                        redirectUrl = '/~lady.hagan/glamphotobooth/customer/dashboard.php';
+                        redirectUrl = '/~lady.hagan/glamphotobooth/shop.php';
                     }
 
                     window.location.href = redirectUrl;

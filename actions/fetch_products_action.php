@@ -66,6 +66,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $products = [];
         }
 
+        // Build full image URLs
+        if ($products && is_array($products)) {
+            foreach ($products as &$product) {
+                if (!empty($product['image'])) {
+                    // Image path: uploads/products/filename
+                    $product['image'] = SITE_URL . '/uploads/products/' . htmlspecialchars($product['image']);
+                } else {
+                    $product['image'] = null;
+                }
+            }
+        }
+
         echo json_encode([
             'success' => true,
             'data' => array_values($products),

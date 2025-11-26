@@ -5,6 +5,12 @@
  */
 require_once __DIR__ . '/settings/core.php';
 
+// Check if user is photographer or vendor - they should use their own dashboards
+if (isLoggedIn() && ($_SESSION['user_role'] == 2 || $_SESSION['user_role'] == 3)) {
+    header('Location: ' . SITE_URL . '/index.php');
+    exit;
+}
+
 // Ensure category class is loaded
 if (!class_exists('category_class')) {
     require_once __DIR__ . '/classes/category_class.php';

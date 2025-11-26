@@ -138,7 +138,7 @@ try {
     // Recent Orders (last 5)
     $recent_orders = [];
     if ($all_orders) {
-        $sorted = usort($all_orders, function($a, $b) {
+        usort($all_orders, function($a, $b) {
             return strtotime($b['order_date']) - strtotime($a['order_date']);
         });
         $recent_orders = array_slice($all_orders, 0, 5);
@@ -148,7 +148,7 @@ try {
     // Recent Bookings (last 5)
     $recent_bookings = [];
     if ($all_bookings) {
-        $sorted = usort($all_bookings, function($a, $b) {
+        usort($all_bookings, function($a, $b) {
             return strtotime($b['created_at']) - strtotime($a['created_at']);
         });
         $recent_bookings = array_slice($all_bookings, 0, 5);

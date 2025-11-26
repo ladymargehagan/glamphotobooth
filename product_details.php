@@ -277,7 +277,7 @@ $cssPath = SITE_URL . '/css/style.css';
     <section class="product-hero">
         <div class="product-hero-image">
             <?php if ($product['image']): ?>
-                <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['title']); ?>">
+                <img src="<?php echo SITE_URL . '/uploads/products/' . htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['title']); ?>">
             <?php else: ?>
                 📸
             <?php endif; ?>
@@ -322,7 +322,11 @@ $cssPath = SITE_URL . '/css/style.css';
 
             <!-- Action Buttons -->
             <div class="action-buttons">
-                <button class="btn-add-to-cart" onclick="addToCart(<?php echo $product['product_id']; ?>, '<?php echo htmlspecialchars($product['title']); ?>', <?php echo $product['price']; ?>)">Add to Cart</button>
+                <?php if ($product['product_type'] === 'service'): ?>
+                    <a href="<?php echo SITE_URL; ?>/customer/booking.php?provider_id=<?php echo $product['provider_id']; ?>" class="btn-add-to-cart" style="display: inline-block; text-decoration: none; text-align: center;">Book Service</a>
+                <?php else: ?>
+                    <button class="btn-add-to-cart" onclick="addToCart(<?php echo $product['product_id']; ?>, '<?php echo htmlspecialchars($product['title']); ?>', <?php echo $product['price']; ?>)">Add to Cart</button>
+                <?php endif; ?>
                 <button class="btn-contact">Contact Provider</button>
             </div>
 
