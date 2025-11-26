@@ -34,6 +34,15 @@ if ($categories === false) {
     <title><?php echo htmlspecialchars($pageTitle); ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo htmlspecialchars($cssPath); ?>">
+
+    <!-- Global variables and cart functionality -->
+    <script>
+        window.isLoggedIn = <?php echo isLoggedIn() ? 'true' : 'false'; ?>;
+        window.loginUrl = '<?php echo SITE_URL; ?>/auth/login.php';
+        window.siteUrl = '<?php echo SITE_URL; ?>';
+    </script>
+    <script src="<?php echo SITE_URL; ?>/js/cart.js"></script>
+
     <style>
         .shop-container {
             max-width: 1400px;

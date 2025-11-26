@@ -93,8 +93,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const productTitle = escapeHtml(product.title || 'Untitled Product');
             const productPrice = parseFloat(product.price || 0);
 
+            const providerProfileUrl = window.siteUrl ? window.siteUrl + '/provider/profile.php?id=' + product.provider_id : '/provider/profile.php?id=' + product.provider_id;
+
             productCard.innerHTML = `
-                <a href="product_details.php?id=${product.product_id}" class="product-card-link">
+                <div class="product-card-link">
                     <div class="product-image">
                         ${imageHtml}
                     </div>
@@ -105,10 +107,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="product-description">${escapeHtml(description)}</p>
                         <div class="product-price">₵${productPrice.toFixed(2)}</div>
                         <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; font-size: 0.85rem;">
-                            <a href="provider_profile.php?id=${product.provider_id}" style="color: var(--primary); text-decoration: none; font-weight: 500;">View Provider Profile →</a>
+                            <a href="${providerProfileUrl}" style="color: var(--primary); text-decoration: none; font-weight: 500;">View Provider Profile →</a>
                         </div>
                     </div>
-                </a>
+                </div>
                 <button class="product-card-btn-add-to-cart" onclick="addToCart(${product.product_id}, '${productTitle}', ${productPrice}); event.stopPropagation();">Add to Cart</button>
             `;
 
