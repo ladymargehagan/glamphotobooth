@@ -452,6 +452,10 @@ $cssPath = SITE_URL . '/css/style.css';
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    // Update cart badge before reload
+                    if (window.updateCartBadgeCount) {
+                        window.updateCartBadgeCount(data.cart_count || 0);
+                    }
                     location.reload();
                 } else {
                     showError(data.message || 'Failed to update cart');

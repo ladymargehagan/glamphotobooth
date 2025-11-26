@@ -78,7 +78,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         </a>
                     </li>
                     <li class="sidebar-nav-item">
-                        <a href="#bookings" class="sidebar-nav-link">
+                        <a href="<?php echo SITE_URL; ?>/customer/my_bookings.php" class="sidebar-nav-link">
                             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
                             </svg>
@@ -86,7 +86,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         </a>
                     </li>
                     <li class="sidebar-nav-item">
-                        <a href="#purchases" class="sidebar-nav-link">
+                        <a href="<?php echo SITE_URL; ?>/customer/orders.php" class="sidebar-nav-link">
                             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <circle cx="9" cy="21" r="1"></circle>
                                 <circle cx="20" cy="21" r="1"></circle>
@@ -95,23 +95,13 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                             My Orders
                         </a>
                     </li>
-                    <li class="sidebar-nav-item">
-                        <a href="#galleries" class="sidebar-nav-link">
-                            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                <polyline points="21 15 16 10 5 21"></polyline>
-                            </svg>
-                            Photo Galleries
-                        </a>
-                    </li>
                 </ul>
 
                 <div class="sidebar-section">
                     <div class="sidebar-section-title">Account</div>
                     <ul class="sidebar-nav">
                         <li class="sidebar-nav-item">
-                            <a href="#profile" class="sidebar-nav-link">
+                            <a href="<?php echo SITE_URL; ?>/customer/edit_profile.php" class="sidebar-nav-link">
                                 <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="12" cy="7" r="4"></circle>
@@ -142,7 +132,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <p class="dashboard-subtitle">Here's your photography journey at a glance</p>
                 </div>
                 <div class="dashboard-actions">
-                    <a href="<?php echo SITE_URL; ?>/auth/register.php" class="btn btn-primary">Book Services</a>
+                    <a href="<?php echo SITE_URL; ?>/shop.php" class="btn btn-primary">Book Services</a>
                 </div>
             </div>
 
@@ -179,28 +169,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     </svg>
                     <h3 class="card-title">Browse Photographers</h3>
                     <p class="card-subtitle">Discover talented photographers ready to capture your moments</p>
-                    <a href="#" class="card-action">Start Browsing →</a>
-                </div>
-
-                <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="8" y="2" width="8" height="20" rx="2"></rect>
-                        <path d="M12 18v.01"></path>
-                    </svg>
-                    <h3 class="card-title">Browse Equipment</h3>
-                    <p class="card-subtitle">Rent professional equipment for your projects</p>
-                    <a href="#" class="card-action">Explore Equipment →</a>
-                </div>
-
-                <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <polyline points="21 15 16 10 5 21"></polyline>
-                    </svg>
-                    <h3 class="card-title">View Galleries</h3>
-                    <p class="card-subtitle">Access your photo galleries from completed bookings</p>
-                    <a href="#" class="card-action">View Galleries →</a>
+                    <a href="<?php echo SITE_URL; ?>/shop.php" class="card-action">Start Browsing →</a>
                 </div>
             </div>
 

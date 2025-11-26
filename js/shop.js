@@ -104,6 +104,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="product-type">${product.product_type || 'N/A'}</div>
                         <p class="product-description">${escapeHtml(description)}</p>
                         <div class="product-price">₵${productPrice.toFixed(2)}</div>
+                        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; font-size: 0.85rem;">
+                            <a href="provider_profile.php?id=${product.provider_id}" style="color: var(--primary); text-decoration: none; font-weight: 500;">View Provider Profile →</a>
+                        </div>
                     </div>
                 </a>
                 <button class="product-card-btn-add-to-cart" onclick="addToCart(${product.product_id}, '${productTitle}', ${productPrice}); event.stopPropagation();">Add to Cart</button>
