@@ -241,9 +241,11 @@ function generateCSRFToken() {
     return Math.random().toString(36).substring(7);
 }
 
-// Add styles for notifications
-const style = document.createElement('style');
-style.textContent = `
+// Add styles for notifications (only if not already added)
+if (!document.getElementById('cartNotificationStyles')) {
+    const style = document.createElement('style');
+    style.id = 'cartNotificationStyles';
+    style.textContent = `
     .cart-notification {
         position: fixed;
         bottom: 20px;
@@ -318,4 +320,5 @@ style.textContent = `
         text-align: center;
     }
 `;
-document.head.appendChild(style);
+    document.head.appendChild(style);
+}
