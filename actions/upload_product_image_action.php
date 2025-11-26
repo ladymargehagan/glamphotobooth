@@ -47,13 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mkdir($uploads_dir, 0755, true);
         }
 
-        // Generate unique filename
+        // Generate unique filename (we only store the filename in DB)
         $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
         $filename = 'product_' . $product_id . '_' . time() . '.' . $ext;
         $filepath = $uploads_dir . '/' . $filename;
-        $relative_path = '/uploads/products/' . $filename;
 
-        // Move uploaded file
+        // Move uploaded file to uploads/products
         if (!move_uploaded_file($file['tmp_name'], $filepath)) {
             echo json_encode(['success' => false, 'message' => 'Failed to upload file']);
             exit;
@@ -61,11 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Update product image in database
         $product_class = new product_class();
-        if ($product_class->update_product_image($product_id, $relative_path)) {
+        // Store only the filename in the database; URL is built when displaying
+        if ($product_class->update_product_image($product_id, $filename)) {
             echo json_encode([
                 'success' => true,
                 'message' => 'Image uploaded successfully',
-                'image_path' => $relative_path
+                'image_path' => SITE_URL . '/uploads/products/' . $filename
             ]);
             exit;
         }

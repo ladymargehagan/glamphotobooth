@@ -30,7 +30,7 @@
         <div class="container">
             <div class="flex-between">
                 <div class="navbar-brand">
-                    <a href="/" class="logo">
+                    <a href="<?php echo SITE_URL; ?>/index.php" class="logo">
                         <h3 class="font-serif text-primary m-0">PhotoMarket</h3>
                     </a>
                 </div>
@@ -39,10 +39,7 @@
                     <ul class="navbar-items">
                         <li><a href="<?php echo SITE_URL; ?>/index.php" class="nav-link">Home</a></li>
                         <li><a href="<?php echo SITE_URL; ?>/shop.php" class="nav-link">Shop</a></li>
-                        <li><a href="/services" class="nav-link">Services</a></li>
-                        <li><a href="/equipment" class="nav-link">Equipment</a></li>
-                        <li><a href="/gallery" class="nav-link">Gallery</a></li>
-                        <li><a href="/about" class="nav-link">About</a></li>
+                        <li><a href="<?php echo SITE_URL; ?>/shop.php?type=service" class="nav-link">Book Services</a></li>
                     </ul>
                 </nav>
 

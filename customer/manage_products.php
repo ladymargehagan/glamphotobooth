@@ -286,6 +286,14 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 </head>
 <body>
     <div class="products-container">
+        <!-- Simple top navigation so providers can go back to their dashboard -->
+        <div style="margin-bottom: var(--spacing-lg); display: flex; justify-content: space-between; align-items: center;">
+            <a href="<?php echo getDashboardUrl(); ?>" style="text-decoration: none; color: var(--text-secondary); font-size: 0.9rem;">
+                ← Back to Dashboard
+            </a>
+            <!-- CSRF token used by JS delete action -->
+            <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
+        </div>
         <div class="products-header">
             <h1>Manage Products</h1>
             <a href="<?php echo SITE_URL; ?>/customer/add_product.php" class="btn-add-product">+ Add New Product</a>
