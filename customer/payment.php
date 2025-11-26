@@ -225,8 +225,10 @@ $cssPath = SITE_URL . '/css/style.css';
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Redirect to Paystack
-                    window.location.href = data.authorization_url;
+                    // Redirect to payment completion page with reference
+                    // Paystack will handle the redirect back with reference parameter
+                    window.location.href = data.authorization_url + '&redirect_url=' +
+                        encodeURIComponent(window.siteUrl + '/customer/payment_complete.php?reference=' + data.reference);
                 } else {
                     showError(data.message || 'Failed to initialize payment');
                     button.disabled = false;

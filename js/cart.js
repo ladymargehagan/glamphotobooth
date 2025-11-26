@@ -58,7 +58,15 @@ window.addToCart = function(productId, productTitle, productPrice) {
                 }, 2000);
             }
         } else {
-            showCartError(data.message || 'Failed to add to cart');
+            // Check if this is a service product that needs booking instead
+            if (data.is_service && data.redirect_url) {
+                showCartInfo(`Services must be booked directly. Redirecting you now...`);
+                setTimeout(() => {
+                    window.location.href = data.redirect_url;
+                }, 2000);
+            } else {
+                showCartError(data.message || 'Failed to add to cart');
+            }
         }
     })
     .catch(error => {
@@ -163,6 +171,41 @@ function showCartError(message) {
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="12" y1="8" x2="12" y2="12"></line>
                 <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>${message}</span>
+        `;
+        container.appendChild(msg);
+
+        setTimeout(() => {
+            msg.style.animation = 'slideOut 0.3s ease forwards';
+            setTimeout(() => msg.remove(), 300);
+        }, 3000);
+    } else {
+        msgEl.querySelector('span').textContent = message;
+        msgEl.style.display = 'flex';
+        setTimeout(() => {
+            msgEl.style.animation = 'slideOut 0.3s ease forwards';
+            setTimeout(() => msgEl.style.display = 'none', 300);
+        }, 3000);
+    }
+}
+
+/**
+ * Show cart info message
+ */
+function showCartInfo(message) {
+    const msgEl = document.getElementById('cartInfoMessage');
+    if (!msgEl) {
+        // Create message element if it doesn't exist
+        const container = document.body;
+        const msg = document.createElement('div');
+        msg.id = 'cartInfoMessage';
+        msg.className = 'cart-notification info';
+        msg.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
             </svg>
             <span>${message}</span>
         `;

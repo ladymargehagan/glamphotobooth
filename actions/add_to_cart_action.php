@@ -21,6 +21,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
+        // Check product type
+        $product_class = new product_class();
+        $product = $product_class->get_product_by_id($product_id);
+
+        if (!$product) {
+            echo json_encode(['success' => false, 'message' => 'Product not found']);
+            exit;
+        }
+
+        // Services cannot be added to cart - must be booked directly
+        if ($product['product_type'] === 'service') {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Services must be booked directly',
+                'is_service' => true,
+                'provider_id' => $product['provider_id'],
+                'product_id' => $product_id,
+                'redirect_url' => SITE_URL . '/customer/booking.php?product_id=' . $product_id . '&provider_id=' . $product['provider_id']
+            ]);
+            exit;
+        }
+
+        // For rental and sale products, add to cart
         $controller = new cart_controller();
         $result = $controller->add_to_cart_ctr($customer_id, $product_id, $quantity);
 

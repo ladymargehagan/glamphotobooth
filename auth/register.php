@@ -329,7 +329,23 @@ $cssPath = SITE_URL . '/css/style.css';
         color: var(--text-primary);
     }
 
-    .form-group input,
+    .form-group input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        font-size: 0.95rem;
+        font-family: var(--font-sans);
+        transition: var(--transition);
+        background: var(--white);
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(16, 33, 82, 0.1);
+    }
+
     .form-group textarea,
     .form-group select {
         width: 100%;
@@ -342,7 +358,6 @@ $cssPath = SITE_URL . '/css/style.css';
         background: var(--white);
     }
 
-    .form-group input:focus,
     .form-group textarea:focus,
     .form-group select:focus {
         outline: none;
