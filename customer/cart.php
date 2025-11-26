@@ -399,7 +399,7 @@ $cssPath = SITE_URL . '/css/style.css';
                         <span>Total</span>
                         <span>₵<?php echo number_format($subtotal, 2); ?></span>
                     </div>
-                    <button class="btn-checkout">Proceed to Checkout</button>
+                    <a href="<?php echo SITE_URL; ?>/customer/checkout.php" class="btn-checkout" style="text-decoration: none; text-align: center; display: block;">Proceed to Checkout</a>
                 </div>
             </div>
         <?php else: ?>
