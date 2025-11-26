@@ -288,7 +288,10 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     <div class="products-container">
         <div class="products-header">
             <h1>Manage Products</h1>
-            <a href="<?php echo SITE_URL; ?>/customer/add_product.php" class="btn-add-product">+ Add New Product</a>
+            <div style="display: flex; gap: var(--spacing-md);">
+                <a href="<?php echo SITE_URL; ?>/<?php echo $user_role === 2 ? 'photographer' : 'vendor'; ?>/dashboard.php" class="btn-add-product" style="background: rgba(16, 33, 82, 0.1); color: var(--primary);">← Back to Dashboard</a>
+                <a href="<?php echo SITE_URL; ?>/customer/add_product.php" class="btn-add-product">+ Add New Product</a>
+            </div>
         </div>
 
         <!-- Messages -->
