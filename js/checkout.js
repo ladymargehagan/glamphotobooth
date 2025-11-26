@@ -36,7 +36,35 @@ window.proceedToPayment = function() {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        // Check if response is ok (status 200-299)
+        if (!response.ok) {
+            // Try to parse as JSON first
+            return response.text().then(text => {
+                try {
+                    const json = JSON.parse(text);
+                    throw new Error(json.message || 'Server error occurred');
+                } catch (e) {
+                    // If not JSON, throw with status text
+                    throw new Error(`Server error (${response.status}): ${response.statusText}`);
+                }
+            });
+        }
+        // Check content type
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return response.json();
+        } else {
+            // If not JSON, get text and try to parse
+            return response.text().then(text => {
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    throw new Error('Invalid response from server');
+                }
+            });
+        }
+    })
     .then(data => {
         if (data.success) {
             // Store order details in session storage
@@ -55,7 +83,7 @@ window.proceedToPayment = function() {
     })
     .catch(error => {
         console.error('Error:', error);
-        showError('Network error. Please try again.');
+        showError(error.message || 'Network error. Please try again.');
         button.disabled = false;
         button.textContent = 'Proceed to Payment';
     });

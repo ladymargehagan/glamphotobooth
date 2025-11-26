@@ -10,6 +10,10 @@ class order_class extends db_connection {
      * Create a new order
      */
     public function create_order($customer_id, $total_amount) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+        
         $customer_id = intval($customer_id);
         $total_amount = floatval($total_amount);
 
@@ -32,6 +36,10 @@ class order_class extends db_connection {
      * Get order by ID
      */
     public function get_order_by_id($order_id) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+        
         $order_id = intval($order_id);
 
         $query = "SELECT o.*, c.name as customer_name, c.email
@@ -56,6 +64,10 @@ class order_class extends db_connection {
      * Get orders by customer
      */
     public function get_orders_by_customer($customer_id) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+        
         $customer_id = intval($customer_id);
 
         $query = "SELECT * FROM pb_orders WHERE customer_id = ? ORDER BY order_date DESC";
@@ -77,6 +89,10 @@ class order_class extends db_connection {
      * Update order payment status
      */
     public function update_payment_status($order_id, $status) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+        
         $order_id = intval($order_id);
         $status = $this->db->real_escape_string($status);
 
@@ -100,6 +116,10 @@ class order_class extends db_connection {
      * Add item to order
      */
     public function add_order_item($order_id, $product_id, $quantity, $price) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+        
         $order_id = intval($order_id);
         $product_id = intval($product_id);
         $quantity = intval($quantity);
@@ -121,6 +141,10 @@ class order_class extends db_connection {
      * Get order items
      */
     public function get_order_items($order_id) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+        
         $order_id = intval($order_id);
 
         $query = "SELECT oi.*, p.title, p.product_type, p.image
@@ -145,6 +169,10 @@ class order_class extends db_connection {
      * Update payment reference
      */
     public function update_payment_reference($order_id, $reference) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+        
         $order_id = intval($order_id);
         $reference = $this->db->real_escape_string($reference);
 
