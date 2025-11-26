@@ -452,11 +452,34 @@ $cssPath = SITE_URL . '/css/style.css';
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Update cart badge before reload
+                    // Update cart badge
                     if (window.updateCartBadgeCount) {
                         window.updateCartBadgeCount(data.cart_count || 0);
                     }
-                    location.reload();
+
+                    // If quantity is 0, remove the item from DOM
+                    if (quantity === 0) {
+                        const item = document.querySelector(`[data-product-id="${productId}"]`);
+                        if (item) {
+                            item.style.opacity = '0.5';
+                            setTimeout(() => {
+                                item.remove();
+                                // Check if cart is now empty
+                                if (document.querySelectorAll('.cart-item').length === 0) {
+                                    location.reload();
+                                }
+                            }, 300);
+                        }
+                    } else {
+                        // Update the quantity in the DOM without reload
+                        const item = document.querySelector(`[data-product-id="${productId}"]`);
+                        if (item) {
+                            const input = item.querySelector('input[type="number"]');
+                            if (input) {
+                                input.value = quantity;
+                            }
+                        }
+                    }
                 } else {
                     showError(data.message || 'Failed to update cart');
                 }

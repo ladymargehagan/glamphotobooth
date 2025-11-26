@@ -9,6 +9,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const successMsg = document.getElementById('successMessage');
     const errorMsg = document.getElementById('errorMessage');
     const errorText = document.getElementById('errorText');
+    const roleRadios = document.querySelectorAll('input[name="role"]');
+
+    // Handle role selection to show/hide provider-specific fields
+    roleRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            const isProvider = this.value === '2' || this.value === '3';
+
+            // Show/hide provider fields
+            document.getElementById('businessNameGroup').style.display = isProvider ? 'block' : 'none';
+            document.getElementById('descriptionGroup').style.display = isProvider ? 'block' : 'none';
+            document.getElementById('rateGroup').style.display = isProvider ? 'block' : 'none';
+            document.getElementById('serviceTypeGroup').style.display = isProvider ? 'block' : 'none';
+
+            // Clear provider fields when not selected
+            if (!isProvider) {
+                document.getElementById('businessName').value = '';
+                document.getElementById('description').value = '';
+                document.getElementById('hourlyRate').value = '';
+                document.getElementById('serviceType').value = '';
+            }
+        });
+    });
 
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -93,6 +115,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
+        const phone = document.getElementById('phone').value.trim();
+        const city = document.getElementById('city').value.trim();
+        const role = document.querySelector('input[name="role"]:checked').value;
 
         if (!name) {
             return { valid: false, field: 'name', message: 'Full name is required' };
@@ -124,6 +149,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (password !== confirmPassword) {
             return { valid: false, field: 'confirmPassword', message: 'Passwords do not match' };
+        }
+
+        if (!phone) {
+            return { valid: false, field: 'phone', message: 'Phone number is required' };
+        }
+
+        if (!city) {
+            return { valid: false, field: 'city', message: 'City/Location is required' };
+        }
+
+        // Validate provider-specific fields
+        if (role === '2' || role === '3') {
+            const businessName = document.getElementById('businessName').value.trim();
+            const hourlyRate = document.getElementById('hourlyRate').value;
+
+            if (!businessName) {
+                return { valid: false, field: 'businessName', message: 'Business name is required' };
+            }
+
+            if (!hourlyRate || parseFloat(hourlyRate) <= 0) {
+                return { valid: false, field: 'hourlyRate', message: 'Hourly rate must be greater than 0' };
+            }
         }
 
         return { valid: true };

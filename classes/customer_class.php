@@ -9,24 +9,28 @@ class customer_class extends db_connection {
     /**
      * Add new customer (register)
      */
-    public function add_customer($name, $email, $password, $user_role = 4) {
+    public function add_customer($name, $email, $password, $user_role = 4, $contact = '', $city = '') {
         if (!$this->db_connect()) {
             return false;
         }
-        
+
         $password_hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
         $email = strtolower(trim($email));
         $name = trim($name);
-        
+        $contact = trim($contact);
+        $city = trim($city);
+
         // Escape SQL inputs
         $name = mysqli_real_escape_string($this->db, $name);
         $email = mysqli_real_escape_string($this->db, $email);
+        $contact = mysqli_real_escape_string($this->db, $contact);
+        $city = mysqli_real_escape_string($this->db, $city);
         // Password hash should NOT be escaped - it's already a safe 60-character string from password_hash()
         // Escaping it can corrupt the hash and break password verification
         $user_role = intval($user_role);
 
-        $sql = "INSERT INTO pb_customer (name, email, password, user_role, created_at)
-                VALUES ('$name', '$email', '$password_hash', $user_role, NOW())";
+        $sql = "INSERT INTO pb_customer (name, email, password, contact, city, user_role, created_at)
+                VALUES ('$name', '$email', '$password_hash', '$contact', '$city', $user_role, NOW())";
 
         if ($this->db_write_query($sql)) {
             return $this->last_insert_id();

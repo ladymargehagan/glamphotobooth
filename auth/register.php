@@ -117,6 +117,55 @@ $cssPath = SITE_URL . '/css/style.css';
                         <span class="form-error" id="confirmError"></span>
                     </div>
 
+                    <!-- Phone Number (required for all) -->
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="+233 XX XXX XXXX" required>
+                        <span class="form-error" id="phoneError"></span>
+                    </div>
+
+                    <!-- City/Location (required for all) -->
+                    <div class="form-group">
+                        <label for="city">City/Location</label>
+                        <input type="text" id="city" name="city" placeholder="Your city" required>
+                        <span class="form-error" id="cityError"></span>
+                    </div>
+
+                    <!-- Business Name (for photographer/vendor) -->
+                    <div class="form-group" id="businessNameGroup" style="display: none;">
+                        <label for="businessName">Business Name</label>
+                        <input type="text" id="businessName" name="business_name" placeholder="Your business name">
+                        <span class="form-error" id="businessNameError"></span>
+                    </div>
+
+                    <!-- Description (for photographer/vendor) -->
+                    <div class="form-group" id="descriptionGroup" style="display: none;">
+                        <label for="description">Business Description</label>
+                        <textarea id="description" name="description" placeholder="Tell us about your business" rows="3"></textarea>
+                        <span class="form-error" id="descriptionError"></span>
+                    </div>
+
+                    <!-- Hourly Rate (for photographer/vendor) -->
+                    <div class="form-group" id="rateGroup" style="display: none;">
+                        <label for="hourlyRate">Hourly Rate (₵)</label>
+                        <input type="number" id="hourlyRate" name="hourly_rate" placeholder="e.g., 500" min="0" step="0.01">
+                        <span class="form-error" id="rateError"></span>
+                    </div>
+
+                    <!-- Service Type (for photographer/vendor) -->
+                    <div class="form-group" id="serviceTypeGroup" style="display: none;">
+                        <label for="serviceType">Service Type</label>
+                        <select id="serviceType" name="service_type">
+                            <option value="">Select service type</option>
+                            <option value="photography">Photography</option>
+                            <option value="equipment_rental">Equipment Rental</option>
+                            <option value="photobooth">Photobooth Services</option>
+                            <option value="prints">Photo Prints</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <span class="form-error" id="serviceTypeError"></span>
+                    </div>
+
                     <!-- Submit -->
                     <button type="submit" class="btn btn-lg btn-primary btn-block" id="submitBtn">
                         Create Account
@@ -280,7 +329,9 @@ $cssPath = SITE_URL . '/css/style.css';
         color: var(--text-primary);
     }
 
-    .form-group input {
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
         width: 100%;
         padding: 0.75rem 1rem;
         border: 1px solid var(--border-color);
@@ -291,10 +342,17 @@ $cssPath = SITE_URL . '/css/style.css';
         background: var(--white);
     }
 
-    .form-group input:focus {
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
         outline: none;
         border-color: var(--primary);
         box-shadow: 0 0 0 3px rgba(16, 33, 82, 0.1);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 80px;
     }
 
     .form-error {

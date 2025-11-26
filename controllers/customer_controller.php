@@ -18,7 +18,7 @@ class customer_controller {
     /**
      * Register customer
      */
-    public function register_customer_ctr($name, $email, $password, $confirm_password, $role) {
+    public function register_customer_ctr($name, $email, $password, $confirm_password, $role, $phone = '', $city = '') {
         // Validation
         if (empty($name) || empty($email) || empty($password) || empty($role)) {
             return ['success' => false, 'message' => 'All fields are required'];
@@ -47,8 +47,8 @@ class customer_controller {
             return ['success' => false, 'message' => 'Email already registered'];
         }
 
-        // Add customer
-        $customer_id = $this->customer->add_customer($name, $email, $password, $role);
+        // Add customer with phone and city
+        $customer_id = $this->customer->add_customer($name, $email, $password, $role, $phone, $city);
 
         if ($customer_id) {
             $_SESSION['user_id'] = $customer_id;
@@ -56,7 +56,7 @@ class customer_controller {
             $_SESSION['user_email'] = $email;
             $_SESSION['user_role'] = $role;
 
-            return ['success' => true, 'message' => 'Registration successful', 'user_id' => $customer_id];
+            return ['success' => true, 'message' => 'Registration successful', 'customer_id' => $customer_id];
         }
 
         return ['success' => false, 'message' => 'Registration failed. Please try again'];

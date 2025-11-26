@@ -9,27 +9,30 @@ class booking_class extends db_connection {
     /**
      * Create a new booking
      */
-    public function create_booking($customer_id, $provider_id, $booking_date, $booking_time, $service_description, $notes = '') {
+    public function create_booking($customer_id, $provider_id, $product_id, $booking_date, $booking_time, $duration_hours = 1, $total_price = 0, $service_description = '', $notes = '') {
         if (!$this->db_connect()) {
             return false;
         }
 
         $customer_id = intval($customer_id);
         $provider_id = intval($provider_id);
+        $product_id = intval($product_id);
         $booking_date = $this->db->real_escape_string($booking_date);
         $booking_time = $this->db->real_escape_string($booking_time);
+        $duration_hours = floatval($duration_hours);
+        $total_price = floatval($total_price);
         $service_description = $this->db->real_escape_string($service_description);
         $notes = $this->db->real_escape_string($notes);
 
-        $query = "INSERT INTO pb_bookings (customer_id, provider_id, booking_date, booking_time, service_description, notes, status, created_at)
-                  VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW())";
+        $query = "INSERT INTO pb_bookings (customer_id, provider_id, product_id, booking_date, booking_time, service_description, notes, duration_hours, total_price, status, created_at)
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW())";
 
         $stmt = $this->db->prepare($query);
         if (!$stmt) {
             return false;
         }
 
-        $stmt->bind_param("iissss", $customer_id, $provider_id, $booking_date, $booking_time, $service_description, $notes);
+        $stmt->bind_param("iiiisssdi", $customer_id, $provider_id, $product_id, $booking_date, $booking_time, $service_description, $notes, $duration_hours, $total_price);
         if ($stmt->execute()) {
             return $this->db->insert_id;
         }

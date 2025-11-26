@@ -21,9 +21,13 @@ if (!$provider) {
     exit;
 }
 
-// Get provider's products
+// Get provider's products (don't filter by active if no products found)
 $product_class = new product_class();
 $products = $product_class->get_products_by_provider($provider_id, true);
+if (!$products) {
+    // Try without active filter if no products found
+    $products = $product_class->get_products_by_provider($provider_id, false);
+}
 
 // Get provider's reviews and rating
 $review_class = new review_class();

@@ -90,7 +90,7 @@ class cart_class extends db_connection {
             return $this->remove_from_cart($customer_id, $product_id);
         }
 
-        $sql = "UPDATE pb_cart SET quantity = $quantity, date_added = NOW()
+        $sql = "UPDATE pb_cart SET quantity = $quantity
                 WHERE customer_id = $customer_id AND product_id = $product_id";
 
         return $this->db_write_query($sql);

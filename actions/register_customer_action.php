@@ -22,7 +22,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = isset($_POST['email']) ? trim($_POST['email']) : '';
         $password = isset($_POST['password']) ? $_POST['password'] : '';
         $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
+        $phone = isset($_POST['phone']) ? trim($_POST['phone']) : '';
+        $city = isset($_POST['city']) ? trim($_POST['city']) : '';
         $role = isset($_POST['role']) ? intval($_POST['role']) : 0;
+
+        // Provider-specific fields
+        $business_name = isset($_POST['business_name']) ? trim($_POST['business_name']) : '';
+        $description = isset($_POST['description']) ? trim($_POST['description']) : '';
+        $hourly_rate = isset($_POST['hourly_rate']) ? floatval($_POST['hourly_rate']) : 0;
 
         // CSRF verification
         if (!isset($_POST['csrf_token']) || !verifyCSRFToken($_POST['csrf_token'])) {
@@ -30,8 +37,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
+        // Register customer
         $controller = new customer_controller();
-        $result = $controller->register_customer_ctr($name, $email, $password, $confirm_password, $role);
+        $result = $controller->register_customer_ctr($name, $email, $password, $confirm_password, $role, $phone, $city);
+
+        if ($result['success']) {
+            $customer_id = $result['customer_id'];
+
+            // If registering as provider (photographer or vendor), create service provider profile
+            if ($role === 2 || $role === 3) {
+                $provider_class = new provider_class();
+                $provider_id = $provider_class->add_provider(
+                    $customer_id,
+                    $business_name,
+                    $description,
+                    $hourly_rate
+                );
+
+                if ($provider_id) {
+                    $result['provider_id'] = $provider_id;
+                    $result['message'] = 'Account created successfully! Setting up your profile...';
+                } else {
+                    // Still return success, but log the provider creation failure
+                    error_log('Provider profile creation failed for customer_id: ' . $customer_id);
+                }
+            }
+        }
 
         echo json_encode($result);
         exit;
