@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
         $filename = 'product_' . $product_id . '_' . time() . '.' . $ext;
         $filepath = $uploads_dir . '/' . $filename;
-        $relative_path = '/uploads/products/' . $filename;
+        $relative_path = $filename;
 
         // Move uploaded file
         if (!move_uploaded_file($file['tmp_name'], $filepath)) {

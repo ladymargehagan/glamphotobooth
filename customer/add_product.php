@@ -303,9 +303,12 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 </head>
 <body>
     <div class="product-form-container">
-        <div class="product-form-header">
-            <h1>Add New Product</h1>
-            <p>Create a new product or service listing</p>
+        <div class="product-form-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>Add New Product</h1>
+                <p>Create a new product or service listing</p>
+            </div>
+            <a href="<?php echo SITE_URL; ?>/customer/manage_products.php" class="btn btn-primary" style="padding: 0.5rem 1rem; text-decoration: none;">← Back to Dashboard</a>
         </div>
 
         <div class="product-card">

@@ -220,27 +220,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <h1 class="dashboard-title">Your Studio</h1>
                     <p class="dashboard-subtitle">Manage bookings, services, and grow your photography business</p>
                 </div>
-                <div class="dashboard-actions">
-                    <a href="#" class="btn btn-primary">Add New Service</a>
-                </div>
             </div>
-
-            <!-- Profile Completion Banner -->
-            <?php if (!$profileComplete): ?>
-            <div class="profile-banner">
-                <div class="profile-banner-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                </div>
-                <div class="profile-banner-content">
-                    <div class="profile-banner-title">Complete Your Profile</div>
-                    <div class="profile-banner-text">Set up your business profile to start receiving bookings from clients</div>
-                </div>
-                <a href="<?php echo SITE_URL; ?>/customer/profile_setup.php" class="profile-banner-action">Complete Now</a>
-            </div>
-            <?php endif; ?>
 
             <!-- Stats Row -->
             <div class="stats-row">
