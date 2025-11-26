@@ -165,16 +165,28 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <div class="sidebar-section-title">Business</div>
                     <ul class="sidebar-nav">
                         <li class="sidebar-nav-item">
-                            <a href="#profile" class="sidebar-nav-link">
+                            <a href="<?php echo SITE_URL; ?>/customer/edit_profile.php" class="sidebar-nav-link">
                                 <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="12" cy="7" r="4"></circle>
                                 </svg>
-                                Business Profile
+                                Edit Business Profile
                             </a>
                         </li>
+                        <?php if ($profileComplete): ?>
                         <li class="sidebar-nav-item">
-                            <a href="#earnings" class="sidebar-nav-link">
+                            <a href="<?php echo SITE_URL; ?>/provider/profile.php?id=<?php echo $provider['provider_id']; ?>" class="sidebar-nav-link" target="_blank">
+                                <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                    <polyline points="15 3 21 3 21 9"></polyline>
+                                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                                </svg>
+                                View My Profile
+                            </a>
+                        </li>
+                        <?php endif; ?>
+                        <li class="sidebar-nav-item">
+                            <a href="<?php echo SITE_URL; ?>/customer/earnings.php" class="sidebar-nav-link">
                                 <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <line x1="12" y1="1" x2="12" y2="23"></line>
                                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
@@ -204,27 +216,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <h1 class="dashboard-title">Equipment Vendor Hub</h1>
                     <p class="dashboard-subtitle">Manage inventory and grow your equipment business</p>
                 </div>
-                <div class="dashboard-actions">
-                    <a href="<?php echo SITE_URL; ?>/customer/add_product.php" class="btn btn-primary">Add Products</a>
-                </div>
             </div>
-
-            <!-- Profile Completion Banner -->
-            <?php if (!$profileComplete): ?>
-            <div class="profile-banner">
-                <div class="profile-banner-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                </div>
-                <div class="profile-banner-content">
-                    <div class="profile-banner-title">Complete Your Profile</div>
-                    <div class="profile-banner-text">Set up your business profile to start accepting equipment rental orders</div>
-                </div>
-                <a href="<?php echo SITE_URL; ?>/customer/profile_setup.php" class="profile-banner-action">Complete Now</a>
-            </div>
-            <?php endif; ?>
 
             <!-- Stats Row -->
             <div class="stats-row">
