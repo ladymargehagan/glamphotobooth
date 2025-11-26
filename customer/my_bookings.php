@@ -278,6 +278,8 @@ $cssPath = SITE_URL . '/css/style.css';
                     <div class="booking-actions">
                         <?php if ($booking['status'] === 'pending'): ?>
                             <button class="btn-action btn-cancel" onclick="cancelBooking(<?php echo $booking['booking_id']; ?>)">Cancel Request</button>
+                        <?php elseif ($booking['status'] === 'completed'): ?>
+                            <button class="btn-action btn-view" onclick="openReviewModal(<?php echo $booking['booking_id']; ?>, <?php echo $booking['provider_id']; ?>)">⭐ Leave Review</button>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -293,9 +295,12 @@ $cssPath = SITE_URL . '/css/style.css';
     </div>
 
     <?php require_once __DIR__ . '/../views/footer.php'; ?>
+    <?php require_once __DIR__ . '/add_review.php'; ?>
 
+    <script src="<?php echo SITE_URL; ?>/js/review.js"></script>
     <script>
         window.siteUrl = '<?php echo SITE_URL; ?>';
+        window.csrfToken = '<?php echo generateCSRFToken(); ?>';
 
         function cancelBooking(bookingId) {
             if (!confirm('Are you sure you want to cancel this booking?')) {

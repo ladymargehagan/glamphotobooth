@@ -331,11 +331,126 @@ $cssPath = SITE_URL . '/css/style.css';
         </div>
     </section>
 
+    <!-- Reviews Section -->
+    <section class="reviews-section">
+        <div class="reviews-container">
+            <h2 class="reviews-title">Customer Reviews</h2>
+            <div id="productReviews" class="reviews-content">
+                <p>Loading reviews...</p>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .reviews-section {
+            background: rgba(226, 196, 146, 0.05);
+            padding: var(--spacing-xxl) var(--spacing-xl);
+            border-top: 1px solid rgba(226, 196, 146, 0.2);
+            border-bottom: 1px solid rgba(226, 196, 146, 0.2);
+        }
+
+        .reviews-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .reviews-title {
+            font-family: var(--font-serif);
+            font-size: 1.75rem;
+            color: var(--primary);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .review-item {
+            background: var(--white);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(226, 196, 146, 0.2);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--spacing-md);
+            gap: var(--spacing-md);
+        }
+
+        .reviewer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+
+        .review-date {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .review-rating {
+            font-size: 1rem;
+            color: #ffc107;
+        }
+
+        .review-comment {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .no-reviews {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: var(--spacing-lg);
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .reviews-section {
+                padding: var(--spacing-lg);
+            }
+
+            .reviews-container {
+                padding: 0;
+            }
+
+            .reviews-title {
+                font-size: 1.35rem;
+            }
+
+            .review-header {
+                flex-direction: column;
+            }
+        }
+    </style>
+
     <?php require_once __DIR__ . '/views/footer.php'; ?>
 
+    <script src="<?php echo SITE_URL; ?>/js/review.js"></script>
     <script>
-        document.querySelector('.btn-contact').addEventListener('click', function() {
-            alert('Contact functionality coming soon!');
+        window.siteUrl = '<?php echo SITE_URL; ?>';
+        window.csrfToken = '<?php echo generateCSRFToken(); ?>';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load product reviews
+            loadProductReviews(<?php echo intval($provider['provider_id']); ?>);
+
+            // Contact button handler
+            document.querySelector('.btn-contact').addEventListener('click', function() {
+                alert('Contact functionality coming soon!');
+            });
         });
     </script>
 </body>

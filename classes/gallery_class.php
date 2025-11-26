@@ -25,7 +25,7 @@ class gallery_class extends db_connection {
             $access_code = substr(bin2hex(random_bytes(16)), 0, 16);
         }
 
-        $query = "INSERT INTO pb_galleries (booking_id, provider_id, title, access_code, created_at)
+        $query = "INSERT INTO pb_photo_galleries (booking_id, provider_id, title, access_code, created_at)
                   VALUES (?, ?, ?, ?, NOW())";
 
         $stmt = $this->db->prepare($query);
@@ -54,7 +54,7 @@ class gallery_class extends db_connection {
                          b.booking_id, b.customer_id, b.provider_id, b.booking_date, b.service_description,
                          c.name as customer_name, c.email as customer_email,
                          p.business_name, sp.name as provider_name
-                  FROM pb_galleries g
+                  FROM pb_photo_galleries g
                   LEFT JOIN pb_bookings b ON g.booking_id = b.booking_id
                   LEFT JOIN pb_customer c ON b.customer_id = c.id
                   LEFT JOIN pb_service_providers p ON b.provider_id = p.provider_id
@@ -88,7 +88,7 @@ class gallery_class extends db_connection {
                          b.booking_id, b.customer_id, b.provider_id, b.booking_date, b.service_description,
                          c.name as customer_name, c.email as customer_email,
                          p.business_name, sp.name as provider_name
-                  FROM pb_galleries g
+                  FROM pb_photo_galleries g
                   LEFT JOIN pb_bookings b ON g.booking_id = b.booking_id
                   LEFT JOIN pb_customer c ON b.customer_id = c.id
                   LEFT JOIN pb_service_providers p ON b.provider_id = p.provider_id
@@ -123,7 +123,7 @@ class gallery_class extends db_connection {
                          c.name as customer_name,
                          p.business_name,
                          (SELECT COUNT(*) FROM pb_gallery_photos WHERE gallery_id = g.gallery_id) as photo_count
-                  FROM pb_galleries g
+                  FROM pb_photo_galleries g
                   LEFT JOIN pb_bookings b ON g.booking_id = b.booking_id
                   LEFT JOIN pb_customer c ON b.customer_id = c.id
                   LEFT JOIN pb_service_providers p ON b.provider_id = p.provider_id
@@ -255,7 +255,7 @@ class gallery_class extends db_connection {
 
         $query = "SELECT p.*, g.gallery_id, g.provider_id, g.booking_id
                   FROM pb_gallery_photos p
-                  LEFT JOIN pb_galleries g ON p.gallery_id = g.gallery_id
+                  LEFT JOIN pb_photo_galleries g ON p.gallery_id = g.gallery_id
                   WHERE p.photo_id = ?";
 
         $stmt = $this->db->prepare($query);
@@ -283,7 +283,7 @@ class gallery_class extends db_connection {
 
         $query = "SELECT g.*,
                          (SELECT COUNT(*) FROM pb_gallery_photos WHERE gallery_id = g.gallery_id) as photo_count
-                  FROM pb_galleries g
+                  FROM pb_photo_galleries g
                   WHERE g.booking_id = ?
                   LIMIT 1";
 
@@ -311,7 +311,7 @@ class gallery_class extends db_connection {
         $gallery_id = intval($gallery_id);
         $title = $this->db->real_escape_string($title);
 
-        $query = "UPDATE pb_galleries SET title = ? WHERE gallery_id = ?";
+        $query = "UPDATE pb_photo_galleries SET title = ? WHERE gallery_id = ?";
 
         $stmt = $this->db->prepare($query);
         if (!$stmt) {
@@ -343,7 +343,7 @@ class gallery_class extends db_connection {
         $stmt->execute();
 
         // Delete gallery
-        $delete_query = "DELETE FROM pb_galleries WHERE gallery_id = ?";
+        $delete_query = "DELETE FROM pb_photo_galleries WHERE gallery_id = ?";
         $delete_stmt = $this->db->prepare($delete_query);
         if (!$delete_stmt) {
             return false;

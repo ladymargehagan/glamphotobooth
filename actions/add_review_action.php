@@ -1,0 +1,46 @@
+<?php
+/**
+ * Add Review Action
+ * actions/add_review_action.php
+ * Handles review submission
+ */
+
+header('Content-Type: application/json');
+require_once __DIR__ . '/../settings/core.php';
+
+requireLogin();
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+    exit;
+}
+
+// Validate CSRF token
+$csrf_token = isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '';
+if (!validateCSRFToken($csrf_token)) {
+    echo json_encode(['success' => false, 'message' => 'Invalid security token']);
+    exit;
+}
+
+$user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
+$booking_id = isset($_POST['booking_id']) ? intval($_POST['booking_id']) : 0;
+$provider_id = isset($_POST['provider_id']) ? intval($_POST['provider_id']) : 0;
+$rating = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
+$comment = isset($_POST['comment']) ? trim($_POST['comment']) : '';
+
+if ($user_id <= 0 || $booking_id <= 0 || $provider_id <= 0) {
+    echo json_encode(['success' => false, 'message' => 'Missing required parameters']);
+    exit;
+}
+
+try {
+    $review_controller = new review_controller();
+    $result = $review_controller->add_review_ctr($user_id, $provider_id, $booking_id, $rating, $comment);
+
+    echo json_encode($result);
+} catch (Exception $e) {
+    error_log('Review add error: ' . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'Error adding review: ' . $e->getMessage()]);
+}
+exit;
+?>
