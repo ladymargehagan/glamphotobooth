@@ -386,6 +386,8 @@ $cssPath = SITE_URL . '/css/style.css';
                             <button class="btn-action btn-reject" onclick="openRejectModal(<?php echo $booking['booking_id']; ?>)">Reject</button>
                         <?php elseif ($booking['status'] === 'confirmed'): ?>
                             <button class="btn-action btn-confirm" onclick="completeBooking(<?php echo $booking['booking_id']; ?>)">Mark Complete</button>
+                        <?php elseif ($booking['status'] === 'completed'): ?>
+                            <a href="<?php echo SITE_URL; ?>/customer/upload_photos.php?booking_id=<?php echo $booking['booking_id']; ?>" class="btn-action btn-confirm" style="text-decoration: none; display: inline-block;">📸 Upload Photos</a>
                         <?php endif; ?>
                     </div>
                 </div>
