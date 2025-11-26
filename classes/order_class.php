@@ -208,5 +208,37 @@ class order_class extends db_connection {
         }
         return false;
     }
+
+    /**
+     * Get orders by provider (vendor orders)
+     * Returns orders that contain products from the specified provider
+     */
+    public function get_orders_by_provider($provider_id) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+        
+        $provider_id = intval($provider_id);
+
+        $query = "SELECT DISTINCT o.*, c.name as customer_name, c.email
+                  FROM pb_orders o
+                  JOIN pb_order_items oi ON o.order_id = oi.order_id
+                  JOIN pb_products p ON oi.product_id = p.product_id
+                  JOIN pb_customer c ON o.customer_id = c.id
+                  WHERE p.provider_id = ?
+                  ORDER BY o.order_date DESC";
+
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param("i", $provider_id);
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
+        return false;
+    }
 }
 ?>

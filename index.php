@@ -122,7 +122,7 @@ try {
     <section class="section-spacing photographers-section">
         <div class="container">
             <div class="section-header">
-                <h2>Featured Photographers</h2>
+                <h2>Featured Photographers/Vendors</h2>
             </div>
 
             <div class="photographer-grid">
@@ -155,7 +155,7 @@ try {
                     <?php endforeach; ?>
                 <?php else: ?>
                     <p style="color: var(--text-secondary); text-align: center;">
-                        Featured photographers will appear here once providers start receiving reviews.
+                        Featured photographers and vendors will appear here once providers start receiving reviews.
                     </p>
                 <?php endif; ?>
             </div>

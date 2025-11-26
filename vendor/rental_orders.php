@@ -1,7 +1,7 @@
 <?php
 /**
- * Vendor Dashboard
- * vendor/dashboard.php
+ * Vendor Rental Orders Page
+ * vendor/rental_orders.php
  */
 require_once __DIR__ . '/../settings/core.php';
 
@@ -18,9 +18,20 @@ if ($_SESSION['user_role'] != 3) {
 $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 $provider_class = new provider_class();
 $provider = $provider_class->get_provider_by_customer($user_id);
-$profileComplete = $provider ? true : false;
 
-$pageTitle = 'Vendor Dashboard - PhotoMarket';
+if (!$provider) {
+    header('Location: ' . SITE_URL . '/customer/profile_setup.php');
+    exit;
+}
+
+// Get orders for this vendor's products
+$order_class = new order_class();
+$orders = $order_class->get_orders_by_provider($provider['provider_id']);
+if (!$orders) {
+    $orders = [];
+}
+
+$pageTitle = 'Rental Orders - PhotoMarket';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>
@@ -34,54 +45,122 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     <link rel="stylesheet" href="<?php echo htmlspecialchars($cssPath); ?>">
     <link rel="stylesheet" href="<?php echo htmlspecialchars($dashboardCss); ?>">
     <style>
-        .profile-banner {
-            background: linear-gradient(135deg, rgba(226, 196, 146, 0.1) 0%, rgba(16, 33, 82, 0.05) 100%);
-            border: 1px solid rgba(226, 196, 146, 0.3);
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
             border-radius: var(--border-radius);
-            padding: var(--spacing-lg);
-            margin-bottom: var(--spacing-lg);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-lg);
-            animation: slideDown 0.3s ease;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
-        .profile-banner-icon {
-            flex-shrink: 0;
-            width: 48px;
-            height: 48px;
-            background: rgba(226, 196, 146, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
+        .orders-table thead {
+            background: rgba(226, 196, 146, 0.05);
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .profile-banner-icon svg {
-            width: 24px;
-            height: 24px;
-            stroke-width: 2;
-        }
-
-        .profile-banner-content {
-            flex: 1;
-        }
-
-        .profile-banner-title {
+        .orders-table th {
+            padding: var(--spacing-md);
+            text-align: left;
             font-weight: 600;
             color: var(--primary);
-            margin-bottom: 4px;
-        }
-
-        .profile-banner-text {
-            color: var(--text-secondary);
             font-size: 0.9rem;
         }
 
-        .profile-banner-action {
-            flex-shrink: 0;
-            padding: 0.5rem 1rem;
+        .orders-table td {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+
+        .orders-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .order-id {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .order-date {
+            color: var(--text-secondary);
+        }
+
+        .order-amount {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .order-status {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.15);
+            color: #f57f17;
+        }
+
+        .status-paid {
+            background: rgba(76, 175, 80, 0.15);
+            color: #2e7d32;
+        }
+
+        .status-failed {
+            background: rgba(211, 47, 47, 0.15);
+            color: #c62828;
+        }
+
+        .status-refunded {
+            background: rgba(158, 158, 158, 0.15);
+            color: #616161;
+        }
+
+        .order-action {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .order-action:hover {
+            text-decoration: underline;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xxl);
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto var(--spacing-lg);
+            color: var(--text-secondary);
+        }
+
+        .empty-state-title {
+            color: var(--primary);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .empty-state-text {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .btn-primary {
+            padding: 0.75rem 1.5rem;
             background: var(--primary);
             color: var(--white);
             border: none;
@@ -89,25 +168,13 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
-            font-size: 0.85rem;
             text-decoration: none;
             display: inline-block;
         }
 
-        .profile-banner-action:hover {
+        .btn-primary:hover {
             background: #0d1a3a;
             transform: translateY(-2px);
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
     </style>
 </head>
@@ -123,7 +190,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             <nav>
                 <ul class="sidebar-nav">
                     <li class="sidebar-nav-item">
-                        <a href="<?php echo SITE_URL; ?>/vendor/dashboard.php" class="sidebar-nav-link active">
+                        <a href="<?php echo SITE_URL; ?>/vendor/dashboard.php" class="sidebar-nav-link">
                             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -132,7 +199,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         </a>
                     </li>
                     <li class="sidebar-nav-item">
-                        <a href="<?php echo SITE_URL; ?>/vendor/rental_orders.php" class="sidebar-nav-link">
+                        <a href="<?php echo SITE_URL; ?>/vendor/rental_orders.php" class="sidebar-nav-link active">
                             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
                             </svg>
@@ -201,81 +268,58 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         <main class="dashboard-content">
             <div class="dashboard-header">
                 <div>
-                    <h1 class="dashboard-title">Equipment Vendor Hub</h1>
-                    <p class="dashboard-subtitle">Manage inventory and grow your equipment business</p>
-                </div>
-                <div class="dashboard-actions">
-                    <a href="<?php echo SITE_URL; ?>/customer/add_product.php" class="btn btn-primary">Add Products</a>
+                    <h1 class="dashboard-title">Rental Orders</h1>
+                    <p class="dashboard-subtitle">View and manage orders for your products</p>
                 </div>
             </div>
 
-            <!-- Profile Completion Banner -->
-            <?php if (!$profileComplete): ?>
-            <div class="profile-banner">
-                <div class="profile-banner-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                </div>
-                <div class="profile-banner-content">
-                    <div class="profile-banner-title">Complete Your Profile</div>
-                    <div class="profile-banner-text">Set up your business profile to start accepting equipment rental orders</div>
-                </div>
-                <a href="<?php echo SITE_URL; ?>/customer/profile_setup.php" class="profile-banner-action">Complete Now</a>
-            </div>
-            <?php endif; ?>
-
-            <!-- Stats Row -->
-            <div class="stats-row">
-                <div class="stat-card">
-                    <div class="stat-label">Active Rentals</div>
-                    <div class="stat-value">0</div>
-                    <div class="stat-change">No active rentals</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Equipment Listed</div>
-                    <div class="stat-value">0</div>
-                    <div class="stat-change">Add your first equipment</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Rating</div>
-                    <div class="stat-value">—</div>
-                    <div class="stat-change">Build your reputation</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Monthly Revenue</div>
-                    <div class="stat-value">₵0</div>
-                    <div class="stat-change">No revenue yet</div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="dashboard-grid">
+            <?php if ($orders && count($orders) > 0): ?>
                 <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <line x1="12" y1="1" x2="12" y2="23"></line>
-                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                    </svg>
-                    <h3 class="card-title">View Revenue</h3>
-                    <p class="card-subtitle">Track earnings and payment history</p>
-                    <a href="#" class="card-action">View Revenue →</a>
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($orders as $order): ?>
+                                <tr>
+                                    <td class="order-id">#<?php echo $order['order_id']; ?></td>
+                                    <td><?php echo htmlspecialchars($order['customer_name'] ?? 'N/A'); ?></td>
+                                    <td class="order-date"><?php echo date('M j, Y', strtotime($order['order_date'])); ?></td>
+                                    <td class="order-amount">₵<?php echo number_format($order['total_amount'], 2); ?></td>
+                                    <td>
+                                        <span class="order-status status-<?php echo strtolower($order['payment_status']); ?>">
+                                            <?php echo htmlspecialchars($order['payment_status']); ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="<?php echo SITE_URL; ?>/customer/order_confirmation.php?order_id=<?php echo $order['order_id']; ?>" class="order-action">View</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-
-            <!-- Empty State for Rentals -->
-            <div>
-                <h2 style="color: var(--primary); margin-bottom: var(--spacing-lg);">Active Rental Orders</h2>
-                <div class="empty-state">
-                    <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
-                    </svg>
-                    <h3 class="empty-state-title">No Active Rentals</h3>
-                    <p class="empty-state-text">You don't have any active equipment rentals. Add products to your inventory to start accepting rental orders</p>
-                    <a href="<?php echo SITE_URL; ?>/customer/add_product.php" class="btn btn-primary">Add Your First Product</a>
+            <?php else: ?>
+                <div class="dashboard-card">
+                    <div class="empty-state">
+                        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
+                        </svg>
+                        <h3 class="empty-state-title">No Rental Orders Yet</h3>
+                        <p class="empty-state-text">You don't have any rental orders yet. Add products to your inventory to start receiving orders.</p>
+                        <a href="<?php echo SITE_URL; ?>/customer/add_product.php" class="btn-primary">Add Products</a>
+                    </div>
                 </div>
-            </div>
+            <?php endif; ?>
         </main>
     </div>
 </body>
 </html>
+
