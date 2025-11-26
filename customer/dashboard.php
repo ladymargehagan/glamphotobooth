@@ -14,6 +14,35 @@ if ($_SESSION['user_role'] != 4) {
     exit;
 }
 
+$user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
+
+// Get booking data
+$booking_class = new booking_class();
+$all_bookings = $booking_class->get_customer_bookings($user_id);
+
+// Calculate statistics
+$stats = [
+    'total_bookings' => count($all_bookings),
+    'pending' => 0,
+    'confirmed' => 0,
+    'completed' => 0
+];
+
+$recent_bookings = [];
+foreach ($all_bookings as $booking) {
+    if ($booking['status'] === 'pending') {
+        $stats['pending']++;
+    } elseif ($booking['status'] === 'confirmed') {
+        $stats['confirmed']++;
+    } elseif ($booking['status'] === 'completed') {
+        $stats['completed']++;
+    }
+    $recent_bookings[] = $booking;
+}
+
+// Get recent bookings (limit to 3)
+$recent_bookings = array_slice($recent_bookings, 0, 3);
+
 $pageTitle = 'Dashboard - PhotoMarket';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
@@ -120,19 +149,19 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             <!-- Stats Row -->
             <div class="stats-row">
                 <div class="stat-card">
-                    <div class="stat-label">Active Bookings</div>
-                    <div class="stat-value">0</div>
-                    <div class="stat-change">No active bookings</div>
+                    <div class="stat-label">Total Bookings</div>
+                    <div class="stat-value"><?php echo $stats['total_bookings']; ?></div>
+                    <div class="stat-change"><?php echo $stats['confirmed'] + $stats['completed']; ?> completed</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Completed Orders</div>
-                    <div class="stat-value">0</div>
-                    <div class="stat-change">Start booking services</div>
+                    <div class="stat-label">Pending</div>
+                    <div class="stat-value"><?php echo $stats['pending']; ?></div>
+                    <div class="stat-change">Awaiting provider response</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Galleries Accessed</div>
-                    <div class="stat-value">0</div>
-                    <div class="stat-change">Photos will appear here</div>
+                    <div class="stat-label">Confirmed</div>
+                    <div class="stat-value"><?php echo $stats['confirmed']; ?></div>
+                    <div class="stat-change">Scheduled bookings</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Account Status</div>
@@ -175,17 +204,63 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 </div>
             </div>
 
-            <!-- Empty State for Bookings -->
+            <!-- Bookings Section -->
             <div>
-                <h2 style="color: var(--primary); margin-bottom: var(--spacing-lg);">Your Bookings</h2>
-                <div class="empty-state">
-                    <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
-                    </svg>
-                    <h3 class="empty-state-title">No Bookings Yet</h3>
-                    <p class="empty-state-text">You haven't booked any photography services yet. Start by exploring our photographers!</p>
-                    <a href="<?php echo SITE_URL; ?>/index.php#services" class="btn btn-primary">Browse Services</a>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                    <h2 style="color: var(--primary); margin: 0;">Recent Bookings</h2>
+                    <a href="<?php echo SITE_URL; ?>/customer/my_bookings.php" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View All</a>
                 </div>
+
+                <?php if ($recent_bookings && count($recent_bookings) > 0): ?>
+                    <div style="display: grid; gap: var(--spacing-lg);">
+                        <?php foreach ($recent_bookings as $booking): ?>
+                            <div style="background: var(--white); border-radius: var(--border-radius); padding: var(--spacing-lg); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); border-left: 4px solid var(--primary);">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--spacing-md);">
+                                    <div>
+                                        <h3 style="color: var(--primary); font-weight: 600; margin: 0 0 var(--spacing-xs) 0;">
+                                            <?php echo htmlspecialchars($booking['business_name'] ?? 'Service Provider'); ?>
+                                        </h3>
+                                        <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                                            <?php echo date('M d, Y', strtotime($booking['booking_date'])); ?> at <?php echo date('g:i A', strtotime($booking['booking_time'])); ?>
+                                        </p>
+                                    </div>
+                                    <span style="display: inline-block; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-transform: capitalize;
+                                        <?php
+                                        if ($booking['status'] === 'pending') {
+                                            echo 'background: rgba(255, 152, 0, 0.15); color: #f57f17;';
+                                        } elseif ($booking['status'] === 'confirmed') {
+                                            echo 'background: rgba(76, 175, 80, 0.15); color: #2e7d32;';
+                                        } elseif ($booking['status'] === 'completed') {
+                                            echo 'background: rgba(33, 150, 243, 0.15); color: #0d47a1;';
+                                        } else {
+                                            echo 'background: rgba(244, 67, 54, 0.15); color: #b71c1c;';
+                                        }
+                                        ?>
+                                    ">
+                                        <?php echo htmlspecialchars($booking['status']); ?>
+                                    </span>
+                                </div>
+
+                                <p style="color: var(--text-secondary); margin: 0 0 var(--spacing-md) 0; font-size: 0.9rem; line-height: 1.5;">
+                                    <strong>Service:</strong> <?php echo htmlspecialchars(substr($booking['service_description'], 0, 80)); ?><?php echo strlen($booking['service_description']) > 80 ? '...' : ''; ?>
+                                </p>
+
+                                <div style="display: flex; gap: var(--spacing-sm);">
+                                    <a href="<?php echo SITE_URL; ?>/customer/my_bookings.php" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="empty-state">
+                        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
+                        </svg>
+                        <h3 class="empty-state-title">No Bookings Yet</h3>
+                        <p class="empty-state-text">You haven't booked any photography services yet. Start by exploring our photographers!</p>
+                        <a href="<?php echo SITE_URL; ?>/shop.php" class="btn btn-primary">Browse Photographers</a>
+                    </div>
+                <?php endif; ?>
             </div>
         </main>
     </div>

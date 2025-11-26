@@ -20,6 +20,24 @@ $provider_class = new provider_class();
 $provider = $provider_class->get_provider_by_customer($user_id);
 $profileComplete = $provider ? true : false;
 
+// Get booking statistics and recent bookings
+$booking_stats = [
+    'pending' => 0,
+    'confirmed' => 0,
+    'completed' => 0,
+    'total' => 0
+];
+$recent_bookings = [];
+
+if ($provider) {
+    $booking_class = new booking_class();
+    $provider_bookings = $booking_class->get_provider_bookings($provider['provider_id']);
+    $booking_stats = $booking_class->get_provider_stats($provider['provider_id']);
+
+    // Get recent bookings (limit to 3)
+    $recent_bookings = array_slice($provider_bookings, 0, 3);
+}
+
 $pageTitle = 'Photographer Dashboard - PhotoMarket';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
@@ -238,23 +256,23 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             <div class="stats-row">
                 <div class="stat-card">
                     <div class="stat-label">Pending Requests</div>
-                    <div class="stat-value">0</div>
+                    <div class="stat-value"><?php echo intval($booking_stats['pending'] ?? 0); ?></div>
                     <div class="stat-change">Review incoming bookings</div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-label">Confirmed Bookings</div>
+                    <div class="stat-value"><?php echo intval($booking_stats['confirmed'] ?? 0); ?></div>
+                    <div class="stat-change">Upcoming sessions</div>
+                </div>
+                <div class="stat-card">
                     <div class="stat-label">Completed Bookings</div>
-                    <div class="stat-value">0</div>
+                    <div class="stat-value"><?php echo intval($booking_stats['completed'] ?? 0); ?></div>
                     <div class="stat-change">Build your reputation</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Rating</div>
-                    <div class="stat-value">—</div>
-                    <div class="stat-change">Start accepting bookings</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Monthly Earnings</div>
-                    <div class="stat-value">₵0</div>
-                    <div class="stat-change">No earnings yet</div>
+                    <div class="stat-label">Total Bookings</div>
+                    <div class="stat-value"><?php echo intval($booking_stats['total'] ?? 0); ?></div>
+                    <div class="stat-change">All time bookings</div>
                 </div>
             </div>
 
@@ -291,17 +309,92 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 </div>
             </div>
 
-            <!-- Empty State for Bookings -->
+            <!-- Recent Bookings Section -->
             <div>
-                <h2 style="color: var(--primary); margin-bottom: var(--spacing-lg);">Recent Booking Requests</h2>
-                <div class="empty-state">
-                    <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
-                    </svg>
-                    <h3 class="empty-state-title">No Booking Requests Yet</h3>
-                    <p class="empty-state-text">Complete your business profile and add services to start receiving booking requests from clients</p>
-                    <a href="#" class="btn btn-primary">Complete Your Profile</a>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                    <h2 style="color: var(--primary); margin: 0;">Recent Booking Requests</h2>
+                    <a href="<?php echo SITE_URL; ?>/customer/manage_bookings.php" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View All</a>
                 </div>
+
+                <?php if ($profileComplete && $recent_bookings && count($recent_bookings) > 0): ?>
+                    <div style="display: grid; gap: var(--spacing-lg);">
+                        <?php foreach ($recent_bookings as $booking): ?>
+                            <div style="background: var(--white); border-radius: var(--border-radius); padding: var(--spacing-lg); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); border-left: 4px solid var(--primary);">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--spacing-md);">
+                                    <div>
+                                        <h3 style="color: var(--primary); font-weight: 600; margin: 0 0 var(--spacing-xs) 0;">
+                                            <?php echo htmlspecialchars($booking['customer_name'] ?? 'Customer'); ?>
+                                        </h3>
+                                        <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                                            <?php echo htmlspecialchars($booking['email'] ?? 'No email'); ?>
+                                        </p>
+                                    </div>
+                                    <span style="display: inline-block; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-transform: capitalize;
+                                        <?php
+                                        if ($booking['status'] === 'pending') {
+                                            echo 'background: rgba(255, 152, 0, 0.15); color: #f57f17;';
+                                        } elseif ($booking['status'] === 'confirmed') {
+                                            echo 'background: rgba(76, 175, 80, 0.15); color: #2e7d32;';
+                                        } elseif ($booking['status'] === 'completed') {
+                                            echo 'background: rgba(33, 150, 243, 0.15); color: #0d47a1;';
+                                        } else {
+                                            echo 'background: rgba(244, 67, 54, 0.15); color: #b71c1c;';
+                                        }
+                                        ?>
+                                    ">
+                                        <?php echo htmlspecialchars($booking['status']); ?>
+                                    </span>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+                                    <div>
+                                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0 0 4px 0; font-weight: 500;">Date</p>
+                                        <p style="color: var(--text-primary); font-weight: 600; margin: 0;">
+                                            <?php echo date('M d, Y', strtotime($booking['booking_date'])); ?>
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0 0 4px 0; font-weight: 500;">Time</p>
+                                        <p style="color: var(--text-primary); font-weight: 600; margin: 0;">
+                                            <?php echo date('g:i A', strtotime($booking['booking_time'])); ?>
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0 0 4px 0; font-weight: 500;">Phone</p>
+                                        <p style="color: var(--text-primary); font-weight: 600; margin: 0;">
+                                            <?php echo htmlspecialchars($booking['contact'] ?? 'N/A'); ?>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div style="background: rgba(226, 196, 146, 0.05); padding: var(--spacing-md); border-radius: var(--border-radius); margin-bottom: var(--spacing-md);">
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0;">
+                                        <strong>Service:</strong> <?php echo htmlspecialchars(substr($booking['service_description'], 0, 100)); ?><?php echo strlen($booking['service_description']) > 100 ? '...' : ''; ?>
+                                    </p>
+                                </div>
+
+                                <div style="display: flex; gap: var(--spacing-sm);">
+                                    <a href="<?php echo SITE_URL; ?>/customer/manage_bookings.php" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="empty-state">
+                        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
+                        </svg>
+                        <h3 class="empty-state-title">No Booking Requests Yet</h3>
+                        <p class="empty-state-text">
+                            <?php if (!$profileComplete): ?>
+                                Complete your business profile and add services to start receiving booking requests from clients
+                            <?php else: ?>
+                                You don't have any booking requests yet. Your clients will see your profile once you add services!
+                            <?php endif; ?>
+                        </p>
+                        <a href="<?php echo SITE_URL; ?>/customer/profile_setup.php" class="btn btn-primary">Complete Your Profile</a>
+                    </div>
+                <?php endif; ?>
             </div>
         </main>
     </div>
