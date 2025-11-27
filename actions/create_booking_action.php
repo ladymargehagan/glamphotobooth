@@ -7,6 +7,13 @@
 header('Content-Type: application/json');
 require_once __DIR__ . '/../settings/core.php';
 
+// Catch any errors before they become JSON issues
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    error_log("Booking Error [$errno]: $errstr in $errfile:$errline");
+    echo json_encode(['success' => false, 'message' => 'Server error: ' . $errstr]);
+    exit;
+});
+
 requireLogin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -56,25 +63,32 @@ if ($booking_datetime === false || $booking_datetime <= time()) {
 if (!class_exists('booking_class')) {
     require_once __DIR__ . '/../classes/booking_class.php';
 }
-$booking_class = new booking_class();
-$booking_id = $booking_class->create_booking($customer_id, $provider_id, $product_id, $booking_date, $booking_time, $service_description, $notes);
 
-if ($booking_id) {
-    // Add product to cart
-    if (!class_exists('cart_class')) {
-        require_once __DIR__ . '/../classes/cart_class.php';
+try {
+    $booking_class = new booking_class();
+    $booking_id = $booking_class->create_booking($customer_id, $provider_id, $product_id, $booking_date, $booking_time, $service_description, $notes);
+
+    if ($booking_id) {
+        // Add product to cart
+        if (!class_exists('cart_class')) {
+            require_once __DIR__ . '/../classes/cart_class.php';
+        }
+        $cart_class = new cart_class();
+        $result = $cart_class->add_to_cart($customer_id, $product_id, 1);
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Booking created! Proceeding to cart...',
+            'booking_id' => $booking_id
+        ]);
+        exit;
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Failed to create booking in database']);
+        exit;
     }
-    $cart_class = new cart_class();
-    $cart_class->add_to_cart($customer_id, $product_id, 1);
-
-    echo json_encode([
-        'success' => true,
-        'message' => 'Booking created! Proceeding to cart...',
-        'booking_id' => $booking_id
-    ]);
+} catch (Exception $e) {
+    error_log('Booking Exception: ' . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'Exception: ' . $e->getMessage()]);
     exit;
 }
-
-echo json_encode(['success' => false, 'message' => 'Failed to create booking']);
-exit;
 ?>
