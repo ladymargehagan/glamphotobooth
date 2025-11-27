@@ -17,15 +17,14 @@ class review_class extends db_connection {
 
         $customer_id = intval($customer_id);
         $provider_id = intval($provider_id);
-        $booking_id = intval($booking_id);
         $rating = intval($rating);
         $comment = $this->db->real_escape_string($comment);
 
-        // Check if already reviewed
-        $check_query = "SELECT review_id FROM pb_reviews WHERE booking_id = ?";
+        // Check if already reviewed (customer can only review each provider once)
+        $check_query = "SELECT review_id FROM pb_reviews WHERE customer_id = ? AND provider_id = ?";
         $check_stmt = $this->db->prepare($check_query);
         if ($check_stmt) {
-            $check_stmt->bind_param("i", $booking_id);
+            $check_stmt->bind_param("ii", $customer_id, $provider_id);
             $check_stmt->execute();
             $result = $check_stmt->get_result();
             if ($result->num_rows > 0) {
@@ -33,15 +32,15 @@ class review_class extends db_connection {
             }
         }
 
-        $query = "INSERT INTO pb_reviews (customer_id, provider_id, booking_id, rating, comment)
-                  VALUES (?, ?, ?, ?, ?)";
+        $query = "INSERT INTO pb_reviews (customer_id, provider_id, rating, comment)
+                  VALUES (?, ?, ?, ?)";
 
         $stmt = $this->db->prepare($query);
         if (!$stmt) {
             return false;
         }
 
-        $stmt->bind_param("iiiis", $customer_id, $provider_id, $booking_id, $rating, $comment);
+        $stmt->bind_param("iiis", $customer_id, $provider_id, $rating, $comment);
         if ($stmt->execute()) {
             // Update provider rating
             $this->update_provider_rating($provider_id);
@@ -202,20 +201,30 @@ class review_class extends db_connection {
      * Get reviews by booking (for checking if already reviewed)
      */
     public function get_review_by_booking($booking_id) {
+        // Since booking_id doesn't exist in the actual database schema,
+        // this method is kept for backward compatibility but will return false
+        return false;
+    }
+
+    /**
+     * Get review by customer and provider (check if already reviewed)
+     */
+    public function get_review_by_customer_provider($customer_id, $provider_id) {
         if (!$this->db_connect()) {
             return false;
         }
 
-        $booking_id = intval($booking_id);
+        $customer_id = intval($customer_id);
+        $provider_id = intval($provider_id);
 
-        $query = "SELECT * FROM pb_reviews WHERE booking_id = ? LIMIT 1";
+        $query = "SELECT * FROM pb_reviews WHERE customer_id = ? AND provider_id = ? LIMIT 1";
 
         $stmt = $this->db->prepare($query);
         if (!$stmt) {
             return false;
         }
 
-        $stmt->bind_param("i", $booking_id);
+        $stmt->bind_param("ii", $customer_id, $provider_id);
         if ($stmt->execute()) {
             $result = $stmt->get_result();
             return $result->fetch_assoc();

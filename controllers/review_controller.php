@@ -53,12 +53,12 @@ class review_controller {
             return ['success' => false, 'message' => 'You can only review your own bookings'];
         }
 
-        // Check if already reviewed
+        // Check if already reviewed (customer can only review each provider once)
         $review_class = new review_class();
-        $existing_review = $review_class->get_review_by_booking($booking_id);
+        $existing_review = $review_class->get_review_by_customer_provider($customer_id, $provider_id);
 
         if ($existing_review) {
-            return ['success' => false, 'message' => 'You have already reviewed this booking'];
+            return ['success' => false, 'message' => 'You have already reviewed this provider'];
         }
 
         // Add review
