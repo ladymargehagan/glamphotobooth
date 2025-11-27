@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.textContent = 'Logging in...';
 
         try {
-            const response = await fetch('/~lady.hagan/glamphotobooth/actions/login_customer_action.php', {
+            const response = await fetch(window.siteUrl + '/actions/login_customer_action.php', {
                 method: 'POST',
                 body: formData
             });
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Redirect based on user role
                 setTimeout(() => {
                     const userRole = data.user_role;
-                    const baseUrl = window.location.origin + '/~lady.hagan/glamphotobooth';
+                    const baseUrl = window.siteUrl;
                     let redirectUrl = baseUrl + '/index.php';
 
                     // Route based on role

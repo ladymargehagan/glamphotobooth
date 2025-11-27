@@ -13,7 +13,23 @@ if (isLoggedIn()) {
 $pageTitle = 'Login - PhotoMarket';
 $cssPath = SITE_URL . '/css/style.css';
 ?>
-<?php include '../views/header.php'; ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($pageTitle); ?></title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?php echo htmlspecialchars($cssPath); ?>">
+    <!-- SweetAlert2 Library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        window.siteUrl = '<?php echo SITE_URL; ?>';
+    </script>
+</head>
+<body>
 
 <main class="auth-main">
     <section class="auth-container">
@@ -108,8 +124,7 @@ $cssPath = SITE_URL . '/css/style.css';
     </section>
 </main>
 
-<?php include '../views/footer.php'; ?>
-
+<script src="<?php echo SITE_URL; ?>/js/sweetalert.js"></script>
 <script src="<?php echo SITE_URL; ?>/js/login.js"></script>
 
 <style>
@@ -360,3 +375,5 @@ $cssPath = SITE_URL . '/css/style.css';
         }
     }
 </style>
+</body>
+</html>
