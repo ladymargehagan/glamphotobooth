@@ -33,7 +33,7 @@ class provider_class extends db_connection {
     }
 
     /**
-     * Get provider by customer ID (via foreign key relationship)
+     * Get provider by customer ID (for legacy compatibility - returns provider with user fields)
      */
     public function get_provider_by_customer($customer_id) {
         if (!$this->db_connect()) {
@@ -41,7 +41,8 @@ class provider_class extends db_connection {
         }
 
         $customer_id = intval($customer_id);
-        $sql = "SELECT provider_id, business_name, description, hourly_rate,
+        $sql = "SELECT provider_id, email, name, contact, city, image, user_role,
+                       business_name, description, hourly_rate,
                        rating, total_reviews, created_at, updated_at
                 FROM pb_service_providers WHERE provider_id = $customer_id LIMIT 1";
         return $this->db_fetch_one($sql);
@@ -56,7 +57,8 @@ class provider_class extends db_connection {
         }
 
         $provider_id = intval($provider_id);
-        $sql = "SELECT provider_id, business_name, description, hourly_rate,
+        $sql = "SELECT provider_id, email, name, contact, city, image, user_role,
+                       business_name, description, hourly_rate,
                        rating, total_reviews, created_at, updated_at
                 FROM pb_service_providers WHERE provider_id = $provider_id LIMIT 1";
         return $this->db_fetch_one($sql);
@@ -104,7 +106,8 @@ class provider_class extends db_connection {
     }
 
     /**
-     * Get provider by ID with customer info
+     * Get provider by ID with all info
+     * Returns all provider info from pb_service_providers table
      */
     public function get_provider_full($provider_id) {
         if (!$this->db_connect()) {
@@ -118,12 +121,11 @@ class provider_class extends db_connection {
             return false;
         }
 
-        $sql = "SELECT sp.provider_id, sp.business_name, sp.description,
-                       sp.hourly_rate, sp.rating, sp.total_reviews, sp.created_at, sp.updated_at,
-                       c.id, c.name, c.email, c.country, c.city, c.contact, c.image
-                FROM pb_service_providers sp
-                LEFT JOIN pb_customer c ON sp.provider_id = c.id
-                WHERE sp.provider_id = $provider_id LIMIT 1";
+        $sql = "SELECT provider_id, email, password, name, contact, city, image, user_role,
+                       business_name, description, hourly_rate, portfolio_images,
+                       rating, total_reviews, created_at, updated_at
+                FROM pb_service_providers
+                WHERE provider_id = $provider_id LIMIT 1";
 
         $result = $this->db_fetch_one($sql);
         if (!$result) {
