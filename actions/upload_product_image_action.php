@@ -44,7 +44,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Create uploads directory if it doesn't exist
         $uploads_dir = SITE_ROOT . '/uploads/products';
         if (!file_exists($uploads_dir)) {
-            mkdir($uploads_dir, 0755, true);
+            if (!mkdir($uploads_dir, 0755, true)) {
+                error_log('Failed to create uploads directory: ' . $uploads_dir);
+                echo json_encode(['success' => false, 'message' => 'Failed to create uploads directory']);
+                exit;
+            }
+        }
+
+        // Verify directory is writable
+        if (!is_writable($uploads_dir)) {
+            error_log('Uploads directory not writable: ' . $uploads_dir);
+            echo json_encode(['success' => false, 'message' => 'Uploads directory is not writable']);
+            exit;
         }
 
         // Generate unique filename
@@ -53,11 +64,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $filepath = $uploads_dir . '/' . $filename;
         $relative_path = $filename;
 
+        error_log('Attempting to upload product image to: ' . $filepath);
+
         // Move uploaded file
         if (!move_uploaded_file($file['tmp_name'], $filepath)) {
+            error_log('Failed to move uploaded file from ' . $file['tmp_name'] . ' to ' . $filepath);
             echo json_encode(['success' => false, 'message' => 'Failed to upload file']);
             exit;
         }
+
+        // Verify file was actually moved
+        if (!file_exists($filepath)) {
+            error_log('File does not exist after move_uploaded_file: ' . $filepath);
+            echo json_encode(['success' => false, 'message' => 'File upload verification failed']);
+            exit;
+        }
+
+        error_log('Successfully uploaded product image to: ' . $filepath);
 
         // Update product image in database
         $product_class = new product_class();

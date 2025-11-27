@@ -83,17 +83,32 @@ class gallery_controller {
             // Create directory structure: uploads/u{user_id}/g{gallery_id}/
             $upload_base = UPLOADS_DIR;
             if (!is_dir($upload_base)) {
-                mkdir($upload_base, 0755, true);
+                if (!mkdir($upload_base, 0755, true)) {
+                    error_log('Failed to create base upload directory: ' . $upload_base);
+                    return ['success' => false, 'message' => 'Failed to create upload directory'];
+                }
             }
 
             $user_dir = $upload_base . 'u' . $provider_id . '/';
             if (!is_dir($user_dir)) {
-                mkdir($user_dir, 0755, true);
+                if (!mkdir($user_dir, 0755, true)) {
+                    error_log('Failed to create user upload directory: ' . $user_dir);
+                    return ['success' => false, 'message' => 'Failed to create user directory'];
+                }
             }
 
             $gallery_dir = $user_dir . 'g' . $gallery_id . '/';
             if (!is_dir($gallery_dir)) {
-                mkdir($gallery_dir, 0755, true);
+                if (!mkdir($gallery_dir, 0755, true)) {
+                    error_log('Failed to create gallery directory: ' . $gallery_dir);
+                    return ['success' => false, 'message' => 'Failed to create gallery directory'];
+                }
+            }
+
+            // Verify all directories are writable
+            if (!is_writable($gallery_dir)) {
+                error_log('Gallery directory not writable: ' . $gallery_dir);
+                return ['success' => false, 'message' => 'Gallery directory is not writable'];
             }
 
             // Generate unique filename
