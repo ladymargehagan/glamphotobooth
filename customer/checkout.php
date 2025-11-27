@@ -28,12 +28,16 @@ $cssPath = SITE_URL . '/css/style.css';
     <title><?php echo htmlspecialchars($pageTitle); ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo htmlspecialchars($cssPath); ?>">
+    <!-- SweetAlert2 Library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Global variables for scripts -->
     <script>
         window.isLoggedIn = <?php echo isLoggedIn() ? 'true' : 'false'; ?>;
         window.loginUrl = '<?php echo SITE_URL; ?>/auth/login.php';
         window.siteUrl = '<?php echo SITE_URL; ?>';
     </script>
+    <script src="<?php echo SITE_URL; ?>/js/sweetalert.js"></script>
     <script src="<?php echo SITE_URL; ?>/js/cart.js"></script>
     <style>
         .checkout-container {
