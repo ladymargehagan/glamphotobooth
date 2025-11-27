@@ -11,6 +11,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const serviceDescriptionInput = document.getElementById('service_description');
     const submitBtn = document.getElementById('submitBtn');
 
+    // Check if required elements exist
+    if (!bookingForm || !bookingDateInput || !timeSlotsContainer || !bookingTimeInput || !serviceDescriptionInput || !submitBtn) {
+        console.error('Booking form elements not found');
+        return;
+    }
+
     // Set minimum date to today
     const today = new Date();
     const minDate = today.toISOString().split('T')[0];
@@ -19,12 +25,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch available slots when date changes
     bookingDateInput.addEventListener('change', function() {
         if (this.value) {
+            // Clear previous time selection
+            bookingTimeInput.value = '';
+            document.querySelectorAll('.time-slot.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
             fetchAvailableSlots(this.value);
         }
     });
 
-    // Handle time slot selection
-    function handleTimeSlotClick(event) {
+    // If date is already selected on page load, fetch slots
+    if (bookingDateInput.value) {
+        fetchAvailableSlots(bookingDateInput.value);
+    }
+
+    // Handle time slot selection (using event delegation)
+    timeSlotsContainer.addEventListener('click', function(event) {
         if (event.target.classList.contains('time-slot') && !event.target.classList.contains('disabled')) {
             // Remove previous selection
             document.querySelectorAll('.time-slot.selected').forEach(el => {
@@ -33,9 +49,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Add selection to clicked slot
             event.target.classList.add('selected');
-            bookingTimeInput.value = event.target.dataset.time;
+            const selectedTime = event.target.dataset.time || event.target.textContent.trim();
+            bookingTimeInput.value = selectedTime;
+            
+            // Clear any error messages when time is selected
+            const errorMsg = document.getElementById('errorMessage');
+            if (errorMsg) {
+                errorMsg.classList.remove('show');
+            }
         }
-    }
+    });
 
     // Fetch available time slots
     function fetchAvailableSlots(bookingDate) {
@@ -63,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     button.className = 'time-slot';
                     button.textContent = time;
                     button.dataset.time = time;
-                    button.addEventListener('click', handleTimeSlotClick);
+                    // Event listener is handled by delegation on timeSlotsContainer
                     timeSlotsContainer.appendChild(button);
                 });
             } else {
@@ -83,6 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validate
         if (!bookingDateInput.value) {
             showError('Please select a booking date');
+            bookingDateInput.focus();
             return;
         }
 
@@ -91,8 +115,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        if (!serviceDescriptionInput.value || serviceDescriptionInput.value.length < 10) {
+        if (!serviceDescriptionInput.value || serviceDescriptionInput.value.trim().length < 10) {
             showError('Service description must be at least 10 characters');
+            serviceDescriptionInput.focus();
             return;
         }
 
@@ -100,6 +125,14 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.textContent = 'Requesting...';
 
         const formData = new FormData(this);
+        
+        // Debug: Log form data to ensure values are being sent
+        console.log('Submitting booking:', {
+            booking_date: bookingDateInput.value,
+            booking_time: bookingTimeInput.value,
+            provider_id: document.getElementById('providerId').value,
+            service_description: serviceDescriptionInput.value
+        });
 
         fetch(window.siteUrl + '/actions/create_booking_action.php', {
             method: 'POST',

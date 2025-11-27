@@ -27,9 +27,15 @@ $provider_class = new provider_class();
 $product_class = new product_class();
 $review_class = new review_class();
 
-$provider = $provider_class->get_provider_full($provider_id);
-
-if (!$provider) {
+try {
+    $provider = $provider_class->get_provider_full($provider_id);
+    
+    if (!$provider) {
+        header('Location: ' . SITE_URL . '/shop.php');
+        exit;
+    }
+} catch (Exception $e) {
+    error_log('Provider profile error: ' . $e->getMessage());
     header('Location: ' . SITE_URL . '/shop.php');
     exit;
 }

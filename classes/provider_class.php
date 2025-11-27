@@ -108,17 +108,28 @@ class provider_class extends db_connection {
      */
     public function get_provider_full($provider_id) {
         if (!$this->db_connect()) {
+            error_log('Provider get_provider_full: Database connection failed');
             return false;
         }
 
         $provider_id = intval($provider_id);
+        if ($provider_id <= 0) {
+            error_log('Provider get_provider_full: Invalid provider_id');
+            return false;
+        }
+
         $sql = "SELECT sp.provider_id, sp.customer_id, sp.business_name, sp.description,
                        sp.hourly_rate, sp.rating, sp.total_reviews, sp.created_at, sp.updated_at,
                        c.name, c.email, c.country, c.city, c.contact, c.image
                 FROM pb_service_providers sp
-                JOIN pb_customer c ON sp.customer_id = c.id
+                LEFT JOIN pb_customer c ON sp.customer_id = c.id
                 WHERE sp.provider_id = $provider_id LIMIT 1";
-        return $this->db_fetch_one($sql);
+        
+        $result = $this->db_fetch_one($sql);
+        if (!$result) {
+            error_log('Provider get_provider_full: No provider found for id ' . $provider_id);
+        }
+        return $result;
     }
 }
 ?>

@@ -9,7 +9,7 @@ class booking_class extends db_connection {
     /**
      * Create a new booking
      */
-    public function create_booking($customer_id, $provider_id, $product_id, $booking_date, $booking_time, $duration_hours = 1, $total_price = 0, $service_description = '', $notes = '') {
+    public function create_booking($customer_id, $provider_id, $product_id = 0, $booking_date = '', $booking_time = '', $duration_hours = 1, $total_price = 0, $service_description = '', $notes = '') {
         if (!$this->db_connect()) {
             return false;
         }
@@ -24,18 +24,24 @@ class booking_class extends db_connection {
         $service_description = $this->db->real_escape_string($service_description);
         $notes = $this->db->real_escape_string($notes);
 
+        // product_id is required (NOT NULL), so use 0 as default if not provided
+        // Note: This assumes product_id=0 is acceptable or the database allows it
         $query = "INSERT INTO pb_bookings (customer_id, provider_id, product_id, booking_date, booking_time, service_description, notes, duration_hours, total_price, status, created_at)
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW())";
 
         $stmt = $this->db->prepare($query);
         if (!$stmt) {
+            error_log('Booking prepare failed: ' . $this->db->error);
             return false;
         }
 
-        $stmt->bind_param("iiiisssdi", $customer_id, $provider_id, $product_id, $booking_date, $booking_time, $service_description, $notes, $duration_hours, $total_price);
+        // Use 0 if product_id is not provided (since column is NOT NULL)
+        $product_id_value = $product_id > 0 ? $product_id : 0;
+        $stmt->bind_param("iiissssdd", $customer_id, $provider_id, $product_id_value, $booking_date, $booking_time, $service_description, $notes, $duration_hours, $total_price);
         if ($stmt->execute()) {
             return $this->db->insert_id;
         }
+        error_log('Booking execute failed: ' . $stmt->error);
         return false;
     }
 

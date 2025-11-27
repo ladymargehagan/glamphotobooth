@@ -21,10 +21,17 @@ class booking_controller {
             ];
         }
 
-        if (empty($booking_date) || empty($booking_time)) {
+        if (empty($booking_date)) {
             return [
                 'success' => false,
-                'message' => 'Booking date and time are required'
+                'message' => 'Please select a booking date'
+            ];
+        }
+
+        if (empty($booking_time)) {
+            return [
+                'success' => false,
+                'message' => 'Please select a time slot'
             ];
         }
 
@@ -45,7 +52,9 @@ class booking_controller {
         }
 
         $booking_class = new booking_class();
-        $booking_id = $booking_class->create_booking($customer_id, $provider_id, $booking_date, $booking_time, $service_description, $notes);
+        // product_id is optional - pass 0 if not provided
+        $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+        $booking_id = $booking_class->create_booking($customer_id, $provider_id, $product_id, $booking_date, $booking_time, 1, 0, $service_description, $notes);
 
         if ($booking_id) {
             return [
