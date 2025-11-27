@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const productPrice = parseFloat(product.price || 0);
 
             productCard.innerHTML = `
-                <div class="product-card-link">
+                <div class="product-card-link" onclick="openProviderModal(${product.product_id}, ${product.provider_id})" style="cursor: pointer;">
                     <div class="product-image">
                         ${imageHtml}
                     </div>
@@ -159,4 +159,182 @@ function bookOrAddToCart(evt, productId, providerId, price, title) {
         // Add to cart for non-services
         addToCart(productId, title, price);
     }
+}
+
+/**
+ * Open provider profile modal
+ */
+function openProviderModal(productId, providerId) {
+    const modal = document.getElementById('providerModal');
+    const modalBody = document.getElementById('modalBody');
+
+    // Show loading state
+    modalBody.innerHTML = '<div class="provider-modal-loading"><p>Loading provider information...</p></div>';
+    modal.classList.add('active');
+
+    // Fetch provider details and reviews
+    fetchProviderProfile(productId, providerId);
+}
+
+/**
+ * Close provider profile modal
+ */
+function closeProviderModal() {
+    const modal = document.getElementById('providerModal');
+    modal.classList.remove('active');
+}
+
+/**
+ * Close modal when clicking outside content
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('providerModal');
+
+    modal.addEventListener('click', function(evt) {
+        if (evt.target === modal) {
+            closeProviderModal();
+        }
+    });
+});
+
+/**
+ * Fetch provider profile and reviews
+ */
+function fetchProviderProfile(productId, providerId) {
+    const formData = new FormData();
+    formData.append('provider_id', providerId);
+    formData.append('product_id', productId);
+
+    fetch(`${window.siteUrl}/actions/fetch_provider_profile_action.php`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            renderProviderProfile(data.provider, data.reviews);
+        } else {
+            showProviderError(data.message || 'Failed to load provider information');
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching provider profile:', error);
+        showProviderError('Error loading provider information. Please try again.');
+    });
+}
+
+/**
+ * Render provider profile in modal
+ */
+function renderProviderProfile(provider, reviews) {
+    const modalBody = document.getElementById('modalBody');
+
+    const ratingStars = generateStars(parseFloat(provider.rating || 0));
+    const profileImage = provider.image ? `<img src="${escapeHtmlForAttribute(provider.image)}" alt="${escapeHtmlForAttribute(provider.business_name)}">` : '👤';
+
+    let reviewsHtml = '';
+    if (reviews && reviews.length > 0) {
+        reviewsHtml = reviews.map(review => {
+            const stars = generateStars(parseInt(review.rating || 0));
+            return `
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="review-author">${escapeHtml(review.customer_name || 'Anonymous')}</span>
+                        <div>
+                            <span class="review-rating">${stars}</span>
+                        </div>
+                    </div>
+                    <div class="review-date">${formatReviewDate(review.review_date)}</div>
+                    ${review.comment ? `<div class="review-comment">${escapeHtml(review.comment)}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+    } else {
+        reviewsHtml = '<div class="no-reviews">No reviews yet</div>';
+    }
+
+    const html = `
+        <div class="provider-profile-header">
+            <div class="provider-profile-cover">${profileImage}</div>
+            <div class="provider-profile-name">${escapeHtml(provider.business_name || 'Provider')}</div>
+            <div class="provider-rating">
+                <span class="provider-rating-stars">${ratingStars}</span>
+                <span>${parseFloat(provider.rating || 0).toFixed(1)}/5 (${parseInt(provider.total_reviews || 0)} reviews)</span>
+            </div>
+            ${provider.description ? `<div class="provider-description">${escapeHtml(provider.description)}</div>` : ''}
+            <div class="provider-info-grid">
+                ${provider.city ? `
+                    <div class="provider-info-item">
+                        <div class="provider-info-label">Location</div>
+                        <div class="provider-info-value">${escapeHtml(provider.city || 'N/A')}</div>
+                    </div>
+                ` : ''}
+                ${provider.country ? `
+                    <div class="provider-info-item">
+                        <div class="provider-info-label">Country</div>
+                        <div class="provider-info-value">${escapeHtml(provider.country || 'N/A')}</div>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+        <div class="provider-reviews-section">
+            <div class="provider-reviews-title">Reviews</div>
+            ${reviewsHtml}
+        </div>
+    `;
+
+    modalBody.innerHTML = html;
+}
+
+/**
+ * Show provider error message
+ */
+function showProviderError(message) {
+    const modalBody = document.getElementById('modalBody');
+    modalBody.innerHTML = `<div class="provider-modal-error">${escapeHtml(message)}</div>`;
+}
+
+/**
+ * Generate star rating display
+ */
+function generateStars(rating) {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    let stars = '★'.repeat(fullStars);
+    if (hasHalfStar) stars += '☆';
+    stars += '☆'.repeat(5 - Math.ceil(rating));
+    return stars;
+}
+
+/**
+ * Format review date
+ */
+function formatReviewDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+        return 'Today';
+    } else if (date.toDateString() === yesterday.toDateString()) {
+        return 'Yesterday';
+    } else {
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+}
+
+/**
+ * Escape HTML for attribute values
+ */
+function escapeHtmlForAttribute(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML.replace(/"/g, '&quot;');
 }

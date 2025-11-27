@@ -21,15 +21,24 @@ class review_class extends db_connection {
         $rating = intval($rating);
         $comment = $this->db->real_escape_string($comment);
 
+        // Try to insert with booking_id first (if column exists)
         $query = "INSERT INTO pb_reviews (customer_id, provider_id, booking_id, rating, comment)
                   VALUES (?, ?, ?, ?, ?)";
 
         $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            return false;
+            // If booking_id column doesn't exist yet, insert without it
+            $query = "INSERT INTO pb_reviews (customer_id, provider_id, rating, comment)
+                      VALUES (?, ?, ?, ?)";
+            $stmt = $this->db->prepare($query);
+            if (!$stmt) {
+                return false;
+            }
+            $stmt->bind_param("iiis", $customer_id, $provider_id, $rating, $comment);
+        } else {
+            $stmt->bind_param("iiiis", $customer_id, $provider_id, $booking_id, $rating, $comment);
         }
 
-        $stmt->bind_param("iiiis", $customer_id, $provider_id, $booking_id, $rating, $comment);
         if ($stmt->execute()) {
             // Update provider rating
             $this->update_provider_rating($provider_id);
@@ -196,10 +205,12 @@ class review_class extends db_connection {
 
         $booking_id = intval($booking_id);
 
+        // Try to query with booking_id first
         $query = "SELECT * FROM pb_reviews WHERE booking_id = ? LIMIT 1";
 
         $stmt = $this->db->prepare($query);
         if (!$stmt) {
+            // booking_id column doesn't exist yet, return false
             return false;
         }
 

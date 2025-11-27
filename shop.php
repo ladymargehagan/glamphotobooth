@@ -281,6 +281,190 @@ if ($categories === false) {
             color: var(--text-secondary);
         }
 
+        /* Provider Profile Modal */
+        .provider-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .provider-modal.active {
+            display: flex;
+        }
+
+        .provider-modal-content {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .provider-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            z-index: 10;
+        }
+
+        .provider-modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .provider-profile-header {
+            padding: var(--spacing-xxl) var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .provider-profile-cover {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: var(--spacing-md);
+            font-size: 2.5rem;
+        }
+
+        .provider-profile-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .provider-profile-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .provider-rating {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .provider-rating-stars {
+            color: #ffc107;
+        }
+
+        .provider-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .provider-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .provider-info-item {
+            padding: var(--spacing-sm);
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+        }
+
+        .provider-info-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .provider-info-value {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .provider-reviews-section {
+            padding: var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .provider-reviews-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .review-item {
+            padding: var(--spacing-md);
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .review-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .review-rating {
+            color: #ffc107;
+        }
+
+        .review-date {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .review-comment {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .no-reviews {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .provider-modal-loading {
+            text-align: center;
+            padding: var(--spacing-xxl) var(--spacing-lg);
+        }
+
+        .provider-modal-error {
+            color: #d32f2f;
+            background: rgba(211, 47, 47, 0.1);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            margin: var(--spacing-lg);
+        }
+
         @media (max-width: 768px) {
             .shop-container {
                 padding: var(--spacing-lg);
@@ -303,6 +487,11 @@ if ($categories === false) {
             .shop-main {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
                 gap: var(--spacing-md);
+            }
+
+            .provider-modal-content {
+                width: 95%;
+                max-height: 95vh;
             }
         }
     </style>
@@ -372,6 +561,18 @@ if ($categories === false) {
     </div>
 
     <?php require_once __DIR__ . '/views/footer.php'; ?>
+
+    <!-- Provider Profile Modal -->
+    <div id="providerModal" class="provider-modal">
+        <div class="provider-modal-content">
+            <button class="provider-modal-close" onclick="closeProviderModal()">&times;</button>
+            <div id="modalBody">
+                <div class="provider-modal-loading">
+                    <p>Loading provider information...</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Hidden CSRF token for cart operations -->
     <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
