@@ -79,13 +79,56 @@ class booking_class extends db_connection {
         }
 
         $provider_id = intval($provider_id);
-        $sql = "SELECT b.*, c.name as customer_name, c.contact as customer_contact, p.title as product_title
+        $sql = "SELECT b.*, c.name as customer_name, c.email, c.contact, p.title as product_title
                 FROM pb_bookings b
                 LEFT JOIN pb_customer c ON b.customer_id = c.id
                 LEFT JOIN pb_products p ON b.product_id = p.product_id
                 WHERE b.provider_id = $provider_id
-                ORDER BY b.booking_date ASC";
+                ORDER BY b.booking_date DESC";
         return $this->db_fetch_all($sql);
+    }
+
+    /**
+     * Get provider booking statistics
+     */
+    public function get_provider_stats($provider_id) {
+        if (!$this->db_connect()) {
+            return [
+                'pending' => 0,
+                'confirmed' => 0,
+                'completed' => 0,
+                'total' => 0
+            ];
+        }
+
+        $provider_id = intval($provider_id);
+        
+        // Get counts by status
+        $sql = "SELECT 
+                    COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending,
+                    COUNT(CASE WHEN status = 'confirmed' OR status = 'accepted' THEN 1 END) as confirmed,
+                    COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed,
+                    COUNT(*) as total
+                FROM pb_bookings 
+                WHERE provider_id = $provider_id";
+        
+        $result = $this->db_fetch_one($sql);
+        
+        if ($result) {
+            return [
+                'pending' => intval($result['pending'] ?? 0),
+                'confirmed' => intval($result['confirmed'] ?? 0),
+                'completed' => intval($result['completed'] ?? 0),
+                'total' => intval($result['total'] ?? 0)
+            ];
+        }
+        
+        return [
+            'pending' => 0,
+            'confirmed' => 0,
+            'completed' => 0,
+            'total' => 0
+        ];
     }
 
     /**

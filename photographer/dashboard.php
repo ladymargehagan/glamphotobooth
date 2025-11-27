@@ -34,6 +34,11 @@ if ($provider) {
     $provider_bookings = $booking_class->get_provider_bookings($provider['provider_id']);
     $booking_stats = $booking_class->get_provider_stats($provider['provider_id']);
 
+    // Ensure provider_bookings is an array
+    if (!is_array($provider_bookings)) {
+        $provider_bookings = [];
+    }
+
     // Get recent bookings (limit to 3)
     $recent_bookings = array_slice($provider_bookings, 0, 3);
 }
