@@ -42,19 +42,21 @@ $stats = [
 
 $recent_bookings = [];
 foreach ($all_bookings as $booking) {
-    if ($booking['status'] === 'pending') {
-        $stats['pending']++;
-    } elseif ($booking['status'] === 'confirmed' || $booking['status'] === 'accepted') {
-        $stats['confirmed']++;
-    } elseif ($booking['status'] === 'completed') {
-        $stats['completed']++;
+    if (isset($booking['status'])) {
+        if ($booking['status'] === 'pending') {
+            $stats['pending']++;
+        } elseif ($booking['status'] === 'confirmed' || $booking['status'] === 'accepted') {
+            $stats['confirmed']++;
+        } elseif ($booking['status'] === 'completed') {
+            $stats['completed']++;
+        }
     }
     $recent_bookings[] = $booking;
 }
 
 // Count paid orders
 foreach ($all_orders as $order) {
-    if ($order['payment_status'] === 'paid') {
+    if (isset($order['payment_status']) && $order['payment_status'] === 'paid') {
         $stats['paid_orders']++;
     }
 }
@@ -63,13 +65,24 @@ foreach ($all_orders as $order) {
 $recent_bookings = array_slice($recent_bookings, 0, 3);
 
 // Get review class to check which bookings have been reviewed
-$review_class = new review_class();
 $reviewed_bookings = [];
-foreach ($all_bookings as $booking) {
-    if ($booking['status'] === 'completed') {
-        $review = $review_class->get_review_by_booking($booking['booking_id']);
-        $reviewed_bookings[$booking['booking_id']] = $review ? true : false;
+try {
+    if (class_exists('review_class')) {
+        $review_class = new review_class();
+        foreach ($all_bookings as $booking) {
+            if (isset($booking['status']) && $booking['status'] === 'completed' && isset($booking['booking_id'])) {
+                try {
+                    $review = $review_class->get_review_by_booking($booking['booking_id']);
+                    $reviewed_bookings[$booking['booking_id']] = $review ? true : false;
+                } catch (Exception $e) {
+                    $reviewed_bookings[$booking['booking_id']] = false;
+                }
+            }
+        }
     }
+} catch (Exception $e) {
+    // If review class doesn't exist or fails, just continue without review functionality
+    error_log('Review class error: ' . $e->getMessage());
 }
 
 $pageTitle = 'Dashboard - PhotoMarket';
@@ -219,23 +232,30 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                                             <?php echo htmlspecialchars($booking['business_name'] ?? 'Service Provider'); ?>
                                         </h3>
                                         <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
-                                            <?php echo date('M d, Y', strtotime($booking['booking_date'])); ?> at <?php echo date('g:i A', strtotime($booking['booking_time'])); ?>
+                                            <?php 
+                                            if (isset($booking['booking_date']) && isset($booking['booking_time'])) {
+                                                echo date('M d, Y', strtotime($booking['booking_date'])); 
+                                                echo ' at '; 
+                                                echo date('g:i A', strtotime($booking['booking_time'])); 
+                                            }
+                                            ?>
                                         </p>
                                     </div>
                                     <span style="display: inline-block; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-transform: capitalize;
                                         <?php
-                                        if ($booking['status'] === 'pending') {
+                                        $status = isset($booking['status']) ? $booking['status'] : 'unknown';
+                                        if ($status === 'pending') {
                                             echo 'background: rgba(255, 152, 0, 0.15); color: #f57f17;';
-                                        } elseif ($booking['status'] === 'confirmed') {
+                                        } elseif ($status === 'confirmed' || $status === 'accepted') {
                                             echo 'background: rgba(76, 175, 80, 0.15); color: #2e7d32;';
-                                        } elseif ($booking['status'] === 'completed') {
+                                        } elseif ($status === 'completed') {
                                             echo 'background: rgba(33, 150, 243, 0.15); color: #0d47a1;';
                                         } else {
                                             echo 'background: rgba(244, 67, 54, 0.15); color: #b71c1c;';
                                         }
                                         ?>
                                     ">
-                                        <?php echo htmlspecialchars($booking['status']); ?>
+                                        <?php echo htmlspecialchars($status); ?>
                                     </span>
                                 </div>
 
@@ -244,8 +264,8 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                                 </p>
 
                                 <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
-                                    <a href="<?php echo SITE_URL; ?>/customer/my_bookings.php?booking_id=<?php echo $booking['booking_id']; ?>" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
-                                    <?php if ($booking['status'] === 'completed' && isset($reviewed_bookings[$booking['booking_id']]) && !$reviewed_bookings[$booking['booking_id']]): ?>
+                                    <a href="<?php echo SITE_URL; ?>/customer/my_bookings.php?booking_id=<?php echo isset($booking['booking_id']) ? $booking['booking_id'] : 0; ?>" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
+                                    <?php if (isset($booking['status']) && $booking['status'] === 'completed' && isset($booking['booking_id']) && isset($booking['provider_id']) && isset($reviewed_bookings[$booking['booking_id']]) && !$reviewed_bookings[$booking['booking_id']]): ?>
                                         <button onclick="openReviewModal(<?php echo $booking['booking_id']; ?>, <?php echo $booking['provider_id']; ?>)" class="btn" style="padding: 0.5rem 1rem; font-size: 0.85rem; background: #ff9800; color: white; border: none; border-radius: 4px; cursor: pointer;">Add Review</button>
                                     <?php endif; ?>
                                 </div>
@@ -266,20 +286,37 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         </main>
     </div>
 
-    <?php require_once __DIR__ . '/add_review.php'; ?>
+    <?php 
+    $add_review_file = __DIR__ . '/add_review.php';
+    if (file_exists($add_review_file)) {
+        require_once $add_review_file;
+    }
+    ?>
     <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
+    <?php if (file_exists(__DIR__ . '/../js/review.js')): ?>
     <script src="<?php echo SITE_URL; ?>/js/review.js"></script>
+    <?php endif; ?>
     <script>
         window.siteUrl = '<?php echo SITE_URL; ?>';
         window.csrfToken = '<?php echo generateCSRFToken(); ?>';
 
         function openReviewModal(bookingId, providerId) {
-            document.getElementById('booking_id').value = bookingId;
-            document.getElementById('provider_id').value = providerId;
-            document.getElementById('rating').value = '';
-            document.getElementById('comment').value = '';
-            document.getElementById('charCount').textContent = '0';
-            document.getElementById('ratingLabel').textContent = 'Click to rate';
+            const bookingIdEl = document.getElementById('booking_id');
+            const providerIdEl = document.getElementById('provider_id');
+            const ratingEl = document.getElementById('rating');
+            const commentEl = document.getElementById('comment');
+            const charCountEl = document.getElementById('charCount');
+            const ratingLabelEl = document.getElementById('ratingLabel');
+            const reviewModal = document.getElementById('reviewModal');
+            
+            if (!reviewModal) return;
+            
+            if (bookingIdEl) bookingIdEl.value = bookingId;
+            if (providerIdEl) providerIdEl.value = providerId;
+            if (ratingEl) ratingEl.value = '';
+            if (commentEl) commentEl.value = '';
+            if (charCountEl) charCountEl.textContent = '0';
+            if (ratingLabelEl) ratingLabelEl.textContent = 'Click to rate';
             
             // Reset stars
             document.querySelectorAll('.star').forEach(star => {
@@ -287,20 +324,30 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             });
             
             // Hide messages
-            document.getElementById('reviewError').classList.remove('show');
-            document.getElementById('reviewSuccess').classList.remove('show');
+            const reviewError = document.getElementById('reviewError');
+            const reviewSuccess = document.getElementById('reviewSuccess');
+            if (reviewError) reviewError.classList.remove('show');
+            if (reviewSuccess) reviewSuccess.classList.remove('show');
             
-            document.getElementById('reviewModal').classList.add('show');
+            reviewModal.classList.add('show');
         }
 
         function closeReviewModal() {
-            document.getElementById('reviewModal').classList.remove('show');
+            const reviewModal = document.getElementById('reviewModal');
+            if (reviewModal) {
+                reviewModal.classList.remove('show');
+            }
         }
 
         // Close modal when clicking outside
-        document.getElementById('reviewModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeReviewModal();
+        document.addEventListener('DOMContentLoaded', function() {
+            const reviewModal = document.getElementById('reviewModal');
+            if (reviewModal) {
+                reviewModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeReviewModal();
+                    }
+                });
             }
         });
     </script>
