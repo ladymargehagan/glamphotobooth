@@ -23,11 +23,12 @@ mysql -h 169.239.251.102 -u lady_hagan -p ecommerce_2025A_lady_hagan < db/migrat
 
 ## What the Migration Does
 
-1. **Adds `booking_id` column** to `pb_reviews` table
+1. **Adds `booking_id` column** to `pb_reviews` table as a UNIQUE field
 2. **Adds foreign key constraint** linking `booking_id` to `pb_bookings.booking_id`
-3. **Creates index** on `booking_id` for performance
-4. **Drops old unique constraint** (one review per customer-provider)
-5. **Adds new unique constraint** (one review per booking)
+3. **Creates index** on `booking_id` for query performance
+4. **Keeps old unique constraint** (customer_id, provider_id) for backward compatibility
+
+The UNIQUE constraint on `booking_id` ensures each booking can only have one review.
 
 ## After Migration
 
