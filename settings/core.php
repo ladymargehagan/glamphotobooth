@@ -35,8 +35,9 @@ if (!defined('SITE_ROOT')) {
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'];
     define('SITE_URL', $protocol . '://' . $host . '/~lady.hagan/glamphotobooth');
-    // Point uploads to the shared tasteofafrica uploads folder
-    define('UPLOADS_DIR', '/home/lady.hagan/public_html/tasteofafrica/uploads/');
+
+    // Point uploads to local glamphotobooth uploads folder
+    define('UPLOADS_DIR', SITE_ROOT . '/uploads/');
 }
 
 /**
