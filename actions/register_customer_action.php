@@ -42,26 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $controller->register_customer_ctr($name, $email, $password, $confirm_password, $role, $phone, $city);
 
         if ($result['success']) {
-            $customer_id = $result['customer_id'];
-
-            // If registering as provider (photographer or vendor), create service provider profile
-            if ($role === 2 || $role === 3) {
-                $provider_class = new provider_class();
-                $provider_id = $provider_class->add_provider(
-                    $customer_id,
-                    $business_name,
-                    $description,
-                    $hourly_rate
-                );
-
-                if ($provider_id) {
-                    $result['provider_id'] = $provider_id;
-                    $result['message'] = 'Account created successfully! Setting up your profile...';
-                } else {
-                    // Still return success, but log the provider creation failure
-                    error_log('Provider profile creation failed for customer_id: ' . $customer_id);
-                }
-            }
+            // Registration is complete - photographers/vendors are registered directly to pb_service_providers
+            // Customers are registered to pb_customer
+            // No additional action needed here
         }
 
         echo json_encode($result);

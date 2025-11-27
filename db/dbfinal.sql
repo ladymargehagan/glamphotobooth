@@ -63,7 +63,14 @@ ALTER TABLE `pb_customer`
 -- TABLE: pb_service_providers
 -- --------------------------------------------------------
 CREATE TABLE `pb_service_providers` (
-  `provider_id` int NOT NULL,
+  `provider_id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `contact` varchar(50) DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `image` varchar(500) DEFAULT NULL,
+  `user_role` tinyint NOT NULL DEFAULT '2',
   `business_name` varchar(255) NOT NULL,
   `description` text,
   `hourly_rate` decimal(10,2) DEFAULT NULL,
@@ -76,6 +83,9 @@ CREATE TABLE `pb_service_providers` (
 
 ALTER TABLE `pb_service_providers`
   ADD PRIMARY KEY (`provider_id`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `idx_email` (`email`),
+  ADD KEY `idx_user_role` (`user_role`),
   ADD KEY `idx_rating` (`rating`);
 
 ALTER TABLE `pb_service_providers`

@@ -16,7 +16,9 @@ class customer_controller {
     }
 
     /**
-     * Register customer
+     * Register customer or provider (photographer/vendor)
+     * Role 4 (customers) → pb_customer table
+     * Role 2,3 (photographers/vendors) → pb_service_providers table
      */
     public function register_customer_ctr($name, $email, $password, $confirm_password, $role, $phone = '', $city = '') {
         // Validation
@@ -42,12 +44,18 @@ class customer_controller {
             return ['success' => false, 'message' => 'Invalid role selected'];
         }
 
-        // Check if email exists
+        // For photographers (role 2) and vendors (role 3), use provider registration
+        if ($role === 2 || $role === 3) {
+            return $this->register_provider_ctr($name, $email, $password, $role, $phone, $city);
+        }
+
+        // For customers (role 4), use customer registration
+        // Check if email exists in customer table
         if ($this->customer->check_email_exists($email)) {
             return ['success' => false, 'message' => 'Email already registered'];
         }
 
-        // Add customer with phone and city
+        // Add customer to pb_customer table
         $customer_id = $this->customer->add_customer($name, $email, $password, $role, $phone, $city);
 
         if ($customer_id) {
@@ -63,7 +71,36 @@ class customer_controller {
     }
 
     /**
-     * Login customer
+     * Register provider (photographer or vendor)
+     * Saves directly to pb_service_providers table, NOT pb_customer
+     */
+    private function register_provider_ctr($name, $email, $password, $role, $phone = '', $city = '') {
+        $provider_class = new provider_class();
+        $provider_class->db_connect();
+
+        // Check if email exists in provider table
+        if ($provider_class->check_provider_email_exists($email)) {
+            return ['success' => false, 'message' => 'Email already registered'];
+        }
+
+        // Add provider directly to pb_service_providers table
+        $provider_id = $provider_class->add_provider_full($name, $email, $password, $role, $phone, $city);
+
+        if ($provider_id) {
+            $_SESSION['user_id'] = $provider_id;
+            $_SESSION['user_name'] = $name;
+            $_SESSION['user_email'] = $email;
+            $_SESSION['user_role'] = $role;
+
+            return ['success' => true, 'message' => 'Registration successful', 'customer_id' => $provider_id];
+        }
+
+        return ['success' => false, 'message' => 'Registration failed. Please try again'];
+    }
+
+    /**
+     * Login customer or provider (photographer/vendor)
+     * Checks both pb_customer (for customers) and pb_service_providers (for photographers/vendors)
      */
     public function login_customer_ctr($email, $password) {
         // Validation
@@ -75,37 +112,46 @@ class customer_controller {
             return ['success' => false, 'message' => 'Invalid email format'];
         }
 
-        // Get customer
+        // Try to get user from pb_customer first (for customers - role 4)
         $customer = $this->customer->get_customer_by_email($email);
 
-        if (!$customer || !isset($customer['password'])) {
-            return ['success' => false, 'message' => 'Invalid email or password'];
+        if ($customer && isset($customer['password']) && !empty($customer['password'])) {
+            // Verify password
+            $password_valid = $this->customer->verify_password($password, $customer['password']);
+
+            if ($password_valid) {
+                // Set session for customer
+                $_SESSION['user_id'] = $customer['id'];
+                $_SESSION['user_name'] = $customer['name'];
+                $_SESSION['user_email'] = $customer['email'];
+                $_SESSION['user_role'] = $customer['user_role'];
+
+                return ['success' => true, 'message' => 'Login successful', 'user_id' => $customer['id'], 'user_role' => $customer['user_role']];
+            }
         }
 
-        // Debug: Check if password hash exists (remove in production)
-        if (empty($customer['password'])) {
-            error_log('Login error: Password hash is empty for email: ' . $email);
-            return ['success' => false, 'message' => 'Account error. Please contact support.'];
+        // If not found in pb_customer or password invalid, try pb_service_providers (for photographers/vendors - role 2,3)
+        $provider_class = new provider_class();
+        $provider_class->db_connect();
+        $provider = $provider_class->get_provider_by_email($email);
+
+        if ($provider && isset($provider['password']) && !empty($provider['password'])) {
+            // Verify password
+            $password_valid = password_verify($password, $provider['password']);
+
+            if ($password_valid) {
+                // Set session for provider
+                $_SESSION['user_id'] = $provider['provider_id'];
+                $_SESSION['user_name'] = $provider['name'];
+                $_SESSION['user_email'] = $provider['email'];
+                $_SESSION['user_role'] = $provider['user_role'];
+
+                return ['success' => true, 'message' => 'Login successful', 'user_id' => $provider['provider_id'], 'user_role' => $provider['user_role']];
+            }
         }
 
-        // Verify password
-        $password_valid = $this->customer->verify_password($password, $customer['password']);
-        
-        if (!$password_valid) {
-            // Debug logging (remove in production)
-            error_log('Login failed for email: ' . $email);
-            error_log('Hash from DB length: ' . strlen($customer['password']));
-            error_log('Hash starts with: ' . substr($customer['password'], 0, 10));
-            return ['success' => false, 'message' => 'Invalid email or password'];
-        }
-
-        // Set session
-        $_SESSION['user_id'] = $customer['id'];
-        $_SESSION['user_name'] = $customer['name'];
-        $_SESSION['user_email'] = $customer['email'];
-        $_SESSION['user_role'] = $customer['user_role'];
-
-        return ['success' => true, 'message' => 'Login successful', 'user_id' => $customer['id'], 'user_role' => $customer['user_role']];
+        // Invalid credentials
+        return ['success' => false, 'message' => 'Invalid email or password'];
     }
 
     /**
