@@ -247,6 +247,12 @@ $cssPath = SITE_URL . '/css/style.css';
     <?php require_once __DIR__ . '/../views/footer.php'; ?>
 
     <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
+    <input type="hidden" id="orderAmount" value="<?php echo $order['total_amount']; ?>">
+    <input type="hidden" id="customerEmail" value="<?php echo htmlspecialchars($order['email']); ?>">
+    <input type="hidden" id="paystackPublicKey" value="<?php echo PAYSTACK_PUBLIC_KEY; ?>">
+
+    <!-- Paystack Inline JS -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
 
     <script>
         window.siteUrl = '<?php echo SITE_URL; ?>';
@@ -255,36 +261,70 @@ $cssPath = SITE_URL . '/css/style.css';
             const button = document.getElementById('payButton');
             const spinner = document.getElementById('loadingSpinner');
             const errorMsg = document.getElementById('errorMessage');
-            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+            const amount = parseFloat(document.getElementById('orderAmount').value);
+            const email = document.getElementById('customerEmail').value;
+            const publicKey = document.getElementById('paystackPublicKey').value;
 
             button.disabled = true;
-            spinner.style.display = 'block';
-            errorMsg.classList.remove('show');
+            button.textContent = 'Opening Paystack...';
 
+            // Use Paystack Inline (Popup) instead of redirect
+            const handler = PaystackPop.setup({
+                key: publicKey,
+                email: email,
+                amount: amount * 100, // Convert to pesewas/kobo
+                currency: 'GHS',
+                ref: 'ord_' + orderId + '_' + Math.floor((Math.random() * 1000000000) + 1),
+                channels: ['card', 'bank', 'mobile_money'],
+                metadata: {
+                    order_id: orderId,
+                    custom_fields: [
+                        {
+                            display_name: "Order ID",
+                            variable_name: "order_id",
+                            value: orderId
+                        }
+                    ]
+                },
+                onClose: function() {
+                    button.disabled = false;
+                    button.textContent = 'Pay with Paystack';
+                    showError('Payment cancelled');
+                },
+                callback: function(response) {
+                    button.textContent = 'Verifying payment...';
+                    // Verify the payment
+                    verifyPayment(response.reference);
+                }
+            });
+
+            handler.openIframe();
+        }
+
+        function verifyPayment(reference) {
             const formData = new FormData();
-            formData.append('order_id', orderId);
-            formData.append('csrf_token', csrfToken);
+            formData.append('reference', reference);
 
-            fetch(window.siteUrl + '/actions/initialize_payment_action.php', {
+            fetch(window.siteUrl + '/actions/verify_payment_action.php', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Redirect to Paystack checkout - Paystack will redirect back to callback_url after payment
-                    window.location.href = data.authorization_url;
+                    // Redirect to order confirmation
+                    window.location.href = data.redirect || (window.siteUrl + '/customer/order_confirmation.php?order_id=' + data.order_id);
                 } else {
-                    showError(data.message || 'Failed to initialize payment');
-                    button.disabled = false;
-                    spinner.style.display = 'none';
+                    showError(data.message || 'Payment verification failed');
+                    document.getElementById('payButton').disabled = false;
+                    document.getElementById('payButton').textContent = 'Pay with Paystack';
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showError('Network error. Please try again.');
-                button.disabled = false;
-                spinner.style.display = 'none';
+                showError('Error verifying payment. Please contact support.');
+                document.getElementById('payButton').disabled = false;
+                document.getElementById('payButton').textContent = 'Pay with Paystack';
             });
         }
 

@@ -72,8 +72,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($products && is_array($products)) {
             foreach ($products as &$product) {
                 if (!empty($product['image'])) {
-                    // Image path: uploads/products/filename
-                    $product['image'] = SITE_URL . '/uploads/products/' . htmlspecialchars($product['image']);
+                    // Clean the path - remove any leading slashes or paths
+                    $filename = basename($product['image']);
+                    $product['image'] = SITE_URL . '/uploads/products/' . $filename;
                 } else {
                     $product['image'] = null;
                 }
