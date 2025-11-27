@@ -20,7 +20,7 @@ class customer_controller {
      * Role 4 (customers) → pb_customer table
      * Role 2,3 (photographers/vendors) → pb_service_providers table
      */
-    public function register_customer_ctr($name, $email, $password, $confirm_password, $role, $phone = '', $city = '') {
+    public function register_customer_ctr($name, $email, $password, $confirm_password, $role, $phone = '', $city = '', $business_name = '', $description = '', $hourly_rate = 0) {
         // Validation
         if (empty($name) || empty($email) || empty($password) || empty($role)) {
             return ['success' => false, 'message' => 'All fields are required'];
@@ -46,7 +46,7 @@ class customer_controller {
 
         // For photographers (role 2) and vendors (role 3), use provider registration
         if ($role === 2 || $role === 3) {
-            return $this->register_provider_ctr($name, $email, $password, $role, $phone, $city);
+            return $this->register_provider_ctr($name, $email, $password, $role, $phone, $city, $business_name, $description, $hourly_rate);
         }
 
         // For customers (role 4), use customer registration
@@ -72,9 +72,9 @@ class customer_controller {
 
     /**
      * Register provider (photographer or vendor)
-     * Saves directly to pb_service_providers table, NOT pb_customer
+     * Saves directly to pb_service_providers table with all business info
      */
-    private function register_provider_ctr($name, $email, $password, $role, $phone = '', $city = '') {
+    private function register_provider_ctr($name, $email, $password, $role, $phone = '', $city = '', $business_name = '', $description = '', $hourly_rate = 0) {
         $provider_class = new provider_class();
         $provider_class->db_connect();
 
@@ -83,8 +83,8 @@ class customer_controller {
             return ['success' => false, 'message' => 'Email already registered'];
         }
 
-        // Add provider directly to pb_service_providers table
-        $provider_id = $provider_class->add_provider_full($name, $email, $password, $role, $phone, $city);
+        // Add provider directly to pb_service_providers table with all info
+        $provider_id = $provider_class->add_provider_full($name, $email, $password, $role, $phone, $city, $business_name, $description, $hourly_rate);
 
         if ($provider_id) {
             $_SESSION['user_id'] = $provider_id;

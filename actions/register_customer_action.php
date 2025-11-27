@@ -37,9 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Register customer
+        // Register customer or provider
         $controller = new customer_controller();
-        $result = $controller->register_customer_ctr($name, $email, $password, $confirm_password, $role, $phone, $city);
+        $result = $controller->register_customer_ctr($name, $email, $password, $confirm_password, $role, $phone, $city, $business_name, $description, $hourly_rate);
 
         if ($result['success']) {
             // Registration is complete - photographers/vendors are registered directly to pb_service_providers

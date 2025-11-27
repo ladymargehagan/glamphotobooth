@@ -135,11 +135,11 @@ class provider_class extends db_connection {
     }
 
     /**
-     * Add provider with full registration (name, email, password, role, contact, city)
+     * Add provider with full registration (name, email, password, role, contact, city, business_name, description, hourly_rate)
      * Used for direct registration to pb_service_providers table
      * Photographers (role 2) and Vendors (role 3) ONLY
      */
-    public function add_provider_full($name, $email, $password, $role, $phone = '', $city = '') {
+    public function add_provider_full($name, $email, $password, $role, $phone = '', $city = '', $business_name = '', $description = '', $hourly_rate = 0) {
         if (!$this->db_connect()) {
             return false;
         }
@@ -149,7 +149,10 @@ class provider_class extends db_connection {
         $email = trim($email);
         $phone = trim($phone);
         $city = trim($city);
+        $business_name = trim($business_name);
+        $description = trim($description);
         $role = intval($role);
+        $hourly_rate = floatval($hourly_rate);
 
         // Only allow photographer (2) and vendor (3)
         if ($role !== 2 && $role !== 3) {
@@ -165,13 +168,17 @@ class provider_class extends db_connection {
         $password_hash = mysqli_real_escape_string($this->db, $password_hash);
         $phone = mysqli_real_escape_string($this->db, $phone);
         $city = mysqli_real_escape_string($this->db, $city);
+        $description = mysqli_real_escape_string($this->db, $description);
 
-        $business_name = ($role === 2) ? $name . " (Photographer)" : $name . " (Vendor)";
+        // Use provided business_name or generate default
+        if (empty($business_name)) {
+            $business_name = ($role === 2) ? $name . " (Photographer)" : $name . " (Vendor)";
+        }
         $business_name = mysqli_real_escape_string($this->db, $business_name);
 
-        // Insert into pb_service_providers
-        $sql = "INSERT INTO pb_service_providers (email, password, name, contact, city, user_role, business_name, created_at)
-                VALUES ('$email', '$password_hash', '$name', '$phone', '$city', $role, '$business_name', NOW())";
+        // Insert into pb_service_providers with all fields
+        $sql = "INSERT INTO pb_service_providers (email, password, name, contact, city, user_role, business_name, description, hourly_rate, created_at)
+                VALUES ('$email', '$password_hash', '$name', '$phone', '$city', $role, '$business_name', '$description', $hourly_rate, NOW())";
 
         if ($this->db_write_query($sql)) {
             return $this->last_insert_id();
