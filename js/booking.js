@@ -69,17 +69,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Validate
         if (!bookingDateInput.value) {
-            alert('Please select a booking date');
+            showErrorAlert('Validation Error', 'Please select a booking date');
             return;
         }
 
         if (!bookingTimeSelect.value) {
-            alert('Please select a time');
+            showErrorAlert('Validation Error', 'Please select a time');
             return;
         }
 
         if (!serviceDescriptionInput.value || serviceDescriptionInput.value.trim().length < 10) {
-            alert('Service description must be at least 10 characters');
+            showErrorAlert('Validation Error', 'Service description must be at least 10 characters');
             return;
         }
 
@@ -102,17 +102,16 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Booking created! Proceeding to cart...');
-                window.location.href = window.siteUrl + '/customer/cart.php';
+                showAlertAndRedirect('Success', 'Booking created! Proceeding to cart...', window.siteUrl + '/customer/cart.php');
             } else {
-                alert('Error: ' + (data.message || 'Failed to create booking'));
+                showErrorAlert('Booking Error', data.message || 'Failed to create booking');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Request Booking';
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Network error. Please try again.');
+            showErrorAlert('Network Error', 'Network error. Please try again.');
             submitBtn.disabled = false;
             submitBtn.textContent = 'Request Booking';
         });

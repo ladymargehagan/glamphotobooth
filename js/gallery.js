@@ -161,38 +161,40 @@ document.addEventListener('DOMContentLoaded', function() {
  * Delete photo function
  */
 function deletePhoto(photoId) {
-    if (!confirm('Are you sure you want to delete this photo?')) {
-        return;
-    }
+    showConfirmAlert(
+        'Delete Photo',
+        'Are you sure you want to delete this photo?',
+        function() {
+            const csrfToken = document.querySelector('input[name="csrf_token"]')?.value || window.csrfToken;
+            const formData = new FormData();
+            formData.append('photo_id', photoId);
+            formData.append('csrf_token', csrfToken);
 
-    const csrfToken = document.querySelector('input[name="csrf_token"]')?.value || window.csrfToken;
-    const formData = new FormData();
-    formData.append('photo_id', photoId);
-    formData.append('csrf_token', csrfToken);
-
-    fetch(window.siteUrl + '/actions/delete_photo_action.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Remove photo element
-            event.target.closest('.photo-item').style.animation = 'fadeOut 0.3s';
-            setTimeout(() => {
-                event.target.closest('.photo-item').remove();
-                // Reload if no photos left
-                const items = document.querySelectorAll('.photo-item');
-                if (items.length === 0) {
-                    location.reload();
+            fetch(window.siteUrl + '/actions/delete_photo_action.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove photo element
+                    event.target.closest('.photo-item').style.animation = 'fadeOut 0.3s';
+                    setTimeout(() => {
+                        event.target.closest('.photo-item').remove();
+                        // Reload if no photos left
+                        const items = document.querySelectorAll('.photo-item');
+                        if (items.length === 0) {
+                            location.reload();
+                        }
+                    }, 300);
+                } else {
+                    showErrorAlert('Error', data.message || 'Failed to delete photo');
                 }
-            }, 300);
-        } else {
-            alert(data.message || 'Failed to delete photo');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showErrorAlert('Error', 'Error deleting photo');
+            });
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error deleting photo');
-    });
+    );
 }

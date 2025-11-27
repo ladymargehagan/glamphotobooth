@@ -213,31 +213,32 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     window.deleteCategory = function(catId, catName) {
-        if (!confirm(`Are you sure you want to delete "${catName}"? This action cannot be undone.`)) {
-            return;
-        }
+        showConfirmAlert(
+            'Delete Category',
+            `Are you sure you want to delete "${catName}"? This action cannot be undone.`,
+            function() {
+                const formData = new FormData();
+                formData.append('csrf_token', document.querySelector('input[name="csrf_token"]').value);
+                formData.append('cat_id', catId);
 
-        const formData = new FormData();
-        formData.append('csrf_token', document.querySelector('input[name="csrf_token"]').value);
-        formData.append('cat_id', catId);
-
-        fetch('../actions/delete_category_action.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                loadCategories();
-                // Could show a toast here instead
-                alert(data.message || 'Category deleted successfully');
-            } else {
-                alert(data.message || 'Failed to delete category');
+                fetch('../actions/delete_category_action.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToastSuccess(data.message || 'Category deleted successfully');
+                        loadCategories();
+                    } else {
+                        showErrorAlert('Error', data.message || 'Failed to delete category');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showErrorAlert('Network Error', 'Network error. Please try again.');
+                });
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Network error. Please try again.');
-        });
+        );
     };
 });
