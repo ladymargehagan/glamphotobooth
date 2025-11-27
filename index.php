@@ -21,12 +21,12 @@ $featuredProviders = [];
 try {
     $db = new db_connection();
     if ($db->db_connect()) {
-        // Providers with the best ratings and most reviews
+        // Providers with the best ratings and most reviews (with customer validation)
         $sql = "SELECT sp.provider_id, sp.business_name, sp.description, sp.rating, sp.total_reviews,
                        c.name, c.city, c.country
                 FROM pb_service_providers sp
-                JOIN pb_customer c ON sp.customer_id = c.id
-                WHERE sp.rating IS NOT NULL
+                INNER JOIN pb_customer c ON sp.customer_id = c.id
+                WHERE sp.rating IS NOT NULL AND c.id IS NOT NULL
                 ORDER BY sp.rating DESC, sp.total_reviews DESC, sp.created_at DESC
                 LIMIT 3";
         $featuredProviders = $db->db_fetch_all($sql);
@@ -36,6 +36,7 @@ try {
     }
 } catch (Exception $e) {
     // Fail silently – homepage should still render even if this query fails
+    error_log('Featured providers query error: ' . $e->getMessage());
     $featuredProviders = [];
 }
 ?>

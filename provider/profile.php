@@ -37,9 +37,9 @@ try {
         exit;
     }
 
-    // Validate provider has customer info (should exist due to LEFT JOIN)
-    if (empty($provider['email'])) {
-        error_log('Provider profile: Provider has invalid customer reference for ID ' . $provider_id);
+    // Validate provider has required fields (business name should always exist)
+    if (empty($provider['business_name']) || empty($provider['customer_id'])) {
+        error_log('Provider profile: Provider has incomplete data for ID ' . $provider_id);
         header('Location: ' . SITE_URL . '/shop.php?error=invalid_provider');
         exit;
     }
