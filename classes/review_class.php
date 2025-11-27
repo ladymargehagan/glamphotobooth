@@ -41,7 +41,7 @@ class review_class extends db_connection {
             return false;
         }
 
-        $stmt->bind_param("iiis", $customer_id, $provider_id, $booking_id, $rating, $comment);
+        $stmt->bind_param("iiiis", $customer_id, $provider_id, $booking_id, $rating, $comment);
         if ($stmt->execute()) {
             // Update provider rating
             $this->update_provider_rating($provider_id);

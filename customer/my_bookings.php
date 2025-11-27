@@ -229,7 +229,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <div class="sidebar-section-title">Account</div>
                     <ul class="sidebar-nav">
                         <li class="sidebar-nav-item">
-                            <a href="<?php echo SITE_URL; ?>/customer/edit_profile.php" class="sidebar-nav-link">
+                            <a href="<?php echo SITE_URL; ?>/customer/my_profile.php" class="sidebar-nav-link">
                                 <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="12" cy="7" r="4"></circle>
@@ -264,7 +264,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             <?php if (count($all_bookings) > 0): ?>
                 <div>
                     <?php foreach ($all_bookings as $booking): ?>
-                        <div class="booking-card">
+                        <div class="booking-card" data-booking-id="<?php echo isset($booking['booking_id']) ? $booking['booking_id'] : 0; ?>"<?php echo $selected_booking_id > 0 && isset($booking['booking_id']) && intval($booking['booking_id']) === $selected_booking_id ? ' style="border-left-color: #ff9800; background-color: rgba(255, 152, 0, 0.05);"' : ''; ?>>
                             <div class="booking-header">
                                 <div class="booking-provider">
                                     <h3><?php echo htmlspecialchars($booking['business_name'] ?? 'Service Provider'); ?></h3>
@@ -337,6 +337,17 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     <script>
         window.siteUrl = '<?php echo SITE_URL; ?>';
         window.csrfToken = '<?php echo generateCSRFToken(); ?>';
+
+        // Scroll to selected booking if booking_id is provided
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookingId = <?php echo $selected_booking_id > 0 ? $selected_booking_id : 'null'; ?>;
+            if (bookingId) {
+                const selectedCard = document.querySelector(`[data-booking-id="${bookingId}"]`);
+                if (selectedCard) {
+                    selectedCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        });
 
         function openReviewModal(bookingId, providerId) {
             document.getElementById('booking_id').value = bookingId;
