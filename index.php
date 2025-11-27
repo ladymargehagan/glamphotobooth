@@ -51,8 +51,8 @@ $cssPath = SITE_URL . '/css/style.css';
                             <path d="M12 5v7l5 3"></path>
                         </svg>
                     </div>
-                    <h3>Equipment Rentals</h3>
-                    <p>Premium photobooths, lighting, cameras, and production gear for daily or weekly rental.</p>
+                    <h3>Equipment & Accessories</h3>
+                    <p>Premium photobooths, lighting, cameras, and production gear for professional photographers.</p>
                 </div>
 
                 <div class="service-card">

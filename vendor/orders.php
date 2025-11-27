@@ -1,7 +1,7 @@
 <?php
 /**
- * Vendor Rental Orders Page
- * vendor/rental_orders.php
+ * Vendor Orders Page
+ * vendor/orders.php
  */
 require_once __DIR__ . '/../settings/core.php';
 
@@ -31,7 +31,7 @@ if (!$orders) {
     $orders = [];
 }
 
-$pageTitle = 'Rental Orders - PhotoMarket';
+$pageTitle = 'Orders - PhotoMarket';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>
@@ -187,7 +187,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         <main class="dashboard-content">
             <div class="dashboard-header">
                 <div>
-                    <h1 class="dashboard-title">Rental Orders</h1>
+                    <h1 class="dashboard-title">Orders</h1>
                     <p class="dashboard-subtitle">View and manage orders for your products</p>
                 </div>
             </div>
@@ -231,8 +231,8 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                             <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
                         </svg>
-                        <h3 class="empty-state-title">No Rental Orders Yet</h3>
-                        <p class="empty-state-text">You don't have any rental orders yet. Add products to your inventory to start receiving orders.</p>
+                        <h3 class="empty-state-title">No Orders Yet</h3>
+                        <p class="empty-state-text">You don't have any orders yet. Add products to your inventory to start receiving orders.</p>
                         <a href="<?php echo SITE_URL; ?>/customer/add_product.php" class="btn-primary">Add Products</a>
                     </div>
                 </div>

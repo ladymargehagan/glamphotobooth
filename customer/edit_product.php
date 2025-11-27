@@ -403,9 +403,11 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         <label for="productType">Product Type</label>
                         <select id="productType" name="product_type" required>
                             <option value="">Select type</option>
-                            <option value="service" <?php echo $product['product_type'] == 'service' ? 'selected' : ''; ?>>Service</option>
-                            <option value="rental" <?php echo $product['product_type'] == 'rental' ? 'selected' : ''; ?>>Rental</option>
-                            <option value="sale" <?php echo $product['product_type'] == 'sale' ? 'selected' : ''; ?>>Sale</option>
+                            <?php if ($user_role == 2): // Photographer - only service ?>
+                                <option value="service" <?php echo $product['product_type'] == 'service' ? 'selected' : ''; ?>>Service</option>
+                            <?php elseif ($user_role == 3): // Vendor - only sale ?>
+                                <option value="sale" <?php echo $product['product_type'] == 'sale' ? 'selected' : ''; ?>>Sale</option>
+                            <?php endif; ?>
                         </select>
                         <span class="form-error" id="productTypeError"></span>
                     </div>

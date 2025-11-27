@@ -38,8 +38,14 @@
                 <nav class="navbar-menu">
                     <ul class="navbar-items">
                         <li><a href="<?php echo SITE_URL; ?>/index.php" class="nav-link">Home</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/services.php" class="nav-link">Services</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/shop.php" class="nav-link">Products</a></li>
+                        <?php
+                        // Only show Services and Products to customers (role 4) and guests
+                        $user_role = isLoggedIn() ? (isset($_SESSION['user_role']) ? intval($_SESSION['user_role']) : 4) : 4;
+                        if ($user_role == 4):
+                        ?>
+                            <li><a href="<?php echo SITE_URL; ?>/services.php" class="nav-link">Services</a></li>
+                            <li><a href="<?php echo SITE_URL; ?>/shop.php" class="nav-link">Products</a></li>
+                        <?php endif; ?>
                     </ul>
                 </nav>
 

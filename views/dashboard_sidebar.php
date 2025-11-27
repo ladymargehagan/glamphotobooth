@@ -44,8 +44,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         Inventory
                     </a>
                 </li>
-                <li class="sidebar-nav-item <?php echo ($current_page == 'rental_orders.php') ? 'active' : ''; ?>">
-                    <a href="<?php echo SITE_URL; ?>/vendor/rental_orders.php" class="sidebar-nav-link">
+                <li class="sidebar-nav-item <?php echo ($current_page == 'orders.php') ? 'active' : ''; ?>">
+                    <a href="<?php echo SITE_URL; ?>/vendor/orders.php" class="sidebar-nav-link">
                         <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2M6 9v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9M10 5V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"></path>
                         </svg>

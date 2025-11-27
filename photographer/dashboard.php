@@ -188,6 +188,26 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
                 <div class="dashboard-card">
                     <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M12 5v14M5 12h14"></path>
+                    </svg>
+                    <h3 class="card-title">Manage Services</h3>
+                    <p class="card-subtitle">Create and edit your photography services</p>
+                    <a href="<?php echo SITE_URL; ?>/customer/manage_products.php" class="card-action">Manage Services →</a>
+                </div>
+
+                <div class="dashboard-card">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <h3 class="card-title">Photo Galleries</h3>
+                    <p class="card-subtitle">Manage client photo galleries and uploads</p>
+                    <a href="<?php echo SITE_URL; ?>/photographer/galleries.php" class="card-action">View Galleries →</a>
+                </div>
+
+                <div class="dashboard-card">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                         <line x1="12" y1="1" x2="12" y2="23"></line>
                         <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                     </svg>

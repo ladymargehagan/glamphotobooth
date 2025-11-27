@@ -85,7 +85,7 @@ $cssPath = SITE_URL . '/css/style.css';
                                 <input type="radio" name="role" value="4" checked>
                                 <span class="role-label">
                                     <span class="role-title">Customer</span>
-                                    <span class="role-desc">Book services & rent equipment</span>
+                                    <span class="role-desc">Book services & buy equipment</span>
                                 </span>
                             </label>
                             <label class="role-option">
