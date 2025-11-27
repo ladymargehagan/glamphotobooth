@@ -92,16 +92,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const productTitle = escapeHtml(product.title || 'Untitled Product');
             const productPrice = parseFloat(product.price || 0);
-            const productDetailUrl = window.siteUrl + '/product/detail.php?id=' + product.product_id;
 
-            const isService = product.product_type === 'service';
-            const buttonText = isService ? 'Book Now' : 'Add to Cart';
-            const buttonOnclick = isService
-                ? `window.location.href='${productDetailUrl}'; event.stopPropagation();`
-                : `addToCart(${product.product_id}, '${productTitle}', ${productPrice}); event.stopPropagation();`;
+            const buttonLabel = product.product_type === 'service' ? 'Book Now' : 'Add to Cart';
 
             productCard.innerHTML = `
-                <a href="${productDetailUrl}" class="product-card-link" style="text-decoration: none; color: inherit;">
+                <div class="product-card-link">
                     <div class="product-image">
                         ${imageHtml}
                     </div>
@@ -112,8 +107,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="product-description">${escapeHtml(description)}</p>
                         <div class="product-price">₵${productPrice.toFixed(2)}</div>
                     </div>
-                </a>
-                <button class="product-card-btn-add-to-cart" onclick="${buttonOnclick}">${buttonText}</button>
+                </div>
+                <button class="product-card-btn-add-to-cart" onclick="addToCart(${product.product_id}, '${productTitle}', ${productPrice}); event.stopPropagation();">${buttonLabel}</button>
             `;
 
             productsGrid.appendChild(productCard);
