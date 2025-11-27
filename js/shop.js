@@ -93,12 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const productTitle = escapeHtml(product.title || 'Untitled Product');
             const productPrice = parseFloat(product.price || 0);
 
-            const isService = product.product_type === 'service';
-            const buttonLabel = isService ? 'Book Now' : 'Add to Cart';
-            const buttonOnclick = isService
-                ? `window.location.href='${window.siteUrl}/customer/booking.php?provider_id=${product.provider_id}'; event.stopPropagation();`
-                : `addToCart(${product.product_id}, '${productTitle}', ${productPrice}); event.stopPropagation();`;
-
             productCard.innerHTML = `
                 <div class="product-card-link">
                     <div class="product-image">
@@ -112,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="product-price">₵${productPrice.toFixed(2)}</div>
                     </div>
                 </div>
-                <button class="product-card-btn-add-to-cart" onclick="${buttonOnclick}">${buttonLabel}</button>
+                <button class="product-card-btn-add-to-cart" onclick="bookOrAddToCart(event, ${product.product_id}, ${product.provider_id}, ${productPrice}, '${productTitle}');">${product.product_type === 'service' ? 'Book Now' : 'Add to Cart'}</button>
             `;
 
             productsGrid.appendChild(productCard);
@@ -145,3 +139,24 @@ document.addEventListener('DOMContentLoaded', function() {
         return div.innerHTML;
     }
 });
+
+/**
+ * Handle booking or add to cart
+ */
+function bookOrAddToCart(evt, productId, providerId, price, title) {
+    evt.stopPropagation();
+
+    if (!window.isLoggedIn) {
+        window.location.href = window.loginUrl;
+        return;
+    }
+
+    // Check button text to determine action
+    const buttonText = evt.target.textContent.trim();
+    if (buttonText === 'Book Now') {
+        window.location.href = `${window.siteUrl}/customer/booking.php?provider_id=${providerId}&product_id=${productId}`;
+    } else {
+        // Add to cart for non-services
+        addToCart(productId, title, price);
+    }
+}

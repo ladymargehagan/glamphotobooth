@@ -3,44 +3,43 @@
  * Booking Page
  * customer/booking.php
  */
-require_once __DIR__ . '/../settings/core.php';
 
+require_once __DIR__ . '/../settings/core.php';
 requireLogin();
 
 $provider_id = isset($_GET['provider_id']) ? intval($_GET['provider_id']) : 0;
+$product_id = isset($_GET['product_id']) ? intval($_GET['product_id']) : 0;
 
-if ($provider_id <= 0) {
+if ($provider_id <= 0 || $product_id <= 0) {
     header('Location: ' . SITE_URL . '/shop.php');
     exit;
 }
 
-// Get provider details
-$provider_class = new provider_class();
-$provider = $provider_class->get_provider_by_id($provider_id);
+// Get provider info
+if (!class_exists('provider_class')) {
+    require_once __DIR__ . '/../classes/provider_class.php';
+}
+$provider = new provider_class();
+$provider_info = $provider->get_provider_by_id($provider_id);
 
-if (!$provider) {
+if (!$provider_info) {
     header('Location: ' . SITE_URL . '/shop.php');
     exit;
 }
 
-// Get first service product for this provider
-$product_id = 0;
+// Get product info
 if (!class_exists('product_class')) {
     require_once __DIR__ . '/../classes/product_class.php';
 }
-$product_class = new product_class();
-$products = $product_class->get_products_by_provider($provider_id, true);
-if ($products && count($products) > 0) {
-    // Get first service product
-    foreach ($products as $prod) {
-        if ($prod['product_type'] === 'service') {
-            $product_id = $prod['product_id'];
-            break;
-        }
-    }
+$product = new product_class();
+$product_info = $product->get_product_by_id($product_id);
+
+if (!$product_info) {
+    header('Location: ' . SITE_URL . '/shop.php');
+    exit;
 }
 
-$pageTitle = 'Book ' . htmlspecialchars($provider['business_name']) . ' - PhotoMarket';
+$pageTitle = 'Book ' . htmlspecialchars($provider_info['business_name']);
 $cssPath = SITE_URL . '/css/style.css';
 ?>
 <!DOCTYPE html>
@@ -52,88 +51,72 @@ $cssPath = SITE_URL . '/css/style.css';
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo htmlspecialchars($cssPath); ?>">
 
-    <!-- Global variables for booking script -->
     <script>
-        window.isLoggedIn = <?php echo isLoggedIn() ? 'true' : 'false'; ?>;
-        window.loginUrl = '<?php echo SITE_URL; ?>/auth/login.php';
         window.siteUrl = '<?php echo SITE_URL; ?>';
     </script>
-    <script src="<?php echo SITE_URL; ?>/js/cart.js"></script>
 
     <style>
-        .booking-container {
-            max-width: 900px;
+        .booking-page {
+            max-width: 800px;
             margin: 0 auto;
             padding: var(--spacing-xxl) var(--spacing-xl);
         }
 
-        .booking-header {
-            text-align: center;
-            margin-bottom: var(--spacing-xxl);
-        }
-
-        .booking-header h1 {
-            color: var(--primary);
-            font-family: var(--font-serif);
-            font-size: 2rem;
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .booking-layout {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: var(--spacing-xl);
-        }
-
-        .booking-form {
+        .booking-card {
             background: var(--white);
             border-radius: var(--border-radius);
-            padding: var(--spacing-lg);
+            padding: var(--spacing-xl);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
-        .form-section {
-            margin-bottom: var(--spacing-lg);
-            padding-bottom: var(--spacing-lg);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .form-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .form-section h2 {
+        .booking-title {
             color: var(--primary);
-            font-size: 1.1rem;
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
             margin-bottom: var(--spacing-md);
+            text-align: center;
+        }
+
+        .provider-summary {
+            background: var(--light-gray);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .provider-name {
             font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .product-name {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: var(--spacing-xs);
         }
 
         .form-group {
-            margin-bottom: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
         }
 
         .form-group label {
             display: block;
+            font-weight: 600;
             margin-bottom: var(--spacing-xs);
-            color: var(--text-primary);
-            font-weight: 500;
-            font-size: 0.9rem;
+            color: var(--primary);
         }
 
-        .form-group input[type="date"],
-        .form-group input[type="time"],
+        .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
             padding: 0.75rem;
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
-            font-size: 0.95rem;
             font-family: inherit;
-            transition: var(--transition);
+            font-size: 0.95rem;
         }
 
         .form-group input:focus,
@@ -149,43 +132,7 @@ $cssPath = SITE_URL . '/css/style.css';
             min-height: 100px;
         }
 
-        .time-slots {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: var(--spacing-sm);
-            margin-top: var(--spacing-md);
-        }
-
-        .time-slot {
-            padding: 0.75rem;
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius);
-            background: var(--white);
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .time-slot:hover {
-            border-color: var(--primary);
-            background: rgba(226, 196, 146, 0.05);
-        }
-
-        .time-slot.selected {
-            border-color: var(--primary);
-            background: var(--primary);
-            color: var(--white);
-        }
-
-        .time-slot.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background: var(--light-gray);
-        }
-
-        .btn-book {
+        .submit-btn {
             width: 100%;
             padding: 1rem;
             background: var(--primary);
@@ -193,99 +140,53 @@ $cssPath = SITE_URL . '/css/style.css';
             border: none;
             border-radius: var(--border-radius);
             font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
             transition: var(--transition);
-            font-size: 0.95rem;
-            margin-top: var(--spacing-lg);
         }
 
-        .btn-book:hover {
+        .submit-btn:hover {
             background: #0d1a3a;
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(16, 33, 82, 0.2);
         }
 
-        .btn-book:disabled {
+        .submit-btn:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
         }
 
-        .provider-info {
-            background: var(--white);
-            border-radius: var(--border-radius);
-            padding: var(--spacing-lg);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            height: fit-content;
-        }
-
-        .provider-name {
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .provider-detail {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: var(--spacing-md);
-            font-size: 0.9rem;
-            padding-bottom: var(--spacing-md);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .provider-detail:last-child {
-            border-bottom: none;
-        }
-
-        .provider-label {
-            color: var(--text-secondary);
-        }
-
-        .provider-value {
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        .message {
+        .price-info {
+            text-align: center;
             padding: var(--spacing-md);
+            background: rgba(226, 196, 146, 0.1);
             border-radius: var(--border-radius);
             margin-bottom: var(--spacing-lg);
-            display: none;
         }
 
-        .message.show {
-            display: block;
+        .price-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
         }
 
-        .message.error {
-            background: rgba(211, 47, 47, 0.1);
-            color: #c62828;
-            border: 1px solid rgba(211, 47, 47, 0.3);
-        }
-
-        .message.success {
-            background: rgba(76, 175, 80, 0.1);
-            color: #2e7d32;
-            border: 1px solid rgba(76, 175, 80, 0.3);
+        .price-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
         }
 
         @media (max-width: 768px) {
-            .booking-container {
+            .booking-page {
                 padding: var(--spacing-lg);
             }
 
-            .booking-header h1 {
-                font-size: 1.5rem;
+            .booking-card {
+                padding: var(--spacing-lg);
             }
 
-            .booking-layout {
-                grid-template-columns: 1fr;
-            }
-
-            .time-slots {
-                grid-template-columns: repeat(2, 1fr);
+            .booking-title {
+                font-size: 1.4rem;
             }
         }
     </style>
@@ -304,118 +205,63 @@ $cssPath = SITE_URL . '/css/style.css';
                 <nav class="navbar-menu">
                     <ul class="navbar-items">
                         <li><a href="<?php echo SITE_URL; ?>/index.php" class="nav-link">Home</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/shop.php" class="nav-link">Products & Services</a></li>
+                        <li><a href="<?php echo SITE_URL; ?>/shop.php" class="nav-link">Shop</a></li>
                     </ul>
                 </nav>
 
                 <div class="navbar-actions flex gap-sm">
-                    <?php if (isLoggedIn()): ?>
-                        <a href="<?php echo SITE_URL; ?>/customer/cart.php" class="cart-icon" title="Shopping Cart" style="position: relative; display: flex; align-items: center;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
-                                <circle cx="9" cy="21" r="1"></circle>
-                                <circle cx="20" cy="21" r="1"></circle>
-                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                            </svg>
-                            <span id="cartBadge" class="cart-badge" style="display: none;"></span>
-                        </a>
-                        <a href="<?php echo getDashboardUrl(); ?>" class="btn btn-sm btn-outline">Dashboard</a>
-                        <a href="<?php echo SITE_URL; ?>/actions/logout.php" class="btn btn-sm btn-primary">Logout</a>
-                    <?php else: ?>
-                        <a href="<?php echo SITE_URL; ?>/auth/login.php" class="btn btn-sm btn-outline">Login</a>
-                        <a href="<?php echo SITE_URL; ?>/auth/register.php" class="btn btn-sm btn-primary">Register</a>
-                    <?php endif; ?>
+                    <a href="<?php echo SITE_URL; ?>/customer/cart.php" class="btn btn-sm btn-outline">Cart</a>
+                    <a href="<?php echo getDashboardUrl(); ?>" class="btn btn-sm btn-outline">Dashboard</a>
+                    <a href="<?php echo SITE_URL; ?>/actions/logout.php" class="btn btn-sm btn-primary">Logout</a>
                 </div>
             </div>
         </div>
     </header>
 
-    <div class="booking-container">
-        <div class="booking-header">
-            <h1>Book a Session</h1>
-            <p>with <?php echo htmlspecialchars($provider['business_name']); ?></p>
-        </div>
+    <div class="booking-page">
+        <div class="booking-card">
+            <h1 class="booking-title">Request a Booking</h1>
 
-        <div id="errorMessage" class="message error"></div>
-        <div id="successMessage" class="message success"></div>
-
-        <div class="booking-layout">
-            <!-- Booking Form -->
-            <div class="booking-form">
-                <form id="bookingForm">
-                    <!-- Date & Time Section -->
-                    <div class="form-section">
-                        <h2>When would you like to book?</h2>
-                        
-                        <div class="form-group">
-                            <label for="booking_date">Select Date</label>
-                            <input type="date" id="booking_date" name="booking_date" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Available Time Slots</label>
-                            <div class="time-slots" id="timeSlots">
-                                <p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">Please select a date first</p>
-                            </div>
-                            <input type="hidden" id="booking_time" name="booking_time" value="">
-                        </div>
-                    </div>
-
-                    <!-- Service Details Section -->
-                    <div class="form-section">
-                        <h2>Service Details</h2>
-                        
-                        <div class="form-group">
-                            <label for="service_description">What service do you need? *</label>
-                            <textarea id="service_description" name="service_description" placeholder="Describe the photography service you need (e.g., Wedding photoshoot, Product photography, etc.)" required></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="notes">Additional Notes</label>
-                            <textarea id="notes" name="notes" placeholder="Any additional information or special requests..."></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Hidden Fields -->
-                    <input type="hidden" id="providerId" name="provider_id" value="<?php echo $provider_id; ?>">
-                    <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
-                    <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
-
-                    <!-- Submit Button -->
-                    <button type="submit" class="btn-book" id="submitBtn">Request Booking</button>
-                </form>
+            <div class="provider-summary">
+                <div class="provider-name"><?php echo htmlspecialchars($provider_info['business_name']); ?></div>
+                <div class="product-name"><?php echo htmlspecialchars($product_info['title']); ?></div>
             </div>
 
-            <!-- Provider Info Sidebar -->
-            <div class="provider-info">
-                <div class="provider-name"><?php echo htmlspecialchars($provider['business_name']); ?></div>
-                
-                <div class="provider-detail">
-                    <span class="provider-label">Rating</span>
-                    <span class="provider-value">
-                        <?php if ($provider['rating'] > 0): ?>
-                            ⭐ <?php echo number_format($provider['rating'], 1); ?>
-                        <?php else: ?>
-                            New Provider
-                        <?php endif; ?>
-                    </span>
+            <div class="price-info">
+                <div class="price-label">Service Price</div>
+                <div class="price-value">₵<?php echo number_format($product_info['price'], 2); ?></div>
+            </div>
+
+            <form id="booking_form">
+                <div class="form-group">
+                    <label for="booking_date">Select Date *</label>
+                    <input type="date" id="booking_date" name="booking_date" required>
                 </div>
 
-                <?php if ($provider['total_reviews'] > 0): ?>
-                    <div class="provider-detail">
-                        <span class="provider-label">Reviews</span>
-                        <span class="provider-value"><?php echo intval($provider['total_reviews']); ?></span>
-                    </div>
-                <?php endif; ?>
+                <div class="form-group">
+                    <label for="booking_time">Select Time *</label>
+                    <select id="booking_time" name="booking_time" required>
+                        <option value="">Select a date first</option>
+                    </select>
+                </div>
 
-                <?php if (!empty($provider['description'])): ?>
-                    <div class="provider-detail">
-                        <span class="provider-label">About</span>
-                    </div>
-                    <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;">
-                        <?php echo htmlspecialchars(substr($provider['description'], 0, 100)); ?>...
-                    </p>
-                <?php endif; ?>
-            </div>
+                <div class="form-group">
+                    <label for="service_description">Service Description *</label>
+                    <textarea id="service_description" name="service_description" placeholder="Describe what you need (minimum 10 characters)" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Additional Notes</label>
+                    <textarea id="notes" name="notes" placeholder="Any special requests or details..."></textarea>
+                </div>
+
+                <!-- Hidden fields -->
+                <input type="hidden" id="provider_id" name="provider_id" value="<?php echo $provider_id; ?>">
+                <input type="hidden" id="product_id" name="product_id" value="<?php echo $product_id; ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
+
+                <button type="submit" class="submit-btn" id="submit_btn">Request Booking</button>
+            </form>
         </div>
     </div>
 

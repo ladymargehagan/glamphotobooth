@@ -1,47 +1,40 @@
 <?php
 /**
- * Booking Management Class
+ * Booking Class
  * classes/booking_class.php
  */
 
-class booking_class extends db_connection {
+class booking_class {
+    private $db;
+
+    public function __construct() {
+        $this->db = new db_connect();
+    }
 
     /**
-     * Create a new booking
+     * Create a booking
      */
-    public function create_booking($customer_id, $provider_id, $product_id = 0, $booking_date = '', $booking_time = '', $duration_hours = 1, $total_price = 0, $service_description = '', $notes = '') {
-        if (!$this->db_connect()) {
-            return false;
-        }
-
+    public function create_booking($customer_id, $provider_id, $product_id, $booking_date, $booking_time, $service_description, $notes = '') {
         $customer_id = intval($customer_id);
         $provider_id = intval($provider_id);
         $product_id = intval($product_id);
         $booking_date = $this->db->real_escape_string($booking_date);
         $booking_time = $this->db->real_escape_string($booking_time);
-        $duration_hours = floatval($duration_hours);
-        $total_price = floatval($total_price);
         $service_description = $this->db->real_escape_string($service_description);
         $notes = $this->db->real_escape_string($notes);
 
-        // product_id is required (NOT NULL), so use 0 as default if not provided
-        // Note: This assumes product_id=0 is acceptable or the database allows it
-        $query = "INSERT INTO pb_bookings (customer_id, provider_id, product_id, booking_date, booking_time, service_description, notes, duration_hours, total_price, status, created_at)
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW())";
+        // Get product price
+        $product_query = "SELECT price FROM pb_products WHERE product_id = $product_id";
+        $product_result = $this->db->query($product_query);
+        $product = $product_result->fetch_assoc();
+        $total_price = $product ? floatval($product['price']) : 0;
 
-        $stmt = $this->db->prepare($query);
-        if (!$stmt) {
-            error_log('Booking prepare failed: ' . $this->db->error);
-            return false;
-        }
+        $sql = "INSERT INTO pb_bookings (customer_id, provider_id, product_id, booking_date, booking_time, service_description, notes, total_price, status)
+                VALUES ($customer_id, $provider_id, $product_id, '$booking_date', '$booking_time', '$service_description', '$notes', $total_price, 'pending')";
 
-        // Use 0 if product_id is not provided (since column is NOT NULL)
-        $product_id_value = $product_id > 0 ? $product_id : 0;
-        $stmt->bind_param("iiissssdd", $customer_id, $provider_id, $product_id_value, $booking_date, $booking_time, $service_description, $notes, $duration_hours, $total_price);
-        if ($stmt->execute()) {
+        if ($this->db->query($sql)) {
             return $this->db->insert_id;
         }
-        error_log('Booking execute failed: ' . $stmt->error);
         return false;
     }
 
@@ -49,226 +42,80 @@ class booking_class extends db_connection {
      * Get booking by ID
      */
     public function get_booking_by_id($booking_id) {
-        if (!$this->db_connect()) {
-            return false;
-        }
-
         $booking_id = intval($booking_id);
-
-        $query = "SELECT b.*, 
-                         c.name as customer_name, c.email as customer_email, c.contact as customer_phone,
-                         p.business_name, p.provider_id, sp.name as provider_name
-                  FROM pb_bookings b
-                  LEFT JOIN pb_customer c ON b.customer_id = c.id
-                  LEFT JOIN pb_service_providers p ON b.provider_id = p.provider_id
-                  LEFT JOIN pb_customer sp ON p.customer_id = sp.id
-                  WHERE b.booking_id = ?";
-
-        $stmt = $this->db->prepare($query);
-        if (!$stmt) {
-            return false;
-        }
-
-        $stmt->bind_param("i", $booking_id);
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
-            return $result->fetch_assoc();
-        }
-        return false;
+        $sql = "SELECT * FROM pb_bookings WHERE booking_id = $booking_id";
+        $result = $this->db->query($sql);
+        return $result->fetch_assoc();
     }
 
     /**
-     * Get bookings for a customer
+     * Get customer's bookings
      */
     public function get_customer_bookings($customer_id) {
-        if (!$this->db_connect()) {
-            return false;
-        }
-
         $customer_id = intval($customer_id);
-
-        $query = "SELECT b.*, p.business_name
-                  FROM pb_bookings b
-                  LEFT JOIN pb_service_providers p ON b.provider_id = p.provider_id
-                  WHERE b.customer_id = ?
-                  ORDER BY b.booking_date DESC, b.booking_time DESC";
-
-        $stmt = $this->db->prepare($query);
-        if (!$stmt) {
-            return false;
-        }
-
-        $stmt->bind_param("i", $customer_id);
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
-            return $result->fetch_all(MYSQLI_ASSOC);
-        }
-        return false;
+        $sql = "SELECT b.*, p.title as product_title, sp.business_name
+                FROM pb_bookings b
+                LEFT JOIN pb_products p ON b.product_id = p.product_id
+                LEFT JOIN pb_service_providers sp ON b.provider_id = sp.provider_id
+                WHERE b.customer_id = $customer_id
+                ORDER BY b.booking_date DESC";
+        $result = $this->db->query($sql);
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     /**
-     * Get bookings for a provider
+     * Get provider's bookings
      */
     public function get_provider_bookings($provider_id) {
-        if (!$this->db_connect()) {
-            return false;
-        }
-
         $provider_id = intval($provider_id);
-
-        $query = "SELECT b.*, c.name as customer_name, c.email, c.contact
-                  FROM pb_bookings b
-                  LEFT JOIN pb_customer c ON b.customer_id = c.id
-                  WHERE b.provider_id = ?
-                  ORDER BY b.booking_date DESC, b.booking_time DESC";
-
-        $stmt = $this->db->prepare($query);
-        if (!$stmt) {
-            return false;
-        }
-
-        $stmt->bind_param("i", $provider_id);
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
-            return $result->fetch_all(MYSQLI_ASSOC);
-        }
-        return false;
+        $sql = "SELECT b.*, c.name as customer_name, c.contact as customer_contact, p.title as product_title
+                FROM pb_bookings b
+                LEFT JOIN pb_customer c ON b.customer_id = c.id
+                LEFT JOIN pb_products p ON b.product_id = p.product_id
+                WHERE b.provider_id = $provider_id
+                ORDER BY b.booking_date ASC";
+        $result = $this->db->query($sql);
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     /**
      * Update booking status
      */
     public function update_booking_status($booking_id, $status, $response_note = '') {
-        if (!$this->db_connect()) {
-            return false;
-        }
-
         $booking_id = intval($booking_id);
         $status = $this->db->real_escape_string($status);
         $response_note = $this->db->real_escape_string($response_note);
 
-        $valid_statuses = ['pending', 'confirmed', 'completed', 'cancelled', 'rejected'];
-        if (!in_array($status, $valid_statuses)) {
-            return false;
-        }
-
-        if (empty($response_note)) {
-            $query = "UPDATE pb_bookings SET status = ?, updated_at = NOW() WHERE booking_id = ?";
-            $stmt = $this->db->prepare($query);
-            $stmt->bind_param("si", $status, $booking_id);
-        } else {
-            $query = "UPDATE pb_bookings SET status = ?, response_note = ?, updated_at = NOW() WHERE booking_id = ?";
-            $stmt = $this->db->prepare($query);
-            $stmt->bind_param("ssi", $status, $response_note, $booking_id);
-        }
-
-        return $stmt->execute();
+        $sql = "UPDATE pb_bookings SET status = '$status', response_note = '$response_note' WHERE booking_id = $booking_id";
+        return $this->db->query($sql);
     }
 
     /**
      * Get available time slots for a date
      */
     public function get_available_slots($provider_id, $booking_date) {
-        if (!$this->db_connect()) {
-            return false;
-        }
-
         $provider_id = intval($provider_id);
         $booking_date = $this->db->real_escape_string($booking_date);
 
-        // Define working hours
-        $time_slots = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+        // Default time slots (9 AM to 5 PM, hourly)
+        $slots = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
 
-        // Get booked slots for this date
-        $query = "SELECT booking_time FROM pb_bookings 
-                  WHERE provider_id = ? AND booking_date = ? AND status IN ('pending', 'confirmed')";
+        // Get booked times for this date
+        $sql = "SELECT booking_time FROM pb_bookings
+                WHERE provider_id = $provider_id AND booking_date = '$booking_date' AND status IN ('pending', 'confirmed', 'accepted')";
+        $result = $this->db->query($sql);
 
-        $stmt = $this->db->prepare($query);
-        if (!$stmt) {
-            return $time_slots;
+        $booked_times = [];
+        while ($row = $result->fetch_assoc()) {
+            $booked_times[] = $row['booking_time'];
         }
 
-        $stmt->bind_param("is", $provider_id, $booking_date);
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
-            $booked_times = [];
-            while ($row = $result->fetch_assoc()) {
-                $booked_times[] = $row['booking_time'];
-            }
+        // Filter out booked slots
+        $available_slots = array_filter($slots, function($slot) use ($booked_times) {
+            return !in_array($slot, $booked_times);
+        });
 
-            // Filter out booked slots
-            return array_values(array_diff($time_slots, $booked_times));
-        }
-
-        return $time_slots;
-    }
-
-    /**
-     * Cancel booking
-     */
-    public function cancel_booking($booking_id, $cancellation_reason = '') {
-        return $this->update_booking_status($booking_id, 'cancelled', $cancellation_reason);
-    }
-
-    /**
-     * Complete booking
-     */
-    public function complete_booking($booking_id) {
-        return $this->update_booking_status($booking_id, 'completed');
-    }
-
-    /**
-     * Get booking statistics for provider
-     */
-    public function get_provider_stats($provider_id) {
-        if (!$this->db_connect()) {
-            return false;
-        }
-
-        $provider_id = intval($provider_id);
-
-        $query = "SELECT 
-                    COUNT(*) as total_bookings,
-                    SUM(CASE WHEN status = 'confirmed' THEN 1 ELSE 0 END) as confirmed,
-                    SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
-                    SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
-                    SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled
-                  FROM pb_bookings
-                  WHERE provider_id = ?";
-
-        $stmt = $this->db->prepare($query);
-        if (!$stmt) {
-            return false;
-        }
-
-        $stmt->bind_param("i", $provider_id);
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
-            return $result->fetch_assoc();
-        }
-        return false;
-    }
-
-    /**
-     * Get all bookings for admin dashboard
-     */
-    public function get_all_bookings() {
-        if (!$this->db_connect()) {
-            return false;
-        }
-
-        $query = "SELECT b.* FROM pb_bookings b ORDER BY b.created_at DESC";
-
-        $stmt = $this->db->prepare($query);
-        if (!$stmt) {
-            return false;
-        }
-
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
-            return $result->fetch_all(MYSQLI_ASSOC);
-        }
-        return false;
+        return array_values($available_slots);
     }
 }
 ?>

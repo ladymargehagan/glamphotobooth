@@ -4,40 +4,33 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    const bookingForm = document.getElementById('bookingForm');
-    const bookingDateInput = document.getElementById('booking_date');
-    const timeSlotsContainer = document.getElementById('timeSlots');
-    const bookingTimeInput = document.getElementById('booking_time');
-    const serviceDescriptionInput = document.getElementById('service_description');
-    const submitBtn = document.getElementById('submitBtn');
+    const dateInput = document.getElementById('booking_date');
+    const timeSelect = document.getElementById('booking_time');
+    const slotsContainer = document.getElementById('time_slots');
+    const bookingForm = document.getElementById('booking_form');
+    const submitBtn = document.getElementById('submit_btn');
 
-    // Check if required elements exist
-    if (!bookingForm || !bookingDateInput || !timeSlotsContainer || !bookingTimeInput || !serviceDescriptionInput || !submitBtn) {
-        console.error('Booking form elements not found');
-        return;
-    }
-
-    // Set minimum date to today
+    // Set min date to today
     const today = new Date();
-    const minDate = today.toISOString().split('T')[0];
-    bookingDateInput.setAttribute('min', minDate);
+    dateInput.min = today.toISOString().split('T')[0];
 
-    // Fetch available time slots
-    function fetchAvailableSlots(bookingDate) {
-        const providerId = document.getElementById('providerId');
-        const csrfToken = document.querySelector('input[name="csrf_token"]');
-
-        if (!providerId || !csrfToken) {
-            console.error('Missing required form fields');
+    // When user selects a date, fetch available slots
+    dateInput.addEventListener('change', function() {
+        if (!this.value) {
+            timeSelect.innerHTML = '<option value="">Select a time</option>';
             return;
         }
 
-        const formData = new FormData();
-        formData.append('provider_id', providerId.value);
-        formData.append('booking_date', bookingDate);
-        formData.append('csrf_token', csrfToken.value);
+        const provider_id = document.getElementById('provider_id').value;
+        const csrf_token = document.querySelector('input[name="csrf_token"]').value;
 
-        timeSlotsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">Loading time slots...</p>';
+        const formData = new FormData();
+        formData.append('provider_id', provider_id);
+        formData.append('booking_date', this.value);
+
+        // Show loading
+        timeSelect.innerHTML = '<option value="">Loading times...</option>';
+        timeSelect.disabled = true;
 
         fetch(window.siteUrl + '/actions/fetch_available_slots_action.php', {
             method: 'POST',
@@ -45,98 +38,64 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
+            timeSelect.disabled = false;
+            timeSelect.innerHTML = '<option value="">Select a time</option>';
+
             if (data.success && data.slots && data.slots.length > 0) {
-                timeSlotsContainer.innerHTML = '';
-                data.slots.forEach(time => {
-                    const button = document.createElement('button');
-                    button.type = 'button';
-                    button.className = 'time-slot';
-                    button.textContent = time;
-                    button.dataset.time = time;
-                    timeSlotsContainer.appendChild(button);
+                data.slots.forEach(slot => {
+                    const option = document.createElement('option');
+                    option.value = slot;
+                    option.textContent = slot;
+                    timeSelect.appendChild(option);
                 });
             } else {
-                timeSlotsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">No available slots for this date. Please choose another date.</p>';
+                timeSelect.innerHTML = '<option value="">No available times</option>';
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            timeSlotsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #c62828;">Error loading time slots</p>';
+            timeSelect.innerHTML = '<option value="">Error loading times</option>';
+            timeSelect.disabled = false;
         });
-    }
-
-    // Fetch available slots when date changes
-    bookingDateInput.addEventListener('change', function() {
-        if (this.value) {
-            // Clear previous time selection
-            bookingTimeInput.value = '';
-            document.querySelectorAll('.time-slot.selected').forEach(el => {
-                el.classList.remove('selected');
-            });
-            fetchAvailableSlots(this.value);
-        }
     });
 
-    // If date is already selected on page load, fetch slots
-    if (bookingDateInput.value) {
-        fetchAvailableSlots(bookingDateInput.value);
-    }
-
-    // Handle time slot selection (using event delegation)
-    timeSlotsContainer.addEventListener('click', function(event) {
-        if (event.target.classList.contains('time-slot') && !event.target.classList.contains('disabled')) {
-            // Remove previous selection
-            document.querySelectorAll('.time-slot.selected').forEach(el => {
-                el.classList.remove('selected');
-            });
-
-            // Add selection to clicked slot
-            event.target.classList.add('selected');
-            const selectedTime = event.target.dataset.time || event.target.textContent.trim();
-            bookingTimeInput.value = selectedTime;
-
-            // Clear any error messages when time is selected
-            const errorMsg = document.getElementById('errorMessage');
-            if (errorMsg) {
-                errorMsg.classList.remove('show');
-            }
-        }
-    });
-
-    // Handle form submission
+    // Form submission
     bookingForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
+        const booking_date = dateInput.value;
+        const booking_time = timeSelect.value;
+        const service_description = document.getElementById('service_description').value;
+        const notes = document.getElementById('notes').value;
+        const provider_id = document.getElementById('provider_id').value;
+        const product_id = document.getElementById('product_id').value;
+        const csrf_token = document.querySelector('input[name="csrf_token"]').value;
+
         // Validate
-        if (!bookingDateInput.value) {
-            showError('Please select a booking date');
-            bookingDateInput.focus();
+        if (!booking_date) {
+            alert('Please select a date');
             return;
         }
-
-        if (!bookingTimeInput.value) {
-            showError('Please select a time slot');
+        if (!booking_time) {
+            alert('Please select a time');
             return;
         }
-
-        if (!serviceDescriptionInput.value || serviceDescriptionInput.value.trim().length < 10) {
-            showError('Service description must be at least 10 characters');
-            serviceDescriptionInput.focus();
+        if (!service_description || service_description.length < 10) {
+            alert('Please enter a description (at least 10 characters)');
             return;
         }
 
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Requesting...';
+        submitBtn.textContent = 'Booking...';
 
-        const formData = new FormData(this);
-
-        // Debug: Log form data to ensure values are being sent
-        console.log('Submitting booking:', {
-            booking_date: bookingDateInput.value,
-            booking_time: bookingTimeInput.value,
-            provider_id: document.getElementById('providerId').value,
-            service_description: serviceDescriptionInput.value
-        });
+        const formData = new FormData();
+        formData.append('provider_id', provider_id);
+        formData.append('product_id', product_id);
+        formData.append('booking_date', booking_date);
+        formData.append('booking_time', booking_time);
+        formData.append('service_description', service_description);
+        formData.append('notes', notes);
+        formData.append('csrf_token', csrf_token);
 
         fetch(window.siteUrl + '/actions/create_booking_action.php', {
             method: 'POST',
@@ -145,40 +104,19 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showSuccess('Booking submitted! Proceeding to checkout...');
-                setTimeout(() => {
-                    window.location.href = window.siteUrl + '/customer/cart.php';
-                }, 2000);
+                alert(data.message);
+                window.location.href = window.siteUrl + '/customer/cart.php';
             } else {
-                showError(data.message || 'Failed to submit booking request');
+                alert('Error: ' + data.message);
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Request Booking';
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showError('Network error. Please try again.');
+            alert('Network error. Try again.');
             submitBtn.disabled = false;
             submitBtn.textContent = 'Request Booking';
         });
     });
-
-    function showError(message) {
-        const errorMsg = document.getElementById('errorMessage');
-        if (errorMsg) {
-            errorMsg.textContent = message;
-            errorMsg.classList.add('show');
-            setTimeout(() => {
-                errorMsg.classList.remove('show');
-            }, 5000);
-        }
-    }
-
-    function showSuccess(message) {
-        const successMsg = document.getElementById('successMessage');
-        if (successMsg) {
-            successMsg.textContent = message;
-            successMsg.classList.add('show');
-        }
-    }
 });
