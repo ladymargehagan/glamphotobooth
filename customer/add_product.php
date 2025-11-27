@@ -302,14 +302,20 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     </style>
 </head>
 <body>
-    <div class="product-form-container">
-        <div class="product-form-header" style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h1>Add New Product</h1>
-                <p>Create a new product or service listing</p>
-            </div>
-            <a href="<?php echo SITE_URL; ?>/customer/manage_products.php" class="btn btn-primary" style="padding: 0.5rem 1rem; text-decoration: none;">← Back to Dashboard</a>
-        </div>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <?php require_once __DIR__ . '/../views/dashboard_sidebar.php'; ?>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            <div class="product-form-container">
+                <div class="product-form-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1>Add New Product</h1>
+                        <p>Create a new product or service listing</p>
+                    </div>
+                    <a href="<?php echo SITE_URL; ?>/customer/manage_products.php" class="btn btn-primary" style="padding: 0.5rem 1rem; text-decoration: none;">← Back to Dashboard</a>
+                </div>
 
         <div class="product-card">
             <!-- Messages -->
@@ -427,6 +433,8 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 </div>
             </form>
         </div>
+            </div>
+        </main>
     </div>
 
     <script src="<?php echo SITE_URL; ?>/js/product.js"></script>

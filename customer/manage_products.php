@@ -285,14 +285,20 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     </style>
 </head>
 <body>
-    <div class="products-container">
-        <div class="products-header">
-            <h1>Manage Products</h1>
-            <div style="display: flex; gap: var(--spacing-md);">
-                <a href="<?php echo SITE_URL; ?>/<?php echo $user_role === 2 ? 'photographer' : 'vendor'; ?>/dashboard.php" class="btn-add-product" style="background: rgba(16, 33, 82, 0.1); color: var(--primary);">← Back to Dashboard</a>
-                <a href="<?php echo SITE_URL; ?>/customer/add_product.php" class="btn-add-product">+ Add New Product</a>
-            </div>
-        </div>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <?php require_once __DIR__ . '/../views/dashboard_sidebar.php'; ?>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            <div class="products-container">
+                <div class="products-header">
+                    <h1>Manage Products</h1>
+                    <div style="display: flex; gap: var(--spacing-md);">
+                        <a href="<?php echo SITE_URL; ?>/<?php echo $user_role === 2 ? 'photographer' : 'vendor'; ?>/dashboard.php" class="btn-add-product" style="background: rgba(16, 33, 82, 0.1); color: var(--primary);">← Back to Dashboard</a>
+                        <a href="<?php echo SITE_URL; ?>/customer/add_product.php" class="btn-add-product">+ Add New Product</a>
+                    </div>
+                </div>
 
         <!-- Messages -->
         <div id="successMessage" class="message success">
@@ -349,7 +355,9 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     </div>
                 <?php endforeach; ?>
             <?php endif; ?>
-        </div>
+            </div>
+            </div>
+        </main>
     </div>
 
     <script src="<?php echo SITE_URL; ?>/js/product.js"></script>
