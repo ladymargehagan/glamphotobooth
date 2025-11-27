@@ -57,6 +57,25 @@ class booking_controller {
         $booking_id = $booking_class->create_booking($customer_id, $provider_id, $product_id, $booking_date, $booking_time, 1, 0, $service_description, $notes);
 
         if ($booking_id) {
+            // Add service booking to cart
+            if ($product_id > 0) {
+                // Get product info to get price
+                if (!class_exists('product_class')) {
+                    require_once __DIR__ . '/../classes/product_class.php';
+                }
+                $product_class = new product_class();
+                $product = $product_class->get_product_by_id($product_id);
+
+                if ($product) {
+                    // Add to cart
+                    if (!class_exists('cart_class')) {
+                        require_once __DIR__ . '/../classes/cart_class.php';
+                    }
+                    $cart_class = new cart_class();
+                    $cart_class->add_to_cart($customer_id, $product_id, 1);
+                }
+            }
+
             return [
                 'success' => true,
                 'message' => 'Booking created successfully',

@@ -23,6 +23,23 @@ if (!$provider) {
     exit;
 }
 
+// Get first service product for this provider
+$product_id = 0;
+if (!class_exists('product_class')) {
+    require_once __DIR__ . '/../classes/product_class.php';
+}
+$product_class = new product_class();
+$products = $product_class->get_products_by_provider($provider_id, true);
+if ($products && count($products) > 0) {
+    // Get first service product
+    foreach ($products as $prod) {
+        if ($prod['product_type'] === 'service') {
+            $product_id = $prod['product_id'];
+            break;
+        }
+    }
+}
+
 $pageTitle = 'Book ' . htmlspecialchars($provider['business_name']) . ' - PhotoMarket';
 $cssPath = SITE_URL . '/css/style.css';
 ?>
@@ -360,6 +377,7 @@ $cssPath = SITE_URL . '/css/style.css';
 
                     <!-- Hidden Fields -->
                     <input type="hidden" id="providerId" name="provider_id" value="<?php echo $provider_id; ?>">
+                    <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
 
                     <!-- Submit Button -->

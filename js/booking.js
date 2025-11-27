@@ -154,9 +154,9 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showSuccess('Booking request submitted successfully! The provider will review and respond to your request.');
+                    showSuccess('Booking submitted! Proceeding to checkout...');
                     setTimeout(() => {
-                        window.location.href = window.siteUrl + '/customer/my_bookings.php';
+                        window.location.href = window.siteUrl + '/customer/cart.php';
                     }, 2000);
                 } else {
                     showError(data.message || 'Failed to submit booking request');

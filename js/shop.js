@@ -93,7 +93,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const productTitle = escapeHtml(product.title || 'Untitled Product');
             const productPrice = parseFloat(product.price || 0);
 
-            const buttonLabel = product.product_type === 'service' ? 'Book Now' : 'Add to Cart';
+            const isService = product.product_type === 'service';
+            const buttonLabel = isService ? 'Book Now' : 'Add to Cart';
+            const buttonOnclick = isService
+                ? `window.location.href='${window.siteUrl}/customer/booking.php?provider_id=${product.provider_id}'; event.stopPropagation();`
+                : `addToCart(${product.product_id}, '${productTitle}', ${productPrice}); event.stopPropagation();`;
 
             productCard.innerHTML = `
                 <div class="product-card-link">
@@ -108,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="product-price">₵${productPrice.toFixed(2)}</div>
                     </div>
                 </div>
-                <button class="product-card-btn-add-to-cart" onclick="addToCart(${product.product_id}, '${productTitle}', ${productPrice}); event.stopPropagation();">${buttonLabel}</button>
+                <button class="product-card-btn-add-to-cart" onclick="${buttonOnclick}">${buttonLabel}</button>
             `;
 
             productsGrid.appendChild(productCard);
