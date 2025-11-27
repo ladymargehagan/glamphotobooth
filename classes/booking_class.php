@@ -4,36 +4,34 @@
  * classes/booking_class.php
  */
 
-class booking_class {
-    private $db;
-
-    public function __construct() {
-        $this->db = new db_connect();
-    }
+class booking_class extends db_connection {
 
     /**
      * Create a booking
      */
     public function create_booking($customer_id, $provider_id, $product_id, $booking_date, $booking_time, $service_description, $notes = '') {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
         $customer_id = intval($customer_id);
         $provider_id = intval($provider_id);
         $product_id = intval($product_id);
-        $booking_date = $this->db->real_escape_string($booking_date);
-        $booking_time = $this->db->real_escape_string($booking_time);
-        $service_description = $this->db->real_escape_string($service_description);
-        $notes = $this->db->real_escape_string($notes);
+        $booking_date = mysqli_real_escape_string($this->db, $booking_date);
+        $booking_time = mysqli_real_escape_string($this->db, $booking_time);
+        $service_description = mysqli_real_escape_string($this->db, $service_description);
+        $notes = mysqli_real_escape_string($this->db, $notes);
 
         // Get product price
-        $product_query = "SELECT price FROM pb_products WHERE product_id = $product_id";
-        $product_result = $this->db->query($product_query);
-        $product = $product_result->fetch_assoc();
-        $total_price = $product ? floatval($product['price']) : 0;
+        $sql_price = "SELECT price FROM pb_products WHERE product_id = $product_id";
+        $result = $this->db_fetch_one($sql_price);
+        $total_price = $result ? floatval($result['price']) : 0;
 
         $sql = "INSERT INTO pb_bookings (customer_id, provider_id, product_id, booking_date, booking_time, service_description, notes, total_price, status)
                 VALUES ($customer_id, $provider_id, $product_id, '$booking_date', '$booking_time', '$service_description', '$notes', $total_price, 'pending')";
 
-        if ($this->db->query($sql)) {
-            return $this->db->insert_id;
+        if ($this->db_write_query($sql)) {
+            return $this->last_insert_id();
         }
         return false;
     }
@@ -42,16 +40,23 @@ class booking_class {
      * Get booking by ID
      */
     public function get_booking_by_id($booking_id) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
         $booking_id = intval($booking_id);
         $sql = "SELECT * FROM pb_bookings WHERE booking_id = $booking_id";
-        $result = $this->db->query($sql);
-        return $result->fetch_assoc();
+        return $this->db_fetch_one($sql);
     }
 
     /**
      * Get customer's bookings
      */
     public function get_customer_bookings($customer_id) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
         $customer_id = intval($customer_id);
         $sql = "SELECT b.*, p.title as product_title, sp.business_name
                 FROM pb_bookings b
@@ -59,14 +64,17 @@ class booking_class {
                 LEFT JOIN pb_service_providers sp ON b.provider_id = sp.provider_id
                 WHERE b.customer_id = $customer_id
                 ORDER BY b.booking_date DESC";
-        $result = $this->db->query($sql);
-        return $result->fetch_all(MYSQLI_ASSOC);
+        return $this->db_fetch_all($sql);
     }
 
     /**
      * Get provider's bookings
      */
     public function get_provider_bookings($provider_id) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
         $provider_id = intval($provider_id);
         $sql = "SELECT b.*, c.name as customer_name, c.contact as customer_contact, p.title as product_title
                 FROM pb_bookings b
@@ -74,28 +82,35 @@ class booking_class {
                 LEFT JOIN pb_products p ON b.product_id = p.product_id
                 WHERE b.provider_id = $provider_id
                 ORDER BY b.booking_date ASC";
-        $result = $this->db->query($sql);
-        return $result->fetch_all(MYSQLI_ASSOC);
+        return $this->db_fetch_all($sql);
     }
 
     /**
      * Update booking status
      */
     public function update_booking_status($booking_id, $status, $response_note = '') {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
         $booking_id = intval($booking_id);
-        $status = $this->db->real_escape_string($status);
-        $response_note = $this->db->real_escape_string($response_note);
+        $status = mysqli_real_escape_string($this->db, $status);
+        $response_note = mysqli_real_escape_string($this->db, $response_note);
 
         $sql = "UPDATE pb_bookings SET status = '$status', response_note = '$response_note' WHERE booking_id = $booking_id";
-        return $this->db->query($sql);
+        return $this->db_write_query($sql);
     }
 
     /**
      * Get available time slots for a date
      */
     public function get_available_slots($provider_id, $booking_date) {
+        if (!$this->db_connect()) {
+            return [];
+        }
+
         $provider_id = intval($provider_id);
-        $booking_date = $this->db->real_escape_string($booking_date);
+        $booking_date = mysqli_real_escape_string($this->db, $booking_date);
 
         // Default time slots (9 AM to 5 PM, hourly)
         $slots = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
@@ -103,11 +118,13 @@ class booking_class {
         // Get booked times for this date
         $sql = "SELECT booking_time FROM pb_bookings
                 WHERE provider_id = $provider_id AND booking_date = '$booking_date' AND status IN ('pending', 'confirmed', 'accepted')";
-        $result = $this->db->query($sql);
+        $results = $this->db_fetch_all($sql);
 
         $booked_times = [];
-        while ($row = $result->fetch_assoc()) {
-            $booked_times[] = $row['booking_time'];
+        if ($results) {
+            foreach ($results as $row) {
+                $booked_times[] = $row['booking_time'];
+            }
         }
 
         // Filter out booked slots
