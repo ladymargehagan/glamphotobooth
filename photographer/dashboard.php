@@ -56,6 +56,9 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo htmlspecialchars($cssPath); ?>">
     <link rel="stylesheet" href="<?php echo htmlspecialchars($dashboardCss); ?>">
+    <!-- SweetAlert2 Library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .profile-banner {
             background: linear-gradient(135deg, rgba(226, 196, 146, 0.1) 0%, rgba(16, 33, 82, 0.05) 100%);
@@ -173,7 +176,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         </a>
                     </li>
                     <li class="sidebar-nav-item">
-                        <a href="<?php echo SITE_URL; ?>/customer/manage_bookings.php?status=completed" class="sidebar-nav-link">
+                        <a href="<?php echo SITE_URL; ?>/photographer/galleries.php" class="sidebar-nav-link">
                             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <rect x="3" y="3" width="18" height="18" rx="2"></rect>
                                 <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -364,5 +367,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             </div>
         </main>
     </div>
+
+    <script src="<?php echo SITE_URL; ?>/js/sweetalert.js"></script>
 </body>
 </html>
