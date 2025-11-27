@@ -62,7 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
         $filename = 'product_' . $product_id . '_' . time() . '.' . $ext;
         $filepath = $uploads_dir . '/' . $filename;
-        $relative_path = 'products/' . $filename;
+        // Store just the filename - display code expects this format
+        $relative_path = $filename;
 
         error_log('Attempting to upload product image to: ' . $filepath);
 
