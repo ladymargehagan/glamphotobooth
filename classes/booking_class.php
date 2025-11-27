@@ -27,8 +27,11 @@ class booking_class extends db_connection {
         $result = $this->db_fetch_one($sql_price);
         $total_price = $result ? floatval($result['price']) : 0;
 
-        $sql = "INSERT INTO pb_bookings (customer_id, provider_id, product_id, booking_date, booking_time, service_description, notes, total_price, status)
-                VALUES ($customer_id, $provider_id, $product_id, '$booking_date', '$booking_time', '$service_description', '$notes', $total_price, 'pending')";
+        // Default duration is 1 hour
+        $duration_hours = 1.00;
+
+        $sql = "INSERT INTO pb_bookings (customer_id, provider_id, product_id, booking_date, booking_time, service_description, notes, duration_hours, total_price, status)
+                VALUES ($customer_id, $provider_id, $product_id, '$booking_date', '$booking_time', '$service_description', '$notes', $duration_hours, $total_price, 'pending')";
 
         if ($this->db_write_query($sql)) {
             return $this->last_insert_id();
