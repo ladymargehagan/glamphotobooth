@@ -91,11 +91,6 @@ $cssPath = SITE_URL . '/css/style.css';
                         <span class="form-error" id="passwordError"></span>
                     </div>
 
-                    <!-- Forgot Password Link -->
-                    <div class="form-help">
-                        <a href="#">Forgot your password?</a>
-                    </div>
-
                     <!-- Submit -->
                     <button type="submit" class="btn btn-lg btn-primary btn-block" id="submitBtn">
                         Login

@@ -23,17 +23,17 @@ class provider_class extends db_connection {
         $business_name = mysqli_real_escape_string($this->db, $business_name);
         $description = mysqli_real_escape_string($this->db, $description);
 
-        $sql = "INSERT INTO pb_service_providers (customer_id, business_name, description, hourly_rate)
+        $sql = "INSERT INTO pb_service_providers (provider_id, business_name, description, hourly_rate)
                 VALUES ($customer_id, '$business_name', '$description', $hourly_rate)";
 
         if ($this->db_write_query($sql)) {
-            return $this->last_insert_id();
+            return $customer_id;
         }
         return false;
     }
 
     /**
-     * Get provider by customer ID
+     * Get provider by customer ID (via foreign key relationship)
      */
     public function get_provider_by_customer($customer_id) {
         if (!$this->db_connect()) {
@@ -41,9 +41,9 @@ class provider_class extends db_connection {
         }
 
         $customer_id = intval($customer_id);
-        $sql = "SELECT provider_id, customer_id, business_name, description, hourly_rate,
+        $sql = "SELECT provider_id, business_name, description, hourly_rate,
                        rating, total_reviews, created_at, updated_at
-                FROM pb_service_providers WHERE customer_id = $customer_id LIMIT 1";
+                FROM pb_service_providers WHERE provider_id = $customer_id LIMIT 1";
         return $this->db_fetch_one($sql);
     }
 
@@ -56,7 +56,7 @@ class provider_class extends db_connection {
         }
 
         $provider_id = intval($provider_id);
-        $sql = "SELECT provider_id, customer_id, business_name, description, hourly_rate,
+        $sql = "SELECT provider_id, business_name, description, hourly_rate,
                        rating, total_reviews, created_at, updated_at
                 FROM pb_service_providers WHERE provider_id = $provider_id LIMIT 1";
         return $this->db_fetch_one($sql);
@@ -71,7 +71,7 @@ class provider_class extends db_connection {
         }
 
         $customer_id = intval($customer_id);
-        $sql = "SELECT provider_id FROM pb_service_providers WHERE customer_id = $customer_id LIMIT 1";
+        $sql = "SELECT provider_id FROM pb_service_providers WHERE provider_id = $customer_id LIMIT 1";
         $result = $this->db_fetch_one($sql);
         return $result ? true : false;
     }
@@ -118,13 +118,13 @@ class provider_class extends db_connection {
             return false;
         }
 
-        $sql = "SELECT sp.provider_id, sp.customer_id, sp.business_name, sp.description,
+        $sql = "SELECT sp.provider_id, sp.business_name, sp.description,
                        sp.hourly_rate, sp.rating, sp.total_reviews, sp.created_at, sp.updated_at,
-                       c.name, c.email, c.country, c.city, c.contact, c.image
+                       c.id, c.name, c.email, c.country, c.city, c.contact, c.image
                 FROM pb_service_providers sp
-                LEFT JOIN pb_customer c ON sp.customer_id = c.id
+                LEFT JOIN pb_customer c ON sp.provider_id = c.id
                 WHERE sp.provider_id = $provider_id LIMIT 1";
-        
+
         $result = $this->db_fetch_one($sql);
         if (!$result) {
             error_log('Provider get_provider_full: No provider found for id ' . $provider_id);

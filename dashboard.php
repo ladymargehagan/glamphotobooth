@@ -18,7 +18,7 @@ $user_role = isset($_SESSION['user_role']) ? intval($_SESSION['user_role']) : 4;
 // Redirect based on role
 switch ($user_role) {
     case 1: // Admin
-        header('Location: ' . SITE_URL . '/customer/dashboard.php');
+        header('Location: ' . SITE_URL . '/admin/dashboard.php');
         break;
     case 2: // Photographer
         header('Location: ' . SITE_URL . '/photographer/dashboard.php');

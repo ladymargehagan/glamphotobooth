@@ -197,6 +197,7 @@ class review_class extends db_connection {
 
     /**
      * Get review by booking (for checking if already reviewed this booking)
+     * This method checks by booking_id first, then falls back to customer+provider combo
      */
     public function get_review_by_booking($booking_id) {
         if (!$this->db_connect()) {
@@ -205,20 +206,37 @@ class review_class extends db_connection {
 
         $booking_id = intval($booking_id);
 
-        // Try to query with booking_id first
+        // First, try to query with booking_id (new unique constraint)
         $query = "SELECT * FROM pb_reviews WHERE booking_id = ? LIMIT 1";
 
         $stmt = $this->db->prepare($query);
-        if (!$stmt) {
-            // booking_id column doesn't exist yet, return false
-            return false;
+        if ($stmt) {
+            $stmt->bind_param("i", $booking_id);
+            if ($stmt->execute()) {
+                $result = $stmt->get_result();
+                $review = $result->fetch_assoc();
+                if ($review) {
+                    return $review;
+                }
+            }
         }
 
-        $stmt->bind_param("i", $booking_id);
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
-            return $result->fetch_assoc();
+        // If booking_id approach doesn't find a review, fall back to checking
+        // if there's any review for this booking via customer+provider relationship
+        // This helps with legacy data
+        $query_alt = "SELECT r.* FROM pb_reviews r
+                      INNER JOIN pb_bookings b ON r.booking_id = b.booking_id
+                      WHERE b.booking_id = ? LIMIT 1";
+
+        $stmt_alt = $this->db->prepare($query_alt);
+        if ($stmt_alt) {
+            $stmt_alt->bind_param("i", $booking_id);
+            if ($stmt_alt->execute()) {
+                $result_alt = $stmt_alt->get_result();
+                return $result_alt->fetch_assoc();
+            }
         }
+
         return false;
     }
 

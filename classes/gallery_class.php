@@ -159,7 +159,7 @@ class gallery_class extends db_connection {
 
         $query = "SELECT * FROM pb_gallery_photos
                   WHERE gallery_id = ?
-                  ORDER BY photo_order ASC, created_at ASC";
+                  ORDER BY photo_order ASC, upload_date ASC";
 
         $stmt = $this->db->prepare($query);
         if (!$stmt) {
@@ -191,7 +191,7 @@ class gallery_class extends db_connection {
         $original_name = $this->db->real_escape_string($original_name);
         $photo_order = intval($photo_order);
 
-        $query = "INSERT INTO pb_gallery_photos (gallery_id, file_path, original_name, photo_order, created_at)
+        $query = "INSERT INTO pb_gallery_photos (gallery_id, file_path, original_name, photo_order, upload_date)
                   VALUES (?, ?, ?, ?, NOW())";
 
         $stmt = $this->db->prepare($query);

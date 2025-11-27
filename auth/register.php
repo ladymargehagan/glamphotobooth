@@ -37,7 +37,7 @@ $cssPath = SITE_URL . '/css/style.css';
         <div class="auth-panel auth-panel-left">
             <div class="auth-panel-content">
                 <h1>Join PhotoMarket</h1>
-                <p>Connect with Ghana's most talented photographers and equipment vendors. Create your account to get started.</p>
+                <p>Join Ghana's photography marketplace. Connect with professionals, browse services, and shop quality photography equipment.</p>
 
                 <div class="auth-benefits">
                     <div class="benefit-item">
@@ -99,7 +99,7 @@ $cssPath = SITE_URL . '/css/style.css';
                                 <input type="radio" name="role" value="3">
                                 <span class="role-label">
                                     <span class="role-title">Vendor</span>
-                                    <span class="role-desc">Rent/sell equipment</span>
+                                    <span class="role-desc">Sell equipment & products</span>
                                 </span>
                             </label>
                         </div>
@@ -173,10 +173,8 @@ $cssPath = SITE_URL . '/css/style.css';
                         <label for="serviceType">Service Type</label>
                         <select id="serviceType" name="service_type">
                             <option value="">Select service type</option>
-                            <option value="photography">Photography</option>
-                            <option value="equipment_rental">Equipment Rental</option>
-                            <option value="photobooth">Photobooth Services</option>
-                            <option value="prints">Photo Prints</option>
+                            <option value="photography">Photography Services</option>
+                            <option value="equipment_sales">Equipment & Accessories</option>
                             <option value="other">Other</option>
                         </select>
                         <span class="form-error" id="serviceTypeError"></span>
@@ -186,8 +184,6 @@ $cssPath = SITE_URL . '/css/style.css';
                     <button type="submit" class="btn btn-lg btn-primary btn-block" id="submitBtn">
                         Create Account
                     </button>
-
-                    <p class="form-footer">By registering, you agree to our Terms of Service and Privacy Policy</p>
                 </form>
 
                 <!-- Success Message -->

@@ -66,6 +66,7 @@ $recent_bookings = array_slice($recent_bookings, 0, 3);
 
 // Get review class to check which bookings have been reviewed
 $reviewed_bookings = [];
+$review_class = null;
 try {
     if (class_exists('review_class')) {
         $review_class = new review_class();
@@ -73,9 +74,9 @@ try {
             if (isset($booking['status']) && $booking['status'] === 'completed' && isset($booking['booking_id'])) {
                 try {
                     $review = $review_class->get_review_by_booking($booking['booking_id']);
-                    $reviewed_bookings[$booking['booking_id']] = $review ? true : false;
+                    $reviewed_bookings[$booking['booking_id']] = $review ? $review : null;
                 } catch (Exception $e) {
-                    $reviewed_bookings[$booking['booking_id']] = false;
+                    $reviewed_bookings[$booking['booking_id']] = null;
                 }
             }
         }
@@ -265,8 +266,14 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
                                 <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
                                     <a href="<?php echo SITE_URL; ?>/customer/my_bookings.php?booking_id=<?php echo isset($booking['booking_id']) ? $booking['booking_id'] : 0; ?>" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
-                                    <?php if (isset($booking['status']) && $booking['status'] === 'completed' && isset($booking['booking_id']) && isset($booking['provider_id']) && isset($reviewed_bookings[$booking['booking_id']]) && !$reviewed_bookings[$booking['booking_id']]): ?>
-                                        <button onclick="openReviewModal(<?php echo $booking['booking_id']; ?>, <?php echo $booking['provider_id']; ?>)" class="btn" style="padding: 0.5rem 1rem; font-size: 0.85rem; background: #ff9800; color: white; border: none; border-radius: 4px; cursor: pointer;">Add Review</button>
+                                    <?php if (isset($booking['status']) && $booking['status'] === 'completed' && isset($booking['booking_id']) && isset($booking['provider_id'])): ?>
+                                        <?php
+                                        $has_review = isset($reviewed_bookings[$booking['booking_id']]) && $reviewed_bookings[$booking['booking_id']] !== null;
+                                        if ($has_review): ?>
+                                            <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.85rem; background: #4caf50; color: white; border: none; border-radius: 4px; cursor: default;" disabled>✓ Already Reviewed</button>
+                                        <?php else: ?>
+                                            <button onclick="openReviewModal(<?php echo $booking['booking_id']; ?>, <?php echo $booking['provider_id']; ?>)" class="btn" style="padding: 0.5rem 1rem; font-size: 0.85rem; background: #ff9800; color: white; border: none; border-radius: 4px; cursor: pointer;">Add Review</button>
+                                        <?php endif; ?>
                                     <?php endif; ?>
                                 </div>
                             </div>

@@ -38,7 +38,8 @@
                 <nav class="navbar-menu">
                     <ul class="navbar-items">
                         <li><a href="<?php echo SITE_URL; ?>/index.php" class="nav-link">Home</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/shop.php" class="nav-link">Products & Services</a></li>
+                        <li><a href="<?php echo SITE_URL; ?>/services.php" class="nav-link">Services</a></li>
+                        <li><a href="<?php echo SITE_URL; ?>/shop.php" class="nav-link">Products</a></li>
                     </ul>
                 </nav>
 

@@ -58,12 +58,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             }
 
             // Check if service provider already exists for this customer
-            $check_provider_sql = "SELECT provider_id FROM pb_service_providers WHERE customer_id = $customer_id LIMIT 1";
+            $check_provider_sql = "SELECT provider_id FROM pb_service_providers WHERE provider_id = $customer_id LIMIT 1";
             $existing_provider = $db_conn->db_fetch_one($check_provider_sql);
 
             if (!$existing_provider) {
                 // Create service provider profile for admin
-                $insert_provider_sql = "INSERT INTO pb_service_providers (customer_id, business_name, description, hourly_rate, created_at)
+                $insert_provider_sql = "INSERT INTO pb_service_providers (provider_id, business_name, description, hourly_rate, created_at)
                                         VALUES ($customer_id,
                                                 'Admin - " . mysqli_real_escape_string($db_conn->db, $admin['name']) . "',
                                                 'Platform Administrator',

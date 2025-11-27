@@ -13,31 +13,18 @@
             </div>
 
             <div class="footer-section">
-                <h6 class="mb-md">Services</h6>
+                <h6 class="mb-md">Browse</h6>
                 <ul class="footer-links">
-                    <li><a href="/services/photography">Photography</a></li>
-                    <li><a href="/services/events">Event Coverage</a></li>
-                    <li><a href="/services/commercial">Commercial</a></li>
-                    <li><a href="/services/prints">Print Services</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-section">
-                <h6 class="mb-md">Equipment</h6>
-                <ul class="footer-links">
-                    <li><a href="/equipment/rentals">Photobooth Rental</a></li>
-                    <li><a href="/equipment/sales">Equipment Sales</a></li>
-                    <li><a href="/equipment/accessories">Accessories</a></li>
+                    <li><a href="<?php echo SITE_URL; ?>/services.php">Services</a></li>
+                    <li><a href="<?php echo SITE_URL; ?>/shop.php">Products</a></li>
                 </ul>
             </div>
 
             <div class="footer-section">
                 <h6 class="mb-md">Company</h6>
                 <ul class="footer-links">
-                    <li><a href="/about">About Us</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                    <li><a href="/privacy">Privacy Policy</a></li>
-                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="<?php echo SITE_URL; ?>/about.php">About Us</a></li>
+                    <li><a href="<?php echo SITE_URL; ?>/contact.php">Contact</a></li>
                 </ul>
             </div>
         </div>

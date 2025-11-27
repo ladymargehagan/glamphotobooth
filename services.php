@@ -1,7 +1,7 @@
 <?php
 /**
- * Shop Page - Products & Equipment Only
- * shop.php
+ * Services Page - Photography Services Only
+ * services.php
  */
 require_once __DIR__ . '/settings/core.php';
 
@@ -16,7 +16,7 @@ if (!class_exists('category_class')) {
     require_once __DIR__ . '/classes/category_class.php';
 }
 
-$pageTitle = 'Products & Equipment - PhotoMarket';
+$pageTitle = 'Photography Services - PhotoMarket';
 $cssPath = SITE_URL . '/css/style.css';
 
 // Get all categories for filter
@@ -501,8 +501,8 @@ if ($categories === false) {
 
     <div class="shop-container">
         <div class="shop-header">
-            <h1>Products & Equipment</h1>
-            <p>Shop photography equipment, accessories, and products from our trusted sellers</p>
+            <h1>Photography Services</h1>
+            <p>Discover professional photography services from talented photographers in Ghana</p>
         </div>
 
         <div class="shop-layout">
@@ -525,18 +525,8 @@ if ($categories === false) {
                     <?php endif; ?>
                 </div>
 
-                <!-- Product Type Filter - Excludes services -->
-                <div class="filter-group">
-                    <div class="filter-title">Type</div>
-                    <div class="filter-option">
-                        <input type="radio" id="type-all" name="product_type" value="" checked>
-                        <label for="type-all">All Types</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="radio" id="type-sale" name="product_type" value="sale">
-                        <label for="type-sale">Products</label>
-                    </div>
-                </div>
+                <!-- Product Type Filter - Hidden, only services shown -->
+                <input type="hidden" id="type-service" name="product_type" value="service">
             </aside>
 
             <!-- Products Grid -->
