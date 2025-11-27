@@ -143,7 +143,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <div class="sidebar-section-title">Account</div>
                     <ul class="sidebar-nav">
                         <li class="sidebar-nav-item">
-                            <a href="<?php echo SITE_URL; ?>/customer/edit_profile.php" class="sidebar-nav-link">
+                            <a href="<?php echo SITE_URL; ?>/customer/my_profile.php" class="sidebar-nav-link">
                                 <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="12" cy="7" r="4"></circle>
