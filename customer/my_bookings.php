@@ -39,12 +39,19 @@ try {
 
 // Get review class to check which bookings have been reviewed
 $reviewed_bookings = [];
+$booking_reviews = [];
 try {
     $review_class = new review_class();
+    $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
+
     foreach ($all_bookings as $booking) {
-        if (isset($booking['status']) && $booking['status'] === 'completed' && isset($booking['booking_id'])) {
-            $review = $review_class->get_review_by_booking($booking['booking_id']);
+        if (isset($booking['status']) && $booking['status'] === 'completed' && isset($booking['booking_id']) && isset($booking['provider_id'])) {
+            // Check if customer has reviewed this provider
+            $review = $review_class->get_review_by_customer_provider($user_id, intval($booking['provider_id']));
             $reviewed_bookings[$booking['booking_id']] = $review ? true : false;
+            if ($review) {
+                $booking_reviews[$booking['booking_id']] = $review;
+            }
         }
     }
 } catch (Exception $e) {
@@ -332,6 +339,23 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                                     <span style="color: #2e7d32; font-size: 0.85rem; font-weight: 600;">✓ Reviewed</span>
                                 <?php endif; ?>
                             </div>
+
+                            <!-- Display review if exists -->
+                            <?php if (isset($booking_reviews[$booking['booking_id']])): ?>
+                                <?php $review = $booking_reviews[$booking['booking_id']]; ?>
+                                <div style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid #eee;">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--spacing-md);">
+                                        <div>
+                                            <h4 style="margin: 0 0 4px 0; font-size: 0.95rem;">Your Review</h4>
+                                            <div style="color: #ffc107; font-size: 1.2rem; letter-spacing: 2px;"><?php echo str_repeat('★', intval($review['rating'])) . str_repeat('☆', 5 - intval($review['rating'])); ?></div>
+                                        </div>
+                                        <span style="font-size: 0.85rem; color: var(--text-secondary);"><?php echo date('M d, Y', strtotime($review['review_date'] ?? 'now')); ?></span>
+                                    </div>
+                                    <?php if (!empty($review['comment'])): ?>
+                                        <p style="margin: 0; color: var(--text-primary); line-height: 1.6;"><?php echo htmlspecialchars($review['comment']); ?></p>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                 </div>
