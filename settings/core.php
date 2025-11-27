@@ -228,4 +228,12 @@ function verifyCSRFToken($token)
 {
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
+
+/**
+ * Validate CSRF token (alias for verifyCSRFToken)
+ */
+function validateCSRFToken($token)
+{
+    return verifyCSRFToken($token);
+}
 ?>

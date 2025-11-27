@@ -135,6 +135,7 @@ class product_class extends db_connection {
      */
     public function update_product_image($product_id, $image) {
         if (!$this->db_connect()) {
+            error_log('Database connection failed in update_product_image');
             return false;
         }
 
@@ -143,7 +144,17 @@ class product_class extends db_connection {
         $image = mysqli_real_escape_string($this->db, $image);
 
         $sql = "UPDATE pb_products SET image = '$image', updated_at = NOW() WHERE product_id = $product_id";
-        return $this->db_write_query($sql);
+        error_log('Executing update_product_image SQL: ' . $sql);
+
+        $result = $this->db_write_query($sql);
+
+        if ($result) {
+            error_log('update_product_image successful');
+        } else {
+            error_log('update_product_image failed: ' . mysqli_error($this->db));
+        }
+
+        return $result;
     }
 
     /**

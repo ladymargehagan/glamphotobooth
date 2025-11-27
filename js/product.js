@@ -218,18 +218,22 @@ function setupAddProductForm() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                showSuccess('Image uploaded successfully');
                 setTimeout(() => {
                     window.location.href = '../customer/manage_products.php';
                 }, 1500);
             } else {
                 // Product created but image upload failed
+                showError('Warning: Image upload failed - ' + (data.message || 'Unknown error'));
+                console.error('Image upload error:', data);
                 setTimeout(() => {
                     window.location.href = '../customer/manage_products.php';
-                }, 1500);
+                }, 2000);
             }
         })
-        .catch(() => {
+        .catch((error) => {
             // Silently fail and redirect anyway
+            console.error('Image upload network error:', error);
             setTimeout(() => {
                 window.location.href = '../customer/manage_products.php';
             }, 1500);

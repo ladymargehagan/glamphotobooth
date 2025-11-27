@@ -645,11 +645,18 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 })
                 .then(response => response.json())
                 .then(data => {
+                    if (data.success) {
+                        showSuccess('Image updated successfully');
+                    } else {
+                        showError('Warning: Image update failed - ' + (data.message || 'Unknown error'));
+                        console.error('Image upload error:', data);
+                    }
                     setTimeout(() => {
                         window.location.href = '../customer/manage_products.php';
                     }, 1500);
                 })
-                .catch(() => {
+                .catch((error) => {
+                    console.error('Image upload network error:', error);
                     setTimeout(() => {
                         window.location.href = '../customer/manage_products.php';
                     }, 1500);

@@ -84,7 +84,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Update product image in database
         $product_class = new product_class();
+        error_log('Attempting database update for product_id: ' . $product_id . ', relative_path: ' . $relative_path);
+
         if ($product_class->update_product_image($product_id, $relative_path)) {
+            error_log('Database update successful for product_id: ' . $product_id);
             echo json_encode([
                 'success' => true,
                 'message' => 'Image uploaded successfully',
@@ -94,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Delete uploaded file if DB update failed
+        error_log('Database update failed for product_id: ' . $product_id);
         @unlink($filepath);
         echo json_encode(['success' => false, 'message' => 'Failed to save image to database']);
         exit;
