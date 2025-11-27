@@ -43,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Prepare Paystack request
         $amount = intval($order['total_amount'] * 100); // Convert to kobo
+        $callback_url = SITE_URL . '/customer/payment_complete.php';
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
@@ -56,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             CURLOPT_POSTFIELDS => json_encode([
                 'amount' => $amount,
                 'email' => $order['email'],
+                'callback_url' => $callback_url,
                 'metadata' => [
                     'order_id' => $order_id,
                     'customer_name' => $order['first_name'] . ' ' . $order['last_name']
