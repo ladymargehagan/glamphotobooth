@@ -34,13 +34,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $products = [];
             }
         } else {
-            // Get all active products
+            // Get all active products (with provider validation)
             $db = new db_connection();
             if ($db->db_connect()) {
-                $sql = "SELECT product_id, provider_id, cat_id, title, description, price,
-                               product_type, image, keywords, is_active, created_at
-                        FROM pb_products WHERE is_active = 1
-                        ORDER BY created_at DESC
+                $sql = "SELECT p.product_id, p.provider_id, p.cat_id, p.title, p.description, p.price,
+                               p.product_type, p.image, p.keywords, p.is_active, p.created_at
+                        FROM pb_products p
+                        INNER JOIN pb_service_providers sp ON p.provider_id = sp.provider_id
+                        WHERE p.is_active = 1
+                        ORDER BY p.created_at DESC
                         LIMIT $per_page OFFSET $offset";
                 $products = $db->db_fetch_all($sql);
                 if ($products === false) {

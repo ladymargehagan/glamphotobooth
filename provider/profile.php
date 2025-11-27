@@ -19,6 +19,7 @@ if (!class_exists('review_class')) {
 $provider_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($provider_id <= 0) {
+    error_log('Provider profile: Invalid or missing provider ID');
     header('Location: ' . SITE_URL . '/shop.php');
     exit;
 }
@@ -29,13 +30,22 @@ $review_class = new review_class();
 
 try {
     $provider = $provider_class->get_provider_full($provider_id);
-    
+
     if (!$provider) {
-        header('Location: ' . SITE_URL . '/shop.php');
+        error_log('Provider profile: Provider not found for ID ' . $provider_id);
+        header('Location: ' . SITE_URL . '/shop.php?error=provider_not_found');
+        exit;
+    }
+
+    // Validate provider has customer info (should exist due to LEFT JOIN)
+    if (empty($provider['email'])) {
+        error_log('Provider profile: Provider has invalid customer reference for ID ' . $provider_id);
+        header('Location: ' . SITE_URL . '/shop.php?error=invalid_provider');
         exit;
     }
 } catch (Exception $e) {
     error_log('Provider profile error: ' . $e->getMessage());
+    error_log('Stack trace: ' . $e->getTraceAsString());
     header('Location: ' . SITE_URL . '/shop.php');
     exit;
 }

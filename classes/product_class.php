@@ -65,11 +65,13 @@ class product_class extends db_connection {
         }
 
         $provider_id = intval($provider_id);
-        $where = $active_only ? "WHERE provider_id = $provider_id AND is_active = 1" : "WHERE provider_id = $provider_id";
+        $where = $active_only ? "WHERE p.provider_id = $provider_id AND p.is_active = 1" : "WHERE p.provider_id = $provider_id";
 
-        $sql = "SELECT product_id, provider_id, cat_id, title, description, price,
-                       product_type, image, keywords, is_active, created_at, updated_at
-                FROM pb_products $where ORDER BY created_at DESC";
+        $sql = "SELECT p.product_id, p.provider_id, p.cat_id, p.title, p.description, p.price,
+                       p.product_type, p.image, p.keywords, p.is_active, p.created_at, p.updated_at
+                FROM pb_products p
+                INNER JOIN pb_service_providers sp ON p.provider_id = sp.provider_id
+                $where ORDER BY p.created_at DESC";
         return $this->db_fetch_all($sql);
     }
 
@@ -82,11 +84,13 @@ class product_class extends db_connection {
         }
 
         $cat_id = intval($cat_id);
-        $where = $active_only ? "WHERE cat_id = $cat_id AND is_active = 1" : "WHERE cat_id = $cat_id";
+        $where = $active_only ? "WHERE p.cat_id = $cat_id AND p.is_active = 1" : "WHERE p.cat_id = $cat_id";
 
-        $sql = "SELECT product_id, provider_id, cat_id, title, description, price,
-                       product_type, image, keywords, is_active, created_at, updated_at
-                FROM pb_products $where ORDER BY created_at DESC";
+        $sql = "SELECT p.product_id, p.provider_id, p.cat_id, p.title, p.description, p.price,
+                       p.product_type, p.image, p.keywords, p.is_active, p.created_at, p.updated_at
+                FROM pb_products p
+                INNER JOIN pb_service_providers sp ON p.provider_id = sp.provider_id
+                $where ORDER BY p.created_at DESC";
         return $this->db_fetch_all($sql);
     }
 
