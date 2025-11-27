@@ -19,20 +19,32 @@ $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 // Get booking data
 $booking_class = new booking_class();
 $all_bookings = $booking_class->get_customer_bookings($user_id);
+if (!is_array($all_bookings)) {
+    $all_bookings = [];
+}
+
+// Get orders data
+$order_class = new order_class();
+$all_orders = $order_class->get_orders_by_customer($user_id);
+if (!is_array($all_orders)) {
+    $all_orders = [];
+}
 
 // Calculate statistics
 $stats = [
     'total_bookings' => count($all_bookings),
+    'total_orders' => count($all_orders),
     'pending' => 0,
     'confirmed' => 0,
-    'completed' => 0
+    'completed' => 0,
+    'paid_orders' => 0
 ];
 
 $recent_bookings = [];
 foreach ($all_bookings as $booking) {
     if ($booking['status'] === 'pending') {
         $stats['pending']++;
-    } elseif ($booking['status'] === 'confirmed') {
+    } elseif ($booking['status'] === 'confirmed' || $booking['status'] === 'accepted') {
         $stats['confirmed']++;
     } elseif ($booking['status'] === 'completed') {
         $stats['completed']++;
@@ -40,8 +52,25 @@ foreach ($all_bookings as $booking) {
     $recent_bookings[] = $booking;
 }
 
+// Count paid orders
+foreach ($all_orders as $order) {
+    if ($order['payment_status'] === 'paid') {
+        $stats['paid_orders']++;
+    }
+}
+
 // Get recent bookings (limit to 3)
 $recent_bookings = array_slice($recent_bookings, 0, 3);
+
+// Get review class to check which bookings have been reviewed
+$review_class = new review_class();
+$reviewed_bookings = [];
+foreach ($all_bookings as $booking) {
+    if ($booking['status'] === 'completed') {
+        $review = $review_class->get_review_by_booking($booking['booking_id']);
+        $reviewed_bookings[$booking['booking_id']] = $review ? true : false;
+    }
+}
 
 $pageTitle = 'Dashboard - PhotoMarket';
 $cssPath = SITE_URL . '/css/style.css';
@@ -154,9 +183,9 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <div class="stat-change">Scheduled bookings</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Account Status</div>
-                    <div class="stat-value"><span class="status-badge status-active">Active</span></div>
-                    <div class="stat-change">Account is verified</div>
+                    <div class="stat-label">Paid Orders</div>
+                    <div class="stat-value"><?php echo $stats['paid_orders']; ?></div>
+                    <div class="stat-change">Confirmed purchases</div>
                 </div>
             </div>
 
@@ -211,11 +240,14 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                                 </div>
 
                                 <p style="color: var(--text-secondary); margin: 0 0 var(--spacing-md) 0; font-size: 0.9rem; line-height: 1.5;">
-                                    <strong>Service:</strong> <?php echo htmlspecialchars(substr($booking['service_description'], 0, 80)); ?><?php echo strlen($booking['service_description']) > 80 ? '...' : ''; ?>
+                                    <strong>Service:</strong> <?php echo htmlspecialchars(substr($booking['service_description'] ?? '', 0, 80)); ?><?php echo strlen($booking['service_description'] ?? '') > 80 ? '...' : ''; ?>
                                 </p>
 
-                                <div style="display: flex; gap: var(--spacing-sm);">
-                                    <a href="<?php echo SITE_URL; ?>/customer/my_bookings.php" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
+                                <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                                    <a href="<?php echo SITE_URL; ?>/customer/my_bookings.php?booking_id=<?php echo $booking['booking_id']; ?>" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
+                                    <?php if ($booking['status'] === 'completed' && isset($reviewed_bookings[$booking['booking_id']]) && !$reviewed_bookings[$booking['booking_id']]): ?>
+                                        <button onclick="openReviewModal(<?php echo $booking['booking_id']; ?>, <?php echo $booking['provider_id']; ?>)" class="btn" style="padding: 0.5rem 1rem; font-size: 0.85rem; background: #ff9800; color: white; border: none; border-radius: 4px; cursor: pointer;">Add Review</button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -233,5 +265,44 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             </div>
         </main>
     </div>
+
+    <?php require_once __DIR__ . '/add_review.php'; ?>
+    <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
+    <script src="<?php echo SITE_URL; ?>/js/review.js"></script>
+    <script>
+        window.siteUrl = '<?php echo SITE_URL; ?>';
+        window.csrfToken = '<?php echo generateCSRFToken(); ?>';
+
+        function openReviewModal(bookingId, providerId) {
+            document.getElementById('booking_id').value = bookingId;
+            document.getElementById('provider_id').value = providerId;
+            document.getElementById('rating').value = '';
+            document.getElementById('comment').value = '';
+            document.getElementById('charCount').textContent = '0';
+            document.getElementById('ratingLabel').textContent = 'Click to rate';
+            
+            // Reset stars
+            document.querySelectorAll('.star').forEach(star => {
+                star.classList.remove('active', 'hover');
+            });
+            
+            // Hide messages
+            document.getElementById('reviewError').classList.remove('show');
+            document.getElementById('reviewSuccess').classList.remove('show');
+            
+            document.getElementById('reviewModal').classList.add('show');
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('reviewModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeReviewModal();
+            }
+        });
+    </script>
 </body>
 </html>
