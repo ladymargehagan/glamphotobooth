@@ -5,40 +5,8 @@
  */
 require_once __DIR__ . '/settings/core.php';
 
-// Load provider and product classes for featured photographers
-if (!class_exists('provider_class')) {
-    require_once __DIR__ . '/classes/provider_class.php';
-}
-if (!class_exists('product_class')) {
-    require_once __DIR__ . '/classes/product_class.php';
-}
-
 $pageTitle = 'PhotoMarket - Premium Photography Services & Equipment';
 $cssPath = SITE_URL . '/css/style.css';
-
-// Fetch top-rated photographers/vendors to feature on the homepage
-$featuredProviders = [];
-try {
-    $db = new db_connection();
-    if ($db->db_connect()) {
-        // Providers with the best ratings and most reviews (with customer validation)
-        $sql = "SELECT sp.provider_id, sp.business_name, sp.description, sp.rating, sp.total_reviews,
-                       c.name, c.city, c.country
-                FROM pb_service_providers sp
-                INNER JOIN pb_customer c ON sp.customer_id = c.id
-                WHERE sp.rating IS NOT NULL AND c.id IS NOT NULL
-                ORDER BY sp.rating DESC, sp.total_reviews DESC, sp.created_at DESC
-                LIMIT 3";
-        $featuredProviders = $db->db_fetch_all($sql);
-        if (!$featuredProviders) {
-            $featuredProviders = [];
-        }
-    }
-} catch (Exception $e) {
-    // Fail silently – homepage should still render even if this query fails
-    error_log('Featured providers query error: ' . $e->getMessage());
-    $featuredProviders = [];
-}
 ?>
 <?php include 'views/header.php'; ?>
 
@@ -119,49 +87,6 @@ try {
         </div>
     </section>
 
-    <!-- Featured Photographers -->
-    <section class="section-spacing photographers-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>Featured Photographers/Vendors</h2>
-            </div>
-
-            <div class="photographer-grid">
-                <?php if ($featuredProviders && count($featuredProviders) > 0): ?>
-                    <?php foreach ($featuredProviders as $provider): ?>
-                        <div class="photographer-card">
-                            <div class="photographer-image"></div>
-                            <div class="photographer-info">
-                                <h4><?php echo htmlspecialchars($provider['business_name']); ?></h4>
-                                <p class="photographer-specialty">
-                                    <?php echo htmlspecialchars($provider['city'] ?? ''); ?>
-                                    <?php if (!empty($provider['country'])): ?>
-                                        , <?php echo htmlspecialchars($provider['country']); ?>
-                                    <?php endif; ?>
-                                </p>
-                                <div class="photographer-rating">
-                                    <?php if (!empty($provider['rating']) && $provider['rating'] > 0): ?>
-                                        <span class="rating-stars">⭐ <?php echo number_format($provider['rating'], 1); ?></span>
-                                        <span class="rating-count">(<?php echo intval($provider['total_reviews']); ?> reviews)</span>
-                                    <?php else: ?>
-                                        <span class="rating-stars">New provider</span>
-                                    <?php endif; ?>
-                                </div>
-                                <a href="<?php echo SITE_URL; ?>/provider/profile.php?id=<?php echo intval($provider['provider_id']); ?>"
-                                   class="btn btn-sm btn-primary">
-                                    View Profile
-                                </a>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <p style="color: var(--text-secondary); text-align: center;">
-                        Featured photographers and vendors will appear here once providers start receiving reviews.
-                    </p>
-                <?php endif; ?>
-            </div>
-        </div>
-    </section>
 
     <!-- Call to Action -->
     <section class="section-spacing cta-section" id="services">
