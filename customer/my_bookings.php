@@ -42,12 +42,11 @@ $reviewed_bookings = [];
 $booking_reviews = [];
 try {
     $review_class = new review_class();
-    $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 
     foreach ($all_bookings as $booking) {
-        if (isset($booking['status']) && $booking['status'] === 'completed' && isset($booking['booking_id']) && isset($booking['provider_id'])) {
-            // Check if customer has reviewed this provider
-            $review = $review_class->get_review_by_customer_provider($user_id, intval($booking['provider_id']));
+        if (isset($booking['status']) && $booking['status'] === 'completed' && isset($booking['booking_id'])) {
+            // Check if this specific booking has been reviewed
+            $review = $review_class->get_review_by_booking(intval($booking['booking_id']));
             $reviewed_bookings[$booking['booking_id']] = $review ? true : false;
             if ($review) {
                 $booking_reviews[$booking['booking_id']] = $review;
