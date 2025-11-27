@@ -443,8 +443,9 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
                             <div class="booking-actions">
                                 <?php if ($booking['status'] === 'pending'): ?>
-                                    <button class="btn-action btn-accept" onclick="updateBookingStatus(<?php echo $booking['booking_id']; ?>, 'confirmed')">Accept</button>
-                                    <button class="btn-action btn-reject" onclick="updateBookingStatus(<?php echo $booking['booking_id']; ?>, 'rejected')">Reject</button>
+                                    <div style="padding: 0.5rem 1rem; background: rgba(255, 152, 0, 0.1); border-radius: 4px; color: #f57f17; font-size: 0.85rem;">
+                                        Awaiting customer payment confirmation
+                                    </div>
                                 <?php elseif ($booking['status'] === 'confirmed' || $booking['status'] === 'accepted'): ?>
                                     <button class="btn-action btn-complete" onclick="updateBookingStatus(<?php echo $booking['booking_id']; ?>, 'completed')">Mark as Completed</button>
                                 <?php endif; ?>

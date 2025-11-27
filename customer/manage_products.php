@@ -38,6 +38,9 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo htmlspecialchars($cssPath); ?>">
     <link rel="stylesheet" href="<?php echo htmlspecialchars($dashboardCss); ?>">
+    <!-- SweetAlert2 Library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .products-container {
             max-width: 1200px;
@@ -360,6 +363,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         </main>
     </div>
 
+    <script src="<?php echo SITE_URL; ?>/js/sweetalert.js"></script>
     <script src="<?php echo SITE_URL; ?>/js/product.js"></script>
 </body>
 </html>
