@@ -510,6 +510,8 @@ $cssPath = SITE_URL . '/css/style.css';
                                 // Check if cart is now empty
                                 if (document.querySelectorAll('.cart-item').length === 0) {
                                     location.reload();
+                                } else {
+                                    updateCartTotals();
                                 }
                             }, 300);
                         }
@@ -522,6 +524,7 @@ $cssPath = SITE_URL . '/css/style.css';
                                 input.value = quantity;
                             }
                         }
+                        updateCartTotals();
                     }
                 } else {
                     showError(data.message || 'Failed to update cart');
@@ -530,6 +533,34 @@ $cssPath = SITE_URL . '/css/style.css';
             .catch(error => {
                 console.error('Error:', error);
                 showError('Network error. Please try again.');
+            });
+        }
+
+        function updateCartTotals() {
+            let subtotal = 0;
+            let itemCount = 0;
+
+            // Get all cart items
+            const items = document.querySelectorAll('.cart-item');
+            items.forEach(item => {
+                const priceText = item.querySelector('.cart-item-price').textContent;
+                const price = parseFloat(priceText.replace('₵', '').replace(',', ''));
+                const quantity = parseInt(item.querySelector('input[type="number"]').value);
+
+                subtotal += price * quantity;
+                itemCount += quantity;
+            });
+
+            // Update summary
+            const summaryRows = document.querySelectorAll('.summary-row');
+            summaryRows.forEach(row => {
+                const label = row.querySelector('span:first-child').textContent.trim();
+
+                if (label.startsWith('Subtotal')) {
+                    row.querySelector('span:last-child').textContent = '₵' + subtotal.toFixed(2);
+                } else if (label === 'Total') {
+                    row.querySelector('span:last-child').textContent = '₵' + subtotal.toFixed(2);
+                }
             });
         }
 
