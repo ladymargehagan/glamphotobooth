@@ -6,6 +6,14 @@
  */
 require_once __DIR__ . '/../settings/core.php';
 
+// Include required classes
+if (!class_exists('booking_class')) {
+    require_once __DIR__ . '/../classes/booking_class.php';
+}
+if (!class_exists('review_class')) {
+    require_once __DIR__ . '/../classes/review_class.php';
+}
+
 requireLogin();
 
 // Check if user is customer (role 4)
@@ -18,20 +26,29 @@ $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 $selected_booking_id = isset($_GET['booking_id']) ? intval($_GET['booking_id']) : 0;
 
 // Get all bookings
-$booking_class = new booking_class();
-$all_bookings = $booking_class->get_customer_bookings($user_id);
-if (!is_array($all_bookings)) {
-    $all_bookings = [];
+$all_bookings = [];
+try {
+    $booking_class = new booking_class();
+    $bookings = $booking_class->get_customer_bookings($user_id);
+    if (is_array($bookings)) {
+        $all_bookings = $bookings;
+    }
+} catch (Exception $e) {
+    error_log('Error fetching bookings: ' . $e->getMessage());
 }
 
 // Get review class to check which bookings have been reviewed
-$review_class = new review_class();
 $reviewed_bookings = [];
-foreach ($all_bookings as $booking) {
-    if ($booking['status'] === 'completed') {
-        $review = $review_class->get_review_by_booking($booking['booking_id']);
-        $reviewed_bookings[$booking['booking_id']] = $review ? true : false;
+try {
+    $review_class = new review_class();
+    foreach ($all_bookings as $booking) {
+        if (isset($booking['status']) && $booking['status'] === 'completed' && isset($booking['booking_id'])) {
+            $review = $review_class->get_review_by_booking($booking['booking_id']);
+            $reviewed_bookings[$booking['booking_id']] = $review ? true : false;
+        }
     }
+} catch (Exception $e) {
+    error_log('Error checking reviews: ' . $e->getMessage());
 }
 
 // Get selected booking details

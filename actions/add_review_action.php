@@ -8,6 +8,17 @@
 header('Content-Type: application/json');
 require_once __DIR__ . '/../settings/core.php';
 
+// Include required classes
+if (!class_exists('review_controller')) {
+    require_once __DIR__ . '/../controllers/review_controller.php';
+}
+if (!class_exists('booking_class')) {
+    require_once __DIR__ . '/../classes/booking_class.php';
+}
+if (!class_exists('review_class')) {
+    require_once __DIR__ . '/../classes/review_class.php';
+}
+
 requireLogin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
