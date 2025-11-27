@@ -33,6 +33,9 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo htmlspecialchars($cssPath); ?>">
     <link rel="stylesheet" href="<?php echo htmlspecialchars($dashboardCss); ?>">
+    <!-- SweetAlert2 Library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .profile-banner {
             background: linear-gradient(135deg, rgba(226, 196, 146, 0.1) 0%, rgba(16, 33, 82, 0.05) 100%);
@@ -131,34 +134,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                             Dashboard
                         </a>
                     </li>
-                    <li class="sidebar-nav-item">
-                        <a href="<?php echo SITE_URL; ?>/vendor/rental_orders.php" class="sidebar-nav-link">
-                            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
-                            </svg>
-                            Rental Orders
-                        </a>
-                    </li>
-                    <li class="sidebar-nav-item">
-                        <a href="<?php echo SITE_URL; ?>/vendor/inventory.php" class="sidebar-nav-link">
-                            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <circle cx="9" cy="21" r="1"></circle>
-                                <circle cx="20" cy="21" r="1"></circle>
-                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                            </svg>
-                            Inventory
-                        </a>
-                    </li>
-                    <li class="sidebar-nav-item">
-                        <a href="<?php echo SITE_URL; ?>/customer/manage_products.php" class="sidebar-nav-link">
-                            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                <polyline points="21 15 16 10 5 21"></polyline>
-                            </svg>
-                            My Equipment
-                        </a>
-                    </li>
                 </ul>
 
                 <div class="sidebar-section">
@@ -201,23 +176,13 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         <main class="dashboard-content">
             <div class="dashboard-header">
                 <div>
-                    <h1 class="dashboard-title">Equipment Vendor Hub</h1>
-                    <p class="dashboard-subtitle">Manage inventory and grow your equipment business</p>
+                    <h1 class="dashboard-title">Vendor Dashboard</h1>
+                    <p class="dashboard-subtitle">Manage your business and track revenue</p>
                 </div>
             </div>
 
             <!-- Stats Row -->
             <div class="stats-row">
-                <div class="stat-card">
-                    <div class="stat-label">Active Rentals</div>
-                    <div class="stat-value">0</div>
-                    <div class="stat-change">No active rentals</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Equipment Listed</div>
-                    <div class="stat-value">0</div>
-                    <div class="stat-change">Add your first equipment</div>
-                </div>
                 <div class="stat-card">
                     <div class="stat-label">Rating</div>
                     <div class="stat-value">—</div>
@@ -239,23 +204,12 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     </svg>
                     <h3 class="card-title">View Revenue</h3>
                     <p class="card-subtitle">Track earnings and payment history</p>
-                    <a href="#" class="card-action">View Revenue →</a>
-                </div>
-            </div>
-
-            <!-- Empty State for Rentals -->
-            <div>
-                <h2 style="color: var(--primary); margin-bottom: var(--spacing-lg);">Active Rental Orders</h2>
-                <div class="empty-state">
-                    <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
-                    </svg>
-                    <h3 class="empty-state-title">No Active Rentals</h3>
-                    <p class="empty-state-text">You don't have any active equipment rentals. Add products to your inventory to start accepting rental orders</p>
-                    <a href="<?php echo SITE_URL; ?>/customer/add_product.php" class="btn btn-primary">Add Your First Product</a>
+                    <a href="<?php echo SITE_URL; ?>/customer/earnings.php" class="card-action">View Revenue →</a>
                 </div>
             </div>
         </main>
     </div>
+
+    <script src="<?php echo SITE_URL; ?>/js/sweetalert.js"></script>
 </body>
 </html>
