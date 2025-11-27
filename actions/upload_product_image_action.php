@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Create uploads directory if it doesn't exist
-        $uploads_dir = SITE_ROOT . '/uploads/products';
+        $uploads_dir = UPLOADS_DIR . 'products';
         if (!file_exists($uploads_dir)) {
             if (!mkdir($uploads_dir, 0755, true)) {
                 error_log('Failed to create uploads directory: ' . $uploads_dir);
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
         $filename = 'product_' . $product_id . '_' . time() . '.' . $ext;
         $filepath = $uploads_dir . '/' . $filename;
-        $relative_path = $filename;
+        $relative_path = 'products/' . $filename;
 
         error_log('Attempting to upload product image to: ' . $filepath);
 
