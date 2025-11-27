@@ -92,11 +92,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const productTitle = escapeHtml(product.title || 'Untitled Product');
             const productPrice = parseFloat(product.price || 0);
+            const productDetailUrl = window.siteUrl + '/product/detail.php?id=' + product.product_id;
 
-            const providerProfileUrl = window.siteUrl ? window.siteUrl + '/provider/profile.php?id=' + product.provider_id : '/provider/profile.php?id=' + product.provider_id;
+            const isService = product.product_type === 'service';
+            const buttonText = isService ? 'Book Now' : 'Add to Cart';
+            const buttonOnclick = isService
+                ? `window.location.href='${productDetailUrl}'; event.stopPropagation();`
+                : `addToCart(${product.product_id}, '${productTitle}', ${productPrice}); event.stopPropagation();`;
 
             productCard.innerHTML = `
-                <div class="product-card-link">
+                <a href="${productDetailUrl}" class="product-card-link" style="text-decoration: none; color: inherit;">
                     <div class="product-image">
                         ${imageHtml}
                     </div>
@@ -106,12 +111,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="product-type">${product.product_type || 'N/A'}</div>
                         <p class="product-description">${escapeHtml(description)}</p>
                         <div class="product-price">₵${productPrice.toFixed(2)}</div>
-                        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; font-size: 0.85rem;">
-                            <a href="${providerProfileUrl}" style="color: var(--primary); text-decoration: none; font-weight: 500;">View Provider Profile →</a>
-                        </div>
                     </div>
-                </div>
-                <button class="product-card-btn-add-to-cart" onclick="addToCart(${product.product_id}, '${productTitle}', ${productPrice}); event.stopPropagation();">Add to Cart</button>
+                </a>
+                <button class="product-card-btn-add-to-cart" onclick="${buttonOnclick}">${buttonText}</button>
             `;
 
             productsGrid.appendChild(productCard);
