@@ -173,9 +173,11 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         </a>
                     </li>
                     <li class="sidebar-nav-item">
-                        <a href="<?php echo SITE_URL; ?>/customer/upload_photos.php" class="sidebar-nav-link">
+                        <a href="<?php echo SITE_URL; ?>/customer/manage_bookings.php?status=completed" class="sidebar-nav-link">
                             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"></path>
+                                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
                             </svg>
                             Client Galleries
                         </a>
@@ -338,7 +340,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                                 </div>
 
                                 <div style="display: flex; gap: var(--spacing-sm);">
-                                    <a href="<?php echo SITE_URL; ?>/customer/manage_bookings.php" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
+                                    <a href="<?php echo SITE_URL; ?>/customer/manage_bookings.php?booking_id=<?php echo $booking['booking_id']; ?>" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
                                 </div>
                             </div>
                         <?php endforeach; ?>
