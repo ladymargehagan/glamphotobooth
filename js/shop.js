@@ -3,6 +3,24 @@
  * js/shop.js
  */
 
+// HTML escape helper function
+function escapeHtml(str) {
+    if (!str) return "";
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function escapeHtmlForAttribute(str) {
+    if (!str) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const categoryFilter = document.querySelector('input[name="category"]');
     const typeFilter = document.querySelector('input[name="product_type"]');
@@ -26,8 +44,22 @@ document.addEventListener('DOMContentLoaded', function() {
      * Load products based on current filters
      */
     function loadProducts() {
-        const selectedCategory = document.querySelector('input[name="category"]:checked').value;
-        const selectedType = document.querySelector('input[name="product_type"]:checked').value;
+        // Safely get category - default to "0" (all) if not found
+        const categoryElement = document.querySelector('input[name="category"]:checked');
+        const selectedCategory = categoryElement ? categoryElement.value : '0';
+
+        // Safely get product_type - handle both radio buttons and hidden inputs
+        let selectedType = 'all';
+        const checkedTypeElement = document.querySelector('input[name="product_type"]:checked');
+        if (checkedTypeElement) {
+            selectedType = checkedTypeElement.value;
+        } else {
+            // Fallback: look for hidden input or any input with name="product_type"
+            const hiddenTypeElement = document.querySelector('input[name="product_type"]');
+            if (hiddenTypeElement) {
+                selectedType = hiddenTypeElement.value;
+            }
+        }
 
         const formData = new FormData();
         formData.append('cat_id', selectedCategory);

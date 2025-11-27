@@ -106,30 +106,34 @@ try {
 
         foreach ($order_items as $item) {
             $product_id = intval($item['product_id']);
+            $quantity = isset($item['quantity']) ? intval($item['quantity']) : 1;
             $product = $product_class->get_product_by_id($product_id);
 
             if ($product) {
-                // For service products, create booking
+                // For service products, create booking(s) - ONE PER QUANTITY
                 if ($product['product_type'] === 'service') {
                     $provider = $provider_class->get_provider_by_id($product['provider_id']);
 
                     if ($provider) {
-                        $booking_id = $booking_class->create_booking(
-                            $customer_id,
-                            $product['provider_id'],
-                            $product_id,
-                            date('Y-m-d', strtotime('+1 day')), // Default to tomorrow
-                            '10:00:00',
-                            1.0,
-                            floatval($item['price']),
-                            'Booked via ' . $product['title'],
-                            ''
-                        );
+                        // Create multiple bookings if quantity > 1
+                        for ($i = 0; $i < $quantity; $i++) {
+                            $booking_id = $booking_class->create_booking(
+                                $customer_id,
+                                $product['provider_id'],
+                                $product_id,
+                                date('Y-m-d', strtotime('+1 day')), // Default to tomorrow
+                                '10:00:00',
+                                1.0,
+                                floatval($item['price']),
+                                'Booked via ' . $product['title'] . ($quantity > 1 ? " (#{$i + 1} of {$quantity})" : ''),
+                                ''
+                            );
 
-                        if ($booking_id) {
-                            error_log("Booking created: ID={$booking_id} for order {$order_id}");
-                        } else {
-                            error_log("Failed to create booking for order {$order_id}");
+                            if ($booking_id) {
+                                error_log("Booking created: ID={$booking_id} for order {$order_id}, item quantity {$i + 1}/{$quantity}");
+                            } else {
+                                error_log("Failed to create booking for order {$order_id}, item quantity {$i + 1}/{$quantity}");
+                            }
                         }
                     }
                 }
