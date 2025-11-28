@@ -263,7 +263,7 @@ $cssPath = SITE_URL . '/css/style.css';
                 <input type="hidden" id="product_id" name="product_id" value="<?php echo $product_id; ?>">
                 <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
 
-                <button type="submit" class="submit-btn" id="submit_btn">Request Booking</button>
+                <button type="submit" class="submit-btn" id="submit_btn">Make Booking</button>
             </form>
         </div>
     </div>

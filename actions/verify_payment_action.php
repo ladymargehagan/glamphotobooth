@@ -128,25 +128,43 @@ try {
     }
     error_log("VERIFY PAYMENT: Order $order_id status updated to 'paid' successfully");
 
-    // Save payment reference
+    // Save payment reference and insert payment record
     $db = new db_connection();
     if (!$db->db_connect()) {
-        error_log("VERIFY PAYMENT ERROR: Database connection failed when saving payment reference");
+        error_log("VERIFY PAYMENT ERROR: Database connection failed");
         echo json_encode(['success' => false, 'message' => 'Database connection error']);
         exit;
     }
 
+    // Extract payment details from Paystack response
+    $payment_channel = isset($result['data']['channel']) ? $db->db->real_escape_string($result['data']['channel']) : '';
+    $authorization_code = isset($result['data']['authorization']['authorization_code']) ? $db->db->real_escape_string($result['data']['authorization']['authorization_code']) : '';
     $reference_escaped = $db->db->real_escape_string($reference);
-    $sql = "UPDATE pb_orders SET payment_reference = '$reference_escaped' WHERE order_id = $order_id";
-    error_log("VERIFY PAYMENT: Executing SQL: $sql");
 
-    $update_result = $db->db_write_query($sql);
-    if (!$update_result) {
+    // Update order payment reference
+    $sql = "UPDATE pb_orders SET payment_reference = '$reference_escaped' WHERE order_id = $order_id";
+    error_log("VERIFY PAYMENT: Updating order payment reference");
+
+    if (!$db->db_write_query($sql)) {
         $mysql_error = $db->db ? $db->db->error : 'Unknown';
-        error_log("VERIFY PAYMENT ERROR: Failed to save payment reference for order $order_id (MySQL error: $mysql_error)");
-        // Don't exit - continue with booking creation
+        error_log("VERIFY PAYMENT ERROR: Failed to update order payment reference (MySQL error: $mysql_error)");
     } else {
-        error_log("VERIFY PAYMENT: Payment reference '$reference' saved for order $order_id");
+        error_log("VERIFY PAYMENT: Payment reference updated for order $order_id");
+    }
+
+    // Insert into pb_payment table
+    $payment_sql = "INSERT INTO pb_payment (order_id, payment_method, transaction_ref, authorization_code, payment_channel)
+                    VALUES ($order_id, 'paystack', '$reference_escaped', '$authorization_code', '$payment_channel')";
+    error_log("VERIFY PAYMENT: Inserting payment record: $payment_sql");
+
+    if (!$db->db_write_query($payment_sql)) {
+        $mysql_error = $db->db ? $db->db->error : 'Unknown';
+        error_log("VERIFY PAYMENT ERROR: Failed to insert payment record (MySQL error: $mysql_error)");
+        echo json_encode(['success' => false, 'message' => 'Failed to save payment record']);
+        exit;
+    } else {
+        $payment_id = $db->last_insert_id();
+        error_log("VERIFY PAYMENT: Payment record created with ID $payment_id for order $order_id");
     }
 
     // Process order items and create bookings for services
