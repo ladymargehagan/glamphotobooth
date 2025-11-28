@@ -25,6 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $per_page = 12;
         $offset = ($page - 1) * $per_page;
 
+        // Debug logging
+        error_log("FETCH PRODUCTS: cat_id=$cat_id, product_type='$product_type', provider_class=$provider_class");
+
         $product_class = new product_class();
         $products = [];
 
@@ -59,10 +62,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     WHERE $where_sql
                     ORDER BY p.created_at DESC
                     LIMIT $per_page OFFSET $offset";
+
+            error_log("FETCH PRODUCTS SQL: $sql");
+
             $products = $db->db_fetch_all($sql);
             if ($products === false) {
                 $products = [];
             }
+
+            error_log("FETCH PRODUCTS: Found " . count($products) . " products");
         }
 
         // Ensure products is an array
@@ -84,9 +92,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($products && is_array($products)) {
             foreach ($products as &$product) {
                 if (!empty($product['image'])) {
-                    // Clean the path - remove any leading slashes or paths
-                    $filename = basename($product['image']);
-                    $product['image'] = SITE_URL . '/uploads/products/' . $filename;
+                    // Check if image already has full URL
+                    if (strpos($product['image'], 'http://') === 0 || strpos($product['image'], 'https://') === 0) {
+                        // Already a full URL, keep as is
+                        // But extract just the filename to rebuild clean URL
+                        $filename = basename($product['image']);
+                        $product['image'] = SITE_URL . '/uploads/products/' . $filename;
+                    } else {
+                        // Relative path or just filename
+                        $filename = basename($product['image']);
+                        $product['image'] = SITE_URL . '/uploads/products/' . $filename;
+                    }
                 } else {
                     $product['image'] = null;
                 }
@@ -96,7 +112,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode([
             'success' => true,
             'data' => array_values($products),
-            'count' => count($products)
+            'count' => count($products),
+            'debug' => [
+                'provider_class_sent' => $provider_class,
+                'sql' => $sql ?? 'No SQL',
+                'first_product_user_role' => isset($products[0]['user_role']) ? $products[0]['user_role'] : 'none'
+            ]
         ]);
         exit;
 

@@ -71,6 +71,13 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('provider_class', providerClass); // Filter by provider type
         formData.append('page', 1);
 
+        // Debug logging
+        console.log('=== FETCH PRODUCTS DEBUG ===');
+        console.log('Category:', selectedCategory);
+        console.log('Product Type:', selectedType);
+        console.log('Provider Class:', providerClass);
+        console.log('===========================');
+
         productsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem;"><p>Loading products...</p></div>';
 
         // Use relative path - shop.php is in root, so actions/ is correct
@@ -87,6 +94,13 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(text => {
             try {
                 const data = JSON.parse(text);
+                console.log('=== SERVER RESPONSE ===');
+                console.log('Success:', data.success);
+                console.log('Count:', data.count);
+                console.log('Debug Info:', data.debug);
+                console.log('First Product:', data.data && data.data[0]);
+                console.log('======================');
+
                 if (data.success) {
                     renderProducts(data.data);
                 } else {
