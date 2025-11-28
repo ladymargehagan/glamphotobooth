@@ -76,15 +76,21 @@ class gallery_controller {
         // Validate
         $validation = $this->validate_photo_upload($file);
         if (!$validation['success']) {
+            error_log("GALLERY CONTROLLER: Validation failed for {$file['name']}: {$validation['message']}");
             return $validation;
         }
+
+        error_log("GALLERY CONTROLLER: File validated successfully: {$file['name']}");
 
         try {
             // Create directory structure: uploads/u{user_id}/g{gallery_id}/
             $upload_base = UPLOADS_DIR;
+            error_log("GALLERY CONTROLLER: Upload base directory: $upload_base");
+
             if (!is_dir($upload_base)) {
+                error_log("GALLERY CONTROLLER: Creating base upload directory: $upload_base");
                 if (!mkdir($upload_base, 0755, true)) {
-                    error_log('Failed to create base upload directory: ' . $upload_base);
+                    error_log("GALLERY CONTROLLER ERROR: Failed to create base upload directory: $upload_base");
                     return ['success' => false, 'message' => 'Failed to create upload directory'];
                 }
             }
@@ -118,28 +124,38 @@ class gallery_controller {
             $file_path = $gallery_dir . $filename;
 
             // Move uploaded file
+            error_log("GALLERY CONTROLLER: Moving uploaded file to: $file_path");
+
             if (!move_uploaded_file($file['tmp_name'], $file_path)) {
+                error_log("GALLERY CONTROLLER ERROR: Failed to move uploaded file from {$file['tmp_name']} to $file_path");
                 return ['success' => false, 'message' => 'Failed to save file'];
             }
+
+            error_log("GALLERY CONTROLLER: File moved successfully");
 
             // Make file readable
             chmod($file_path, 0644);
 
             // Save to database
+            $db_path = 'u' . $provider_id . '/g' . $gallery_id . '/' . $filename;
+            error_log("GALLERY CONTROLLER: Saving to database with path: $db_path");
+
             $gallery_class = new gallery_class();
             $photo_id = $gallery_class->add_photo(
                 $gallery_id,
-                'u' . $provider_id . '/g' . $gallery_id . '/' . $filename,
+                $db_path,
                 $file['name']
             );
 
             if ($photo_id) {
+                error_log("GALLERY CONTROLLER: Photo saved to database with ID: $photo_id");
                 return [
                     'success' => true,
                     'photo_id' => $photo_id,
-                    'file_path' => 'u' . $provider_id . '/g' . $gallery_id . '/' . $filename
+                    'file_path' => $db_path
                 ];
             } else {
+                error_log("GALLERY CONTROLLER ERROR: Failed to save photo to database, cleaning up file");
                 // Clean up file if database save fails
                 unlink($file_path);
                 return ['success' => false, 'message' => 'Failed to save photo record'];
