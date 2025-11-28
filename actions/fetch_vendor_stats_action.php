@@ -56,7 +56,7 @@ try {
 
     // Calculate revenue from orders
     $order_class = new order_class();
-    $all_orders = $order_class->get_all_orders();
+    $vendor_orders = $order_class->get_orders_by_provider($provider_id);
 
     $total_revenue = 0;
     $monthly_revenue = 0;
@@ -65,33 +65,41 @@ try {
 
     $current_month = date('Y-m');
 
-    if ($all_orders && is_array($provider_products)) {
-        // Get product IDs for this vendor
-        $vendor_product_ids = array_column($provider_products, 'product_id');
+    if ($vendor_orders && is_array($vendor_orders)) {
+        // Get product IDs for this vendor (for filtering order items)
+        $vendor_product_ids = is_array($provider_products) ? array_column($provider_products, 'product_id') : [];
 
-        foreach ($all_orders as $order) {
-            // Get order details to check if this order contains vendor's products
-            $order_details = $order_class->get_order_details($order['order_id']);
+        foreach ($vendor_orders as $order) {
+            // Get order items
+            $order_items = $order_class->get_order_items($order['order_id']);
 
-            if ($order_details) {
-                foreach ($order_details as $detail) {
-                    // Check if this order item is for one of vendor's products
-                    if (in_array($detail['product_id'], $vendor_product_ids)) {
-                        $item_total = floatval($detail['qty']) * floatval($detail['price']);
+            if ($order_items && is_array($order_items)) {
+                $order_has_vendor_items = false;
+                $order_total = 0;
 
-                        // Only count paid orders
-                        if ($order['payment_status'] === 'paid') {
-                            $total_revenue += $item_total;
-                            $total_orders++;
+                foreach ($order_items as $item) {
+                    // Check if this item belongs to vendor's products
+                    if (in_array($item['product_id'], $vendor_product_ids)) {
+                        $order_has_vendor_items = true;
+                        $item_total = floatval($item['quantity']) * floatval($item['price']);
+                        $order_total += $item_total;
+                    }
+                }
 
-                            // Check if order is from current month
-                            $order_month = date('Y-m', strtotime($order['order_date']));
-                            if ($order_month === $current_month) {
-                                $monthly_revenue += $item_total;
-                            }
-                        } elseif ($order['payment_status'] === 'pending') {
-                            $pending_orders++;
+                // Only count orders with vendor items
+                if ($order_has_vendor_items) {
+                    // Only count paid orders for revenue
+                    if ($order['payment_status'] === 'paid') {
+                        $total_revenue += $order_total;
+                        $total_orders++;
+
+                        // Check if order is from current month
+                        $order_month = date('Y-m', strtotime($order['order_date']));
+                        if ($order_month === $current_month) {
+                            $monthly_revenue += $order_total;
                         }
+                    } elseif ($order['payment_status'] === 'pending') {
+                        $pending_orders++;
                     }
                 }
             }
