@@ -530,7 +530,7 @@ if ($categories === false) {
             </aside>
 
             <!-- Products Grid -->
-            <main class="shop-main" id="productsGrid">
+            <main class="shop-main" id="productsGrid" data-provider-class="2">
                 <div class="empty-state">
                     <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <circle cx="12" cy="12" r="10"></circle>

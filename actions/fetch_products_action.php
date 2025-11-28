@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $cat_id = isset($_POST['cat_id']) ? intval($_POST['cat_id']) : 0;
         $product_type = isset($_POST['product_type']) ? trim($_POST['product_type']) : '';
+        $provider_class = isset($_POST['provider_class']) ? intval($_POST['provider_class']) : 0;
         $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
         $per_page = 12;
         $offset = ($page - 1) * $per_page;
@@ -28,34 +29,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $products = [];
 
         // Get products based on filters
-        if ($cat_id > 0) {
-            $products = $product_class->get_products_by_category($cat_id, true);
+        $db = new db_connection();
+        if ($db->db_connect()) {
+            $where_clauses = ["p.is_active = 1"];
+
+            // Filter by category
+            if ($cat_id > 0) {
+                $where_clauses[] = "p.cat_id = $cat_id";
+            }
+
+            // Filter by product type
+            if (!empty($product_type) && in_array($product_type, ['service', 'sale', 'rental'])) {
+                $product_type_escaped = $db->db->real_escape_string($product_type);
+                $where_clauses[] = "p.product_type = '$product_type_escaped'";
+            }
+
+            // Filter by provider class (2=photographer, 3=vendor)
+            if ($provider_class > 0) {
+                $where_clauses[] = "sp.provider_class = $provider_class";
+            }
+
+            $where_sql = implode(' AND ', $where_clauses);
+
+            $sql = "SELECT p.product_id, p.provider_id, p.cat_id, p.title, p.description, p.price,
+                           p.product_type, p.image, p.keywords, p.is_active, p.created_at,
+                           sp.business_name, sp.provider_class
+                    FROM pb_products p
+                    INNER JOIN pb_service_providers sp ON p.provider_id = sp.provider_id
+                    WHERE $where_sql
+                    ORDER BY p.created_at DESC
+                    LIMIT $per_page OFFSET $offset";
+            $products = $db->db_fetch_all($sql);
             if ($products === false) {
                 $products = [];
             }
-        } else {
-            // Get all active products (with provider validation)
-            $db = new db_connection();
-            if ($db->db_connect()) {
-                $sql = "SELECT p.product_id, p.provider_id, p.cat_id, p.title, p.description, p.price,
-                               p.product_type, p.image, p.keywords, p.is_active, p.created_at
-                        FROM pb_products p
-                        INNER JOIN pb_service_providers sp ON p.provider_id = sp.provider_id
-                        WHERE p.is_active = 1
-                        ORDER BY p.created_at DESC
-                        LIMIT $per_page OFFSET $offset";
-                $products = $db->db_fetch_all($sql);
-                if ($products === false) {
-                    $products = [];
-                }
-            }
         }
 
-        // Filter by product type if specified
-        if (!empty($product_type) && $products && is_array($products)) {
-            $products = array_filter($products, function($p) use ($product_type) {
-                return isset($p['product_type']) && $p['product_type'] === $product_type;
-            });
+        // Ensure products is an array
+        if (!is_array($products)) {
+            $products = [];
         }
 
         // Apply pagination to filtered results (only if we got all products, not already paginated)

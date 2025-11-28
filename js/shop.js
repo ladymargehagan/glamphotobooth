@@ -61,9 +61,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // Determine provider class based on page type (services vs shop)
+        // Look for data-provider-class attribute on productsGrid
+        const providerClass = productsGrid.dataset.providerClass || '0';
+
         const formData = new FormData();
         formData.append('cat_id', selectedCategory);
         formData.append('product_type', selectedType);
+        formData.append('provider_class', providerClass); // Filter by provider type
         formData.append('page', 1);
 
         productsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem;"><p>Loading products...</p></div>';
