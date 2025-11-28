@@ -47,11 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $where_clauses[] = "p.product_type = '$product_type_escaped'";
             }
 
-            // Filter by provider class (2=photographer, 3=vendor)
-            if ($provider_class > 0) {
-                $where_clauses[] = "sp.user_role = $provider_class";
-            }
-
             $where_sql = implode(' AND ', $where_clauses);
 
             $sql = "SELECT p.product_id, p.provider_id, p.cat_id, p.title, p.description, p.price,

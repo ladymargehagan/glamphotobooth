@@ -16,7 +16,7 @@ if (!class_exists('category_class')) {
     require_once __DIR__ . '/classes/category_class.php';
 }
 
-$pageTitle = 'Products & Equipment - PhotoMarket';
+$pageTitle = 'Photography Marketplace - PhotoMarket';
 $cssPath = SITE_URL . '/css/style.css';
 
 // Get all categories for filter
@@ -501,8 +501,8 @@ if ($categories === false) {
 
     <div class="shop-container">
         <div class="shop-header">
-            <h1>Products & Equipment</h1>
-            <p>Shop photography equipment, accessories, and products from our trusted sellers</p>
+            <h1>Photography Marketplace</h1>
+            <p>Browse photography services, equipment, and products from our trusted photographers and vendors</p>
         </div>
 
         <div class="shop-layout">
@@ -525,7 +525,7 @@ if ($categories === false) {
                     <?php endif; ?>
                 </div>
 
-                <!-- Product Type Filter - Excludes services -->
+                <!-- Product Type Filter -->
                 <div class="filter-group">
                     <div class="filter-title">Type</div>
                     <div class="filter-option">
@@ -533,14 +533,22 @@ if ($categories === false) {
                         <label for="type-all">All Types</label>
                     </div>
                     <div class="filter-option">
+                        <input type="radio" id="type-service" name="product_type" value="service">
+                        <label for="type-service">Services</label>
+                    </div>
+                    <div class="filter-option">
                         <input type="radio" id="type-sale" name="product_type" value="sale">
                         <label for="type-sale">Products</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" id="type-rental" name="product_type" value="rental">
+                        <label for="type-rental">Rentals</label>
                     </div>
                 </div>
             </aside>
 
             <!-- Products Grid -->
-            <main class="shop-main" id="productsGrid" data-provider-class="3">
+            <main class="shop-main" id="productsGrid">
                 <div class="empty-state">
                     <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <circle cx="12" cy="12" r="10"></circle>
