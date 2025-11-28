@@ -53,7 +53,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </a>
                 </li>
                 <li class="sidebar-nav-item <?php echo (strpos($current_page, 'manage_products') !== false || strpos($current_page, 'add_product') !== false || strpos($current_page, 'edit_product') !== false) ? 'active' : ''; ?>">
-                    <a href="<?php echo SITE_URL; ?>/customer/manage_products.php" class="sidebar-nav-link">
+                    <a href="<?php echo SITE_URL; ?>/vendor/manage_products.php" class="sidebar-nav-link">
                         <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M12 5v14M5 12h14"></path>
                         </svg>
@@ -67,7 +67,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <div class="sidebar-section-title">Business</div>
             <ul class="sidebar-nav">
                 <li class="sidebar-nav-item <?php echo ($current_page == 'edit_profile.php' || strpos($current_page, 'profile') !== false) ? 'active' : ''; ?>">
-                    <a href="<?php echo SITE_URL; ?>/customer/edit_profile.php" class="sidebar-nav-link">
+                    <a href="<?php echo SITE_URL; ?>/vendor/edit_profile.php" class="sidebar-nav-link">
                         <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
@@ -76,7 +76,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </a>
                 </li>
                 <li class="sidebar-nav-item <?php echo ($current_page == 'earnings.php') ? 'active' : ''; ?>">
-                    <a href="<?php echo SITE_URL; ?>/customer/earnings.php" class="sidebar-nav-link">
+                    <a href="<?php echo SITE_URL; ?>/vendor/earnings.php" class="sidebar-nav-link">
                         <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <line x1="12" y1="1" x2="12" y2="23"></line>
                             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
@@ -113,8 +113,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         Dashboard
                     </a>
                 </li>
-                <li class="sidebar-nav-item <?php echo ($current_page == 'manage_bookings.php' || strpos($current_page, 'booking') !== false) ? 'active' : ''; ?>">
-                    <a href="<?php echo SITE_URL; ?>/customer/manage_bookings.php" class="sidebar-nav-link">
+                <li class="sidebar-nav-item <?php echo ($current_page == 'manage_bookings.php' || strpos($current_page, 'booking') !== false || strpos($current_page, 'upload_photos') !== false) ? 'active' : ''; ?>">
+                    <a href="<?php echo SITE_URL; ?>/photographer/manage_bookings.php" class="sidebar-nav-link">
                         <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                             <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -122,14 +122,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <line x1="3" y1="10" x2="21" y2="10"></line>
                         </svg>
                         Bookings
-                    </a>
-                </li>
-                <li class="sidebar-nav-item <?php echo (strpos($current_page, 'manage_products') !== false || strpos($current_page, 'add_product') !== false || strpos($current_page, 'edit_product') !== false) ? 'active' : ''; ?>">
-                    <a href="<?php echo SITE_URL; ?>/customer/manage_products.php" class="sidebar-nav-link">
-                        <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M12 5v14M5 12h14"></path>
-                        </svg>
-                        My Services
                     </a>
                 </li>
                 <li class="sidebar-nav-item <?php echo ($current_page == 'galleries.php') ? 'active' : ''; ?>">
@@ -149,7 +141,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <div class="sidebar-section-title">Business</div>
             <ul class="sidebar-nav">
                 <li class="sidebar-nav-item <?php echo ($current_page == 'edit_profile.php' || strpos($current_page, 'profile') !== false) ? 'active' : ''; ?>">
-                    <a href="<?php echo SITE_URL; ?>/customer/edit_profile.php" class="sidebar-nav-link">
+                    <a href="<?php echo SITE_URL; ?>/photographer/edit_profile.php" class="sidebar-nav-link">
                         <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
@@ -158,7 +150,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </a>
                 </li>
                 <li class="sidebar-nav-item <?php echo ($current_page == 'earnings.php') ? 'active' : ''; ?>">
-                    <a href="<?php echo SITE_URL; ?>/customer/earnings.php" class="sidebar-nav-link">
+                    <a href="<?php echo SITE_URL; ?>/photographer/earnings.php" class="sidebar-nav-link">
                         <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <line x1="12" y1="1" x2="12" y2="23"></line>
                             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
