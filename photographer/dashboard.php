@@ -183,7 +183,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     </svg>
                     <h3 class="card-title">Manage Bookings</h3>
                     <p class="card-subtitle">Review and respond to client booking requests</p>
-                    <a href="<?php echo SITE_URL; ?>/customer/manage_bookings.php" class="card-action">View Requests →</a>
+                    <a href="<?php echo SITE_URL; ?>/photographer/manage_bookings.php" class="card-action">View Requests →</a>
                 </div>
 
                 <div class="dashboard-card">
