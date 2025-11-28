@@ -144,7 +144,7 @@ class order_class extends db_connection {
         if (!$this->db_connect()) {
             return false;
         }
-        
+
         $order_id = intval($order_id);
 
         $query = "SELECT oi.*, p.title, p.product_type, p.image
@@ -160,7 +160,21 @@ class order_class extends db_connection {
         $stmt->bind_param("i", $order_id);
         if ($stmt->execute()) {
             $result = $stmt->get_result();
-            return $result->fetch_all(MYSQLI_ASSOC);
+            $items = $result->fetch_all(MYSQLI_ASSOC);
+
+            // Fix image paths
+            if ($items && is_array($items)) {
+                foreach ($items as &$item) {
+                    if (!empty($item['image'])) {
+                        $filename = basename($item['image']);
+                        $item['image'] = SITE_URL . '/uploads/products/' . $filename;
+                    } else {
+                        $item['image'] = null;
+                    }
+                }
+            }
+
+            return $items;
         }
         return false;
     }

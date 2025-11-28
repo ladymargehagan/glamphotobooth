@@ -71,7 +71,21 @@ class cart_class extends db_connection {
                 WHERE c.customer_id = $customer_id
                 ORDER BY c.date_added DESC";
 
-        return $this->db_fetch_all($sql);
+        $items = $this->db_fetch_all($sql);
+
+        // Fix image paths
+        if ($items && is_array($items)) {
+            foreach ($items as &$item) {
+                if (!empty($item['image'])) {
+                    $filename = basename($item['image']);
+                    $item['image'] = SITE_URL . '/uploads/products/' . $filename;
+                } else {
+                    $item['image'] = null;
+                }
+            }
+        }
+
+        return $items;
     }
 
     /**

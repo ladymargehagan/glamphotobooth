@@ -53,7 +53,15 @@ class product_class extends db_connection {
         $sql = "SELECT product_id, provider_id, cat_id, title, description, price,
                        product_type, image, keywords, is_active, created_at, updated_at
                 FROM pb_products WHERE product_id = $product_id LIMIT 1";
-        return $this->db_fetch_one($sql);
+        $product = $this->db_fetch_one($sql);
+
+        // Fix image path
+        if ($product && !empty($product['image'])) {
+            $filename = basename($product['image']);
+            $product['image'] = SITE_URL . '/uploads/products/' . $filename;
+        }
+
+        return $product;
     }
 
     /**
@@ -72,7 +80,19 @@ class product_class extends db_connection {
                 FROM pb_products p
                 INNER JOIN pb_service_providers sp ON p.provider_id = sp.provider_id
                 $where ORDER BY p.created_at DESC";
-        return $this->db_fetch_all($sql);
+        $products = $this->db_fetch_all($sql);
+
+        // Fix image paths
+        if ($products && is_array($products)) {
+            foreach ($products as &$product) {
+                if (!empty($product['image'])) {
+                    $filename = basename($product['image']);
+                    $product['image'] = SITE_URL . '/uploads/products/' . $filename;
+                }
+            }
+        }
+
+        return $products;
     }
 
     /**
@@ -91,7 +111,19 @@ class product_class extends db_connection {
                 FROM pb_products p
                 INNER JOIN pb_service_providers sp ON p.provider_id = sp.provider_id
                 $where ORDER BY p.created_at DESC";
-        return $this->db_fetch_all($sql);
+        $products = $this->db_fetch_all($sql);
+
+        // Fix image paths
+        if ($products && is_array($products)) {
+            foreach ($products as &$product) {
+                if (!empty($product['image'])) {
+                    $filename = basename($product['image']);
+                    $product['image'] = SITE_URL . '/uploads/products/' . $filename;
+                }
+            }
+        }
+
+        return $products;
     }
 
     /**
