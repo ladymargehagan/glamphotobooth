@@ -252,6 +252,7 @@ require_once __DIR__ . '/../settings/core.php';
         <form id="reviewForm">
             <div class="hidden-inputs">
                 <input type="hidden" name="booking_id" id="booking_id" value="">
+                <input type="hidden" name="order_id" id="order_id" value="">
                 <input type="hidden" name="provider_id" id="provider_id" value="">
                 <input type="hidden" name="rating" id="rating" value="">
             </div>

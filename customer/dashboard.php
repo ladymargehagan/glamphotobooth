@@ -64,22 +64,42 @@ foreach ($all_orders as $order) {
 // Get recent bookings (limit to 3)
 $recent_bookings = array_slice($recent_bookings, 0, 3);
 
-// Get recent orders (limit to 3) - need to get order items with product details
+// Get recent orders (limit to 3) - only show vendor product orders (not photographer services)
+// We need to get order items and filter out orders that only contain photographer services
 $recent_orders = [];
-$order_items_map = [];
+$reviewed_orders = []; // Track which orders have been reviewed
 if (count($all_orders) > 0) {
-    $recent_orders_data = array_slice($all_orders, 0, 3);
-    foreach ($recent_orders_data as $order) {
+    $product_class = new product_class();
+
+    foreach ($all_orders as $order) {
         $order_items = $order_class->get_order_items($order['order_id']);
         if ($order_items && is_array($order_items)) {
-            $order['items'] = $order_items;
-            $recent_orders[] = $order;
+            // Check if this order contains vendor products (product_type = 'sale' or 'rental')
+            $has_vendor_products = false;
+            $vendor_items = [];
+            $vendor_provider_ids = [];
 
-            // Store provider IDs from order items for review checking
             foreach ($order_items as $item) {
-                if (isset($item['product_id'])) {
-                    $order_items_map[$order['order_id']][] = $item;
+                // Only include vendor products (sale/rental), not photographer services
+                if (isset($item['product_type']) && ($item['product_type'] === 'sale' || $item['product_type'] === 'rental')) {
+                    $has_vendor_products = true;
+                    $vendor_items[] = $item;
+
+                    // Get provider_id from the product to enable reviews
+                    if (isset($item['product_id'])) {
+                        $product_details = $product_class->get_product_by_id($item['product_id']);
+                        if ($product_details && isset($product_details['provider_id'])) {
+                            $vendor_provider_ids[$item['product_id']] = $product_details['provider_id'];
+                        }
+                    }
                 }
+            }
+
+            // Only include orders with vendor products
+            if ($has_vendor_products && count($recent_orders) < 3) {
+                $order['items'] = $vendor_items;
+                $order['vendor_provider_ids'] = $vendor_provider_ids;
+                $recent_orders[] = $order;
             }
         }
     }
@@ -87,10 +107,13 @@ if (count($all_orders) > 0) {
 
 // Get review class to check which bookings and orders have been reviewed
 $reviewed_bookings = [];
+$reviewed_orders = [];
 $review_class = null;
 try {
     if (class_exists('review_class')) {
         $review_class = new review_class();
+
+        // Check booking reviews
         foreach ($all_bookings as $booking) {
             if (isset($booking['status']) && $booking['status'] === 'completed' && isset($booking['booking_id'])) {
                 try {
@@ -98,6 +121,27 @@ try {
                     $reviewed_bookings[$booking['booking_id']] = $review ? $review : null;
                 } catch (Exception $e) {
                     $reviewed_bookings[$booking['booking_id']] = null;
+                }
+            }
+        }
+
+        // Check order reviews (for each vendor provider in paid orders)
+        foreach ($recent_orders as $order) {
+            if (isset($order['payment_status']) && $order['payment_status'] === 'paid' && isset($order['vendor_provider_ids'])) {
+                foreach ($order['vendor_provider_ids'] as $product_id => $provider_id) {
+                    try {
+                        // Check if this vendor has been reviewed for this order
+                        $review = $review_class->get_review_by_order_and_provider($order['order_id'], $provider_id);
+                        if (!isset($reviewed_orders[$order['order_id']])) {
+                            $reviewed_orders[$order['order_id']] = [];
+                        }
+                        $reviewed_orders[$order['order_id']][$provider_id] = $review ? $review : null;
+                    } catch (Exception $e) {
+                        if (!isset($reviewed_orders[$order['order_id']])) {
+                            $reviewed_orders[$order['order_id']] = [];
+                        }
+                        $reviewed_orders[$order['order_id']][$provider_id] = null;
+                    }
                 }
             }
         }
@@ -309,11 +353,36 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                                     </div>
                                 <?php endif; ?>
 
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-sm);">
                                     <div style="color: var(--primary); font-weight: 700; font-size: 1.1rem;">
                                         Total: ₵<?php echo number_format($order['total_amount'] ?? 0, 2); ?>
                                     </div>
-                                    <a href="<?php echo SITE_URL; ?>/customer/orders.php" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
+                                    <div style="display: flex; gap: var(--spacing-sm);">
+                                        <a href="<?php echo SITE_URL; ?>/customer/orders.php" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
+                                        <?php if (isset($order['payment_status']) && $order['payment_status'] === 'paid' && isset($order['vendor_provider_ids']) && !empty($order['vendor_provider_ids'])): ?>
+                                            <?php
+                                            // Get first vendor provider ID for the review button
+                                            $first_provider_id = reset($order['vendor_provider_ids']);
+                                            $order_id = $order['order_id'];
+
+                                            // Check if any vendor in this order has been reviewed
+                                            $any_vendor_reviewed = false;
+                                            if (isset($reviewed_orders[$order_id])) {
+                                                foreach ($reviewed_orders[$order_id] as $review) {
+                                                    if ($review !== null) {
+                                                        $any_vendor_reviewed = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+
+                                            if ($any_vendor_reviewed): ?>
+                                                <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.85rem; background: #4caf50; color: white; border: none; border-radius: 4px; cursor: default;" disabled>✓ Reviewed</button>
+                                            <?php else: ?>
+                                                <button onclick="openReviewModal(null, <?php echo $first_provider_id; ?>, <?php echo $order_id; ?>)" class="btn" style="padding: 0.5rem 1rem; font-size: 0.85rem; background: #ff9800; color: white; border: none; border-radius: 4px; cursor: pointer;">Add Review</button>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -348,35 +417,38 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         window.siteUrl = '<?php echo SITE_URL; ?>';
         window.csrfToken = '<?php echo generateCSRFToken(); ?>';
 
-        function openReviewModal(bookingId, providerId) {
+        function openReviewModal(bookingId, providerId, orderId) {
             const bookingIdEl = document.getElementById('booking_id');
+            const orderIdEl = document.getElementById('order_id'); // For vendor reviews
             const providerIdEl = document.getElementById('provider_id');
             const ratingEl = document.getElementById('rating');
             const commentEl = document.getElementById('comment');
             const charCountEl = document.getElementById('charCount');
             const ratingLabelEl = document.getElementById('ratingLabel');
             const reviewModal = document.getElementById('reviewModal');
-            
+
             if (!reviewModal) return;
-            
-            if (bookingIdEl) bookingIdEl.value = bookingId;
+
+            // Set booking ID or order ID depending on review type
+            if (bookingIdEl) bookingIdEl.value = bookingId || '';
+            if (orderIdEl) orderIdEl.value = orderId || '';
             if (providerIdEl) providerIdEl.value = providerId;
             if (ratingEl) ratingEl.value = '';
             if (commentEl) commentEl.value = '';
             if (charCountEl) charCountEl.textContent = '0';
             if (ratingLabelEl) ratingLabelEl.textContent = 'Click to rate';
-            
+
             // Reset stars
             document.querySelectorAll('.star').forEach(star => {
                 star.classList.remove('active', 'hover');
             });
-            
+
             // Hide messages
             const reviewError = document.getElementById('reviewError');
             const reviewSuccess = document.getElementById('reviewSuccess');
             if (reviewError) reviewError.classList.remove('show');
             if (reviewSuccess) reviewSuccess.classList.remove('show');
-            
+
             reviewModal.classList.add('show');
         }
 
