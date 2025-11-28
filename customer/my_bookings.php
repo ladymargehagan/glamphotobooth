@@ -40,16 +40,32 @@ try {
 // Get review class to check which bookings have been reviewed
 $reviewed_bookings = [];
 $booking_reviews = [];
+$can_edit_review = [];
+$booking_galleries = [];
 try {
     $review_class = new review_class();
+    $gallery_class = new gallery_class();
 
     foreach ($all_bookings as $booking) {
         if (isset($booking['status']) && $booking['status'] === 'completed' && isset($booking['booking_id'])) {
             // Check if this specific booking has been reviewed
             $review = $review_class->get_review_by_booking(intval($booking['booking_id']));
             $reviewed_bookings[$booking['booking_id']] = $review ? true : false;
+
             if ($review) {
                 $booking_reviews[$booking['booking_id']] = $review;
+
+                // Check if review can be edited (within 7 days)
+                $review_time = strtotime($review['review_date'] ?? $review['created_at'] ?? 'now');
+                $current_time = time();
+                $days_passed = ($current_time - $review_time) / (60 * 60 * 24);
+                $can_edit_review[$booking['booking_id']] = ($days_passed <= 7);
+            }
+
+            // Check if booking has a gallery
+            $gallery = $gallery_class->get_gallery_by_booking(intval($booking['booking_id']));
+            if ($gallery) {
+                $booking_galleries[$booking['booking_id']] = $gallery;
             }
         }
     }
@@ -339,10 +355,26 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                             <?php endif; ?>
 
                             <div class="booking-actions">
-                                <?php if ($booking['status'] === 'completed' && isset($reviewed_bookings[$booking['booking_id']]) && !$reviewed_bookings[$booking['booking_id']]): ?>
-                                    <button onclick="openReviewModal(<?php echo $booking['booking_id']; ?>, <?php echo $booking['provider_id']; ?>)" class="btn-review">Add Review</button>
-                                <?php elseif ($booking['status'] === 'completed' && isset($reviewed_bookings[$booking['booking_id']]) && $reviewed_bookings[$booking['booking_id']]): ?>
-                                    <span style="color: #2e7d32; font-size: 0.85rem; font-weight: 600;">✓ Reviewed</span>
+                                <?php if ($booking['status'] === 'completed'): ?>
+                                    <?php if (isset($booking_galleries[$booking['booking_id']])): ?>
+                                        <?php $gallery = $booking_galleries[$booking['booking_id']]; ?>
+                                        <a href="<?php echo SITE_URL; ?>/customer/view_gallery.php?code=<?php echo htmlspecialchars($gallery['access_code']); ?>"
+                                           class="btn-review"
+                                           style="background: #1976d2;">
+                                            View Gallery
+                                        </a>
+                                    <?php endif; ?>
+
+                                    <?php if (isset($reviewed_bookings[$booking['booking_id']]) && !$reviewed_bookings[$booking['booking_id']]): ?>
+                                        <button onclick="openReviewModal(<?php echo $booking['booking_id']; ?>, <?php echo $booking['provider_id']; ?>)" class="btn-review">Add Review</button>
+                                    <?php elseif (isset($reviewed_bookings[$booking['booking_id']]) && $reviewed_bookings[$booking['booking_id']]): ?>
+                                        <?php if (isset($can_edit_review[$booking['booking_id']]) && $can_edit_review[$booking['booking_id']]): ?>
+                                            <?php $review = $booking_reviews[$booking['booking_id']]; ?>
+                                            <button onclick="openEditReviewModal(<?php echo $booking['booking_id']; ?>, <?php echo $booking['provider_id']; ?>, <?php echo $review['rating']; ?>, '<?php echo htmlspecialchars(addslashes($review['comment'] ?? ''), ENT_QUOTES); ?>')" class="btn-review" style="background: #ff9800;">Edit Review</button>
+                                        <?php else: ?>
+                                            <span style="color: #2e7d32; font-size: 0.85rem; font-weight: 600;">✓ Reviewed</span>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
 
@@ -404,16 +436,51 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             document.getElementById('comment').value = '';
             document.getElementById('charCount').textContent = '0';
             document.getElementById('ratingLabel').textContent = 'Click to rate';
-            
+
             // Reset stars
             document.querySelectorAll('.star').forEach(star => {
                 star.classList.remove('active', 'hover');
             });
-            
+
             // Hide messages
             document.getElementById('reviewError').classList.remove('show');
             document.getElementById('reviewSuccess').classList.remove('show');
-            
+
+            // Update modal title
+            document.querySelector('.review-modal-header h2').textContent = 'Leave a Review';
+
+            document.getElementById('reviewModal').classList.add('show');
+        }
+
+        function openEditReviewModal(bookingId, providerId, rating, comment) {
+            document.getElementById('booking_id').value = bookingId;
+            document.getElementById('provider_id').value = providerId;
+            document.getElementById('rating').value = rating;
+            document.getElementById('comment').value = comment;
+            document.getElementById('charCount').textContent = comment.length;
+
+            // Update star display
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => {
+                const starRating = parseInt(star.getAttribute('data-rating'));
+                if (starRating <= rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+
+            // Update rating label
+            const labels = ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+            document.getElementById('ratingLabel').textContent = labels[rating - 1];
+
+            // Hide messages
+            document.getElementById('reviewError').classList.remove('show');
+            document.getElementById('reviewSuccess').classList.remove('show');
+
+            // Update modal title
+            document.querySelector('.review-modal-header h2').textContent = 'Edit Your Review';
+
             document.getElementById('reviewModal').classList.add('show');
         }
 

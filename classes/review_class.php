@@ -267,6 +267,40 @@ class review_class extends db_connection {
     }
 
     /**
+     * Update existing review
+     */
+    public function update_review($review_id, $rating, $comment = '') {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
+        $review_id = intval($review_id);
+        $rating = intval($rating);
+        $comment = $this->db->real_escape_string($comment);
+
+        // Get review details first to get provider_id
+        $review = $this->get_review_by_id($review_id);
+        if (!$review) {
+            return false;
+        }
+
+        // Update review
+        $query = "UPDATE pb_reviews SET rating = ?, comment = ? WHERE review_id = ?";
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param("isi", $rating, $comment, $review_id);
+        if ($stmt->execute()) {
+            // Update provider rating
+            $this->update_provider_rating($review['provider_id']);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Delete review
      */
     public function delete_review($review_id) {

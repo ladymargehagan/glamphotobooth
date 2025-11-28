@@ -58,10 +58,24 @@ class review_controller {
         $existing_review = $review_class->get_review_by_booking($booking_id);
 
         if ($existing_review) {
-            return ['success' => false, 'message' => 'You have already reviewed this booking'];
+            // Check if review can be edited (within 7 days)
+            $review_time = strtotime($existing_review['created_at']);
+            $current_time = time();
+            $days_passed = ($current_time - $review_time) / (60 * 60 * 24);
+
+            if ($days_passed > 7) {
+                return ['success' => false, 'message' => 'You have already reviewed this booking'];
+            }
+
+            // Update existing review
+            if ($review_class->update_review($existing_review['review_id'], $rating, $comment)) {
+                return ['success' => true, 'message' => 'Review updated successfully', 'review_id' => $existing_review['review_id']];
+            } else {
+                return ['success' => false, 'message' => 'Failed to update review'];
+            }
         }
 
-        // Add review
+        // Add new review
         $review_id = $review_class->add_review($customer_id, $provider_id, $booking_id, $rating, $comment);
 
         if ($review_id) {

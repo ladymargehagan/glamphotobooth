@@ -109,12 +109,27 @@ function submitReview() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showReviewSuccess('Review submitted successfully!');
-            resetReviewForm();
-            // Close modal or refresh after delay
-            setTimeout(() => {
-                location.reload();
-            }, 1500);
+            // Close modal immediately
+            closeReviewModal();
+
+            // Show SweetAlert success message
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Success!',
+                    text: data.message || 'Review submitted successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#5c9ead'
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                // Fallback if SweetAlert not loaded
+                showReviewSuccess(data.message || 'Review submitted successfully!');
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            }
         } else {
             showReviewError(data.message || 'Failed to submit review');
             submitBtn.disabled = false;
