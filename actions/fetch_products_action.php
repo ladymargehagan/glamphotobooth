@@ -46,14 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Filter by provider class (2=photographer, 3=vendor)
             if ($provider_class > 0) {
-                $where_clauses[] = "sp.provider_class = $provider_class";
+                $where_clauses[] = "sp.user_role = $provider_class";
             }
 
             $where_sql = implode(' AND ', $where_clauses);
 
             $sql = "SELECT p.product_id, p.provider_id, p.cat_id, p.title, p.description, p.price,
                            p.product_type, p.image, p.keywords, p.is_active, p.created_at,
-                           sp.business_name, sp.provider_class
+                           sp.business_name, sp.user_role
                     FROM pb_products p
                     INNER JOIN pb_service_providers sp ON p.provider_id = sp.provider_id
                     WHERE $where_sql
