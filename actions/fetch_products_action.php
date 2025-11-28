@@ -107,12 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode([
             'success' => true,
             'data' => array_values($products),
-            'count' => count($products),
-            'debug' => [
-                'provider_class_sent' => $provider_class,
-                'sql' => $sql ?? 'No SQL',
-                'first_product_user_role' => isset($products[0]['user_role']) ? $products[0]['user_role'] : 'none'
-            ]
+            'count' => count($products)
         ]);
         exit;
 

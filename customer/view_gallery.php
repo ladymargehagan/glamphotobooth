@@ -6,22 +6,23 @@
  */
 require_once __DIR__ . '/../settings/core.php';
 
-$gallery_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-$access_code = isset($_GET['code']) ? $_GET['code'] : '';
+$access_code = isset($_GET['code']) ? trim($_GET['code']) : '';
 
-if ($gallery_id <= 0 || empty($access_code)) {
+if (empty($access_code)) {
     http_response_code(404);
     $pageTitle = 'Gallery Not Found - PhotoMarket';
+    $gallery = null;
 } else {
     // Validate access code
     $gallery_class = new gallery_class();
     $gallery = $gallery_class->get_gallery_by_access_code($access_code);
 
-    if (!$gallery || intval($gallery['gallery_id']) !== intval($gallery_id)) {
+    if (!$gallery) {
         http_response_code(403);
         $pageTitle = 'Access Denied - PhotoMarket';
     } else {
         $pageTitle = htmlspecialchars($gallery['title'] ?: 'Gallery') . ' - PhotoMarket';
+        $gallery_id = intval($gallery['gallery_id']);
         $photos = $gallery_class->get_gallery_photos($gallery_id);
     }
 }
