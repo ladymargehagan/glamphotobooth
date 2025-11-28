@@ -13,6 +13,7 @@ $orders = $order_class->get_orders_by_customer($user_id);
 
 $pageTitle = 'My Orders - PhotoMarket';
 $cssPath = SITE_URL . '/css/style.css';
+$dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,13 +23,7 @@ $cssPath = SITE_URL . '/css/style.css';
     <title><?php echo htmlspecialchars($pageTitle); ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo htmlspecialchars($cssPath); ?>">
-    <!-- Global variables for scripts -->
-    <script>
-        window.isLoggedIn = <?php echo isLoggedIn() ? 'true' : 'false'; ?>;
-        window.loginUrl = '<?php echo SITE_URL; ?>/auth/login.php';
-        window.siteUrl = '<?php echo SITE_URL; ?>';
-    </script>
-    <script src="<?php echo SITE_URL; ?>/js/cart.js"></script>
+    <link rel="stylesheet" href="<?php echo htmlspecialchars($dashboardCss); ?>">
     <style>
         .orders-container {
             max-width: 1000px;
@@ -193,48 +188,18 @@ $cssPath = SITE_URL . '/css/style.css';
     </style>
 </head>
 <body>
-    <!-- Navigation Header -->
-    <header class="navbar">
-        <div class="container">
-            <div class="flex-between">
-                <div class="navbar-brand">
-                    <a href="/" class="logo">
-                        <h3 class="font-serif text-primary m-0">PhotoMarket</h3>
-                    </a>
-                </div>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <?php require_once __DIR__ . '/../views/dashboard_sidebar.php'; ?>
 
-                <nav class="navbar-menu">
-                    <ul class="navbar-items">
-                        <li><a href="<?php echo SITE_URL; ?>/index.php" class="nav-link">Home</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/shop.php" class="nav-link">Products & Services</a></li>
-                    </ul>
-                </nav>
-
-                <div class="navbar-actions flex gap-sm">
-                    <?php if (isLoggedIn()): ?>
-                        <a href="<?php echo SITE_URL; ?>/customer/cart.php" class="cart-icon" title="Shopping Cart" style="position: relative; display: flex; align-items: center;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
-                                <circle cx="9" cy="21" r="1"></circle>
-                                <circle cx="20" cy="21" r="1"></circle>
-                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                            </svg>
-                            <span id="cartBadge" class="cart-badge" style="display: none;"></span>
-                        </a>
-                        <a href="<?php echo getDashboardUrl(); ?>" class="btn btn-sm btn-outline">Dashboard</a>
-                        <a href="<?php echo SITE_URL; ?>/actions/logout.php" class="btn btn-sm btn-primary">Logout</a>
-                    <?php else: ?>
-                        <a href="<?php echo SITE_URL; ?>/auth/login.php" class="btn btn-sm btn-outline">Login</a>
-                        <a href="<?php echo SITE_URL; ?>/auth/register.php" class="btn btn-sm btn-primary">Register</a>
-                    <?php endif; ?>
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            <div class="dashboard-header">
+                <div>
+                    <h1 class="dashboard-title">My Orders</h1>
+                    <p class="dashboard-subtitle">View and track your product purchases</p>
                 </div>
             </div>
-        </div>
-    </header>
-
-    <div class="orders-container">
-        <div class="orders-header">
-            <h1>My Orders</h1>
-        </div>
 
         <?php if ($orders && count($orders) > 0): ?>
             <table class="orders-table">
@@ -273,8 +238,7 @@ $cssPath = SITE_URL . '/css/style.css';
                 <a href="<?php echo SITE_URL; ?>/shop.php" class="btn-shop">Browse Products</a>
             </div>
         <?php endif; ?>
+        </main>
     </div>
-
-    <?php require_once __DIR__ . '/../views/footer.php'; ?>
 </body>
 </html>

@@ -149,19 +149,19 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <div class="stat-change"><?php echo $stats['confirmed'] + $stats['completed']; ?> completed</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Pending</div>
+                    <div class="stat-label">Pending Bookings</div>
                     <div class="stat-value"><?php echo $stats['pending']; ?></div>
                     <div class="stat-change">Awaiting provider response</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Confirmed</div>
-                    <div class="stat-value"><?php echo $stats['confirmed']; ?></div>
-                    <div class="stat-change">Scheduled bookings</div>
+                    <div class="stat-label">Product Orders</div>
+                    <div class="stat-value"><?php echo $stats['total_orders']; ?></div>
+                    <div class="stat-change"><?php echo $stats['paid_orders']; ?> paid</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Paid Orders</div>
-                    <div class="stat-value"><?php echo $stats['paid_orders']; ?></div>
-                    <div class="stat-change">Confirmed purchases</div>
+                    <div class="stat-label">Total Orders</div>
+                    <div class="stat-value"><?php echo $stats['total_bookings'] + $stats['total_orders']; ?></div>
+                    <div class="stat-change">All services & products</div>
                 </div>
             </div>
 
