@@ -20,81 +20,6 @@ $provider_class = new provider_class();
 $provider = $provider_class->get_provider_by_customer($user_id);
 $profileComplete = $provider ? true : false;
 
-// Calculate vendor revenue
-$monthly_revenue = 0;
-$total_revenue = 0;
-$rating = 0;
-$review_count = 0;
-
-try {
-    if ($provider) {
-        // Ensure required classes are loaded
-        if (!class_exists('order_class')) {
-            require_once __DIR__ . '/../classes/order_class.php';
-        }
-        if (!class_exists('product_class')) {
-            require_once __DIR__ . '/../classes/product_class.php';
-        }
-        if (!class_exists('review_class')) {
-            require_once __DIR__ . '/../classes/review_class.php';
-        }
-
-        $order_class = new order_class();
-        $product_class = new product_class();
-        $review_class = new review_class();
-
-        // Get vendor products
-        $vendor_products = $product_class->get_products_by_provider($provider['provider_id']);
-        $product_ids = [];
-        if ($vendor_products) {
-            foreach ($vendor_products as $product) {
-                $product_ids[] = $product['product_id'];
-            }
-        }
-
-        // Calculate revenue from paid orders
-        if (!empty($product_ids)) {
-            $all_orders = $order_class->get_all_orders();
-            $current_month = date('Y-m');
-
-            if ($all_orders) {
-                foreach ($all_orders as $order) {
-                    if ($order['payment_status'] === 'paid') {
-                        $order_items = $order_class->get_order_items($order['order_id']);
-                        if ($order_items) {
-                            foreach ($order_items as $item) {
-                                if (in_array($item['product_id'], $product_ids)) {
-                                    $item_total = floatval($item['price']) * intval($item['quantity']);
-                                    $total_revenue += $item_total;
-
-                                    // Add to monthly revenue if from current month
-                                    if (date('Y-m', strtotime($order['order_date'])) === $current_month) {
-                                        $monthly_revenue += $item_total;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Get rating
-        $provider_reviews = $review_class->get_provider_reviews($provider['provider_id']);
-        if ($provider_reviews && count($provider_reviews) > 0) {
-            $total_rating = 0;
-            foreach ($provider_reviews as $review) {
-                $total_rating += floatval($review['rating']);
-            }
-            $rating = round($total_rating / count($provider_reviews), 1);
-            $review_count = count($provider_reviews);
-        }
-    }
-} catch (Exception $e) {
-    error_log('Vendor dashboard stats error: ' . $e->getMessage());
-    // Continue with default values
-}
-
 $pageTitle = 'Vendor Dashboard - PhotoMarket';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
@@ -207,13 +132,13 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             <div class="stats-row">
                 <div class="stat-card">
                     <div class="stat-label">Rating</div>
-                    <div class="stat-value"><?php echo $rating > 0 ? number_format($rating, 1) . '/5' : '—'; ?></div>
-                    <div class="stat-change"><?php echo $review_count > 0 ? $review_count . ' reviews' : 'Build your reputation'; ?></div>
+                    <div class="stat-value">—</div>
+                    <div class="stat-change">Build your reputation</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Monthly Revenue</div>
-                    <div class="stat-value">₵<?php echo number_format($monthly_revenue, 2); ?></div>
-                    <div class="stat-change"><?php echo $monthly_revenue > 0 ? 'Total: ₵' . number_format($total_revenue, 2) : 'No revenue yet'; ?></div>
+                    <div class="stat-value">₵0</div>
+                    <div class="stat-change">No revenue yet</div>
                 </div>
             </div>
 

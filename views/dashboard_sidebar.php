@@ -178,6 +178,78 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </li>
             </ul>
         </div>
+
+    <?php elseif ($user_role == 4): // Customer ?>
+        <div class="sidebar-welcome">
+            <p>Welcome, <strong><?php echo isset($_SESSION['user_name']) ? htmlspecialchars($_SESSION['user_name']) : 'Customer'; ?></strong></p>
+        </div>
+
+        <div class="sidebar-section">
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item <?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>">
+                    <a href="<?php echo SITE_URL; ?>/customer/dashboard.php" class="sidebar-nav-link">
+                        <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="sidebar-nav-item <?php echo ($current_page == 'my_bookings.php') ? 'active' : ''; ?>">
+                    <a href="<?php echo SITE_URL; ?>/customer/my_bookings.php" class="sidebar-nav-link">
+                        <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
+                        </svg>
+                        My Bookings
+                    </a>
+                </li>
+                <li class="sidebar-nav-item <?php echo ($current_page == 'my_galleries.php') ? 'active' : ''; ?>">
+                    <a href="<?php echo SITE_URL; ?>/customer/my_galleries.php" class="sidebar-nav-link">
+                        <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        My Galleries
+                    </a>
+                </li>
+                <li class="sidebar-nav-item <?php echo ($current_page == 'orders.php') ? 'active' : ''; ?>">
+                    <a href="<?php echo SITE_URL; ?>/customer/orders.php" class="sidebar-nav-link">
+                        <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        My Orders
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Account</div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item <?php echo ($current_page == 'my_profile.php') ? 'active' : ''; ?>">
+                    <a href="<?php echo SITE_URL; ?>/customer/my_profile.php" class="sidebar-nav-link">
+                        <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        My Profile
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="<?php echo SITE_URL; ?>/actions/logout.php" class="sidebar-nav-link">
+                        <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
     <?php endif; ?>
 </aside>
 
