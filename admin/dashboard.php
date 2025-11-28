@@ -25,50 +25,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 <body>
     <div class="dashboard-layout">
         <!-- Sidebar -->
-        <aside class="dashboard-sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-brand">PhotoMarket</div>
-                <div class="sidebar-user">Admin Panel</div>
-            </div>
-
-            <nav>
-                <ul class="sidebar-nav">
-                    <li class="sidebar-nav-item">
-                        <a href="<?php echo SITE_URL; ?>/admin/dashboard.php" class="sidebar-nav-link active">
-                            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                            </svg>
-                            Dashboard
-                        </a>
-                    </li>
-                    <li class="sidebar-nav-item">
-                        <a href="<?php echo SITE_URL; ?>/admin/category.php" class="sidebar-nav-link">
-                            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
-                            </svg>
-                            Categories
-                        </a>
-                    </li>
-                </ul>
-
-                <div class="sidebar-section">
-                    <div class="sidebar-section-title">Account</div>
-                    <ul class="sidebar-nav">
-                        <li class="sidebar-nav-item">
-                            <a href="<?php echo SITE_URL; ?>/actions/logout.php" class="sidebar-nav-link">
-                                <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                    <polyline points="16 17 21 12 16 7"></polyline>
-                                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                                </svg>
-                                Logout
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </aside>
+        <?php require_once __DIR__ . '/../views/admin_sidebar.php'; ?>
 
         <!-- Main Content -->
         <main class="dashboard-content">

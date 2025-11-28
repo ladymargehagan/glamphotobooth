@@ -52,12 +52,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         Orders
                     </a>
                 </li>
-                <li class="sidebar-nav-item <?php echo (strpos($current_page, 'manage_products') !== false || strpos($current_page, 'add_product') !== false) ? 'active' : ''; ?>">
+                <li class="sidebar-nav-item <?php echo (strpos($current_page, 'manage_products') !== false || strpos($current_page, 'add_product') !== false || strpos($current_page, 'edit_product') !== false) ? 'active' : ''; ?>">
                     <a href="<?php echo SITE_URL; ?>/customer/manage_products.php" class="sidebar-nav-link">
                         <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M12 5v14M5 12h14"></path>
                         </svg>
-                        Manage Products
+                        My Products
                     </a>
                 </li>
             </ul>
@@ -66,7 +66,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <div class="sidebar-section">
             <div class="sidebar-section-title">Business</div>
             <ul class="sidebar-nav">
-                <li class="sidebar-nav-item <?php echo ($current_page == 'edit_profile.php') ? 'active' : ''; ?>">
+                <li class="sidebar-nav-item <?php echo ($current_page == 'edit_profile.php' || strpos($current_page, 'profile') !== false) ? 'active' : ''; ?>">
                     <a href="<?php echo SITE_URL; ?>/customer/edit_profile.php" class="sidebar-nav-link">
                         <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -113,7 +113,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         Dashboard
                     </a>
                 </li>
-                <li class="sidebar-nav-item <?php echo ($current_page == 'manage_bookings.php' || strpos($current_page, 'manage_bookings') !== false) ? 'active' : ''; ?>">
+                <li class="sidebar-nav-item <?php echo ($current_page == 'manage_bookings.php' || strpos($current_page, 'booking') !== false) ? 'active' : ''; ?>">
                     <a href="<?php echo SITE_URL; ?>/customer/manage_bookings.php" class="sidebar-nav-link">
                         <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -124,7 +124,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         Bookings
                     </a>
                 </li>
-                <li class="sidebar-nav-item <?php echo (strpos($current_page, 'manage_products') !== false || strpos($current_page, 'add_product') !== false) ? 'active' : ''; ?>">
+                <li class="sidebar-nav-item <?php echo (strpos($current_page, 'manage_products') !== false || strpos($current_page, 'add_product') !== false || strpos($current_page, 'edit_product') !== false) ? 'active' : ''; ?>">
                     <a href="<?php echo SITE_URL; ?>/customer/manage_products.php" class="sidebar-nav-link">
                         <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M12 5v14M5 12h14"></path>
@@ -148,13 +148,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <div class="sidebar-section">
             <div class="sidebar-section-title">Business</div>
             <ul class="sidebar-nav">
-                <li class="sidebar-nav-item <?php echo ($current_page == 'edit_profile.php') ? 'active' : ''; ?>">
+                <li class="sidebar-nav-item <?php echo ($current_page == 'edit_profile.php' || strpos($current_page, 'profile') !== false) ? 'active' : ''; ?>">
                     <a href="<?php echo SITE_URL; ?>/customer/edit_profile.php" class="sidebar-nav-link">
                         <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
-                        Edit Profile
+                        Business Profile
                     </a>
                 </li>
                 <li class="sidebar-nav-item <?php echo ($current_page == 'earnings.php') ? 'active' : ''; ?>">
