@@ -4,6 +4,11 @@
  * customer/upload_photos.php
  * Upload photos to gallery for completed bookings
  */
+
+// Enable error logging
+error_reporting(E_ALL);
+ini_set('log_errors', 1);
+
 require_once __DIR__ . '/../settings/core.php';
 
 requireLogin();
@@ -21,21 +26,34 @@ $booking_class = new booking_class();
 $booking = $booking_class->get_booking_by_id($booking_id);
 
 if (!$booking) {
+    error_log("UPLOAD_PHOTOS: Booking $booking_id not found");
     header('Location: ' . SITE_URL . '/customer/manage_bookings.php');
     exit;
 }
+
+error_log("UPLOAD_PHOTOS: Booking found - ID: $booking_id, Provider: {$booking['provider_id']}, Status: {$booking['status']}");
 
 // Check if user is the provider
 $provider_class = new provider_class();
 $provider = $provider_class->get_provider_by_customer($user_id);
 
-if (!$provider || intval($provider['provider_id']) !== intval($booking['provider_id'])) {
+if (!$provider) {
+    error_log("UPLOAD_PHOTOS: User $user_id is not a provider");
+    header('Location: ' . SITE_URL . '/customer/manage_bookings.php');
+    exit;
+}
+
+error_log("UPLOAD_PHOTOS: Provider found - provider_id: {$provider['provider_id']}");
+
+if (intval($provider['provider_id']) !== intval($booking['provider_id'])) {
+    error_log("UPLOAD_PHOTOS: Permission denied - provider_id mismatch: {$provider['provider_id']} != {$booking['provider_id']}");
     header('Location: ' . SITE_URL . '/customer/manage_bookings.php');
     exit;
 }
 
 // Check if booking is completed
 if ($booking['status'] !== 'completed') {
+    error_log("UPLOAD_PHOTOS: Booking status is '{$booking['status']}', not 'completed'");
     header('Location: ' . SITE_URL . '/customer/manage_bookings.php');
     exit;
 }
@@ -45,17 +63,26 @@ $gallery_class = new gallery_class();
 $gallery = $gallery_class->get_gallery_by_booking($booking_id);
 
 if (!$gallery) {
+    error_log("UPLOAD_PHOTOS: Gallery not found for booking $booking_id, creating new gallery");
     // Create gallery
     $gallery_id = $gallery_class->create_gallery($booking_id, $provider['provider_id']);
     if (!$gallery_id) {
+        error_log("UPLOAD_PHOTOS ERROR: Failed to create gallery for booking $booking_id");
         header('Location: ' . SITE_URL . '/customer/manage_bookings.php');
         exit;
     }
+    error_log("UPLOAD_PHOTOS: Gallery created with ID: $gallery_id");
     $gallery = $gallery_class->get_gallery_by_id($gallery_id);
 }
 
+error_log("UPLOAD_PHOTOS: Gallery ID: {$gallery['gallery_id']}");
+
 // Get photos already uploaded
 $photos = $gallery_class->get_gallery_photos($gallery['gallery_id']);
+if (!$photos) {
+    $photos = [];
+}
+error_log("UPLOAD_PHOTOS: Found " . count($photos) . " existing photos");
 
 $pageTitle = 'Upload Photos - PhotoMarket';
 $cssPath = SITE_URL . '/css/style.css';
