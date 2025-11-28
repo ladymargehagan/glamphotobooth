@@ -26,38 +26,51 @@ $total_revenue = 0;
 $rating = 0;
 $review_count = 0;
 
-if ($provider) {
-    $order_class = new order_class();
-    $product_class = new product_class();
-    $review_class = new review_class();
-
-    // Get vendor products
-    $vendor_products = $product_class->get_products_by_provider($provider['provider_id']);
-    $product_ids = [];
-    if ($vendor_products) {
-        foreach ($vendor_products as $product) {
-            $product_ids[] = $product['product_id'];
+try {
+    if ($provider) {
+        // Ensure required classes are loaded
+        if (!class_exists('order_class')) {
+            require_once __DIR__ . '/../classes/order_class.php';
         }
-    }
+        if (!class_exists('product_class')) {
+            require_once __DIR__ . '/../classes/product_class.php';
+        }
+        if (!class_exists('review_class')) {
+            require_once __DIR__ . '/../classes/review_class.php';
+        }
 
-    // Calculate revenue from paid orders
-    if (!empty($product_ids)) {
-        $all_orders = $order_class->get_all_orders();
-        $current_month = date('Y-m');
+        $order_class = new order_class();
+        $product_class = new product_class();
+        $review_class = new review_class();
 
-        if ($all_orders) {
-            foreach ($all_orders as $order) {
-                if ($order['payment_status'] === 'paid') {
-                    $order_items = $order_class->get_order_items($order['order_id']);
-                    if ($order_items) {
-                        foreach ($order_items as $item) {
-                            if (in_array($item['product_id'], $product_ids)) {
-                                $item_total = floatval($item['price']) * intval($item['quantity']);
-                                $total_revenue += $item_total;
+        // Get vendor products
+        $vendor_products = $product_class->get_products_by_provider($provider['provider_id']);
+        $product_ids = [];
+        if ($vendor_products) {
+            foreach ($vendor_products as $product) {
+                $product_ids[] = $product['product_id'];
+            }
+        }
 
-                                // Add to monthly revenue if from current month
-                                if (date('Y-m', strtotime($order['order_date'])) === $current_month) {
-                                    $monthly_revenue += $item_total;
+        // Calculate revenue from paid orders
+        if (!empty($product_ids)) {
+            $all_orders = $order_class->get_all_orders();
+            $current_month = date('Y-m');
+
+            if ($all_orders) {
+                foreach ($all_orders as $order) {
+                    if ($order['payment_status'] === 'paid') {
+                        $order_items = $order_class->get_order_items($order['order_id']);
+                        if ($order_items) {
+                            foreach ($order_items as $item) {
+                                if (in_array($item['product_id'], $product_ids)) {
+                                    $item_total = floatval($item['price']) * intval($item['quantity']);
+                                    $total_revenue += $item_total;
+
+                                    // Add to monthly revenue if from current month
+                                    if (date('Y-m', strtotime($order['order_date'])) === $current_month) {
+                                        $monthly_revenue += $item_total;
+                                    }
                                 }
                             }
                         }
@@ -65,18 +78,21 @@ if ($provider) {
                 }
             }
         }
-    }
 
-    // Get rating
-    $provider_reviews = $review_class->get_provider_reviews($provider['provider_id']);
-    if ($provider_reviews && count($provider_reviews) > 0) {
-        $total_rating = 0;
-        foreach ($provider_reviews as $review) {
-            $total_rating += floatval($review['rating']);
+        // Get rating
+        $provider_reviews = $review_class->get_provider_reviews($provider['provider_id']);
+        if ($provider_reviews && count($provider_reviews) > 0) {
+            $total_rating = 0;
+            foreach ($provider_reviews as $review) {
+                $total_rating += floatval($review['rating']);
+            }
+            $rating = round($total_rating / count($provider_reviews), 1);
+            $review_count = count($provider_reviews);
         }
-        $rating = round($total_rating / count($provider_reviews), 1);
-        $review_count = count($provider_reviews);
     }
+} catch (Exception $e) {
+    error_log('Vendor dashboard stats error: ' . $e->getMessage());
+    // Continue with default values
 }
 
 $pageTitle = 'Vendor Dashboard - PhotoMarket';
