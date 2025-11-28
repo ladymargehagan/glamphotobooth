@@ -128,17 +128,43 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 </div>
             </div>
 
+            <!-- Profile Completion Banner -->
+            <?php if (!$profileComplete): ?>
+            <div class="profile-banner">
+                <div class="profile-banner-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+                <div class="profile-banner-content">
+                    <div class="profile-banner-title">Complete Your Business Profile</div>
+                    <div class="profile-banner-text">Set up your business information to start selling products and receiving orders.</div>
+                </div>
+                <a href="<?php echo SITE_URL; ?>/customer/edit_profile.php" class="profile-banner-action">Complete Profile</a>
+            </div>
+            <?php endif; ?>
+
             <!-- Stats Row -->
             <div class="stats-row">
                 <div class="stat-card">
                     <div class="stat-label">Rating</div>
-                    <div class="stat-value">—</div>
-                    <div class="stat-change">Build your reputation</div>
+                    <div class="stat-value" id="ratingValue">—</div>
+                    <div class="stat-change" id="ratingChange">Loading...</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Monthly Revenue</div>
-                    <div class="stat-value">₵0</div>
-                    <div class="stat-change">No revenue yet</div>
+                    <div class="stat-value" id="revenueValue">₵0</div>
+                    <div class="stat-change" id="revenueChange">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Products</div>
+                    <div class="stat-value" id="productsValue">0</div>
+                    <div class="stat-change" id="productsChange">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Orders</div>
+                    <div class="stat-value" id="ordersValue">0</div>
+                    <div class="stat-change" id="ordersChange">Loading...</div>
                 </div>
             </div>
 
@@ -178,5 +204,60 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     </div>
 
     <script src="<?php echo SITE_URL; ?>/js/sweetalert.js"></script>
+    <script>
+        // Fetch and display vendor stats
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('<?php echo SITE_URL; ?>/actions/fetch_vendor_stats_action.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const stats = data.stats;
+
+                        // Update Rating
+                        document.getElementById('ratingValue').textContent = stats.rating > 0 ? stats.rating.toFixed(1) + '/5' : '—';
+                        document.getElementById('ratingChange').textContent = stats.total_reviews > 0 ?
+                            stats.total_reviews + ' review' + (stats.total_reviews !== 1 ? 's' : '') :
+                            'No reviews yet';
+
+                        // Update Monthly Revenue
+                        document.getElementById('revenueValue').textContent = '₵' + stats.monthly_revenue;
+                        document.getElementById('revenueChange').textContent = stats.monthly_revenue > 0 ?
+                            'This month' :
+                            'No revenue this month';
+
+                        // Update Total Products
+                        document.getElementById('productsValue').textContent = stats.total_products;
+                        document.getElementById('productsChange').textContent = stats.total_products > 0 ?
+                            'In your inventory' :
+                            'Add products to get started';
+
+                        // Update Total Orders
+                        document.getElementById('ordersValue').textContent = stats.total_orders;
+                        document.getElementById('ordersChange').textContent = stats.pending_orders > 0 ?
+                            stats.pending_orders + ' pending order' + (stats.pending_orders !== 1 ? 's' : '') :
+                            'All orders processed';
+                    } else if (data.profile_incomplete) {
+                        // Profile not complete - stats remain as placeholders
+                        document.getElementById('ratingChange').textContent = 'Complete profile first';
+                        document.getElementById('revenueChange').textContent = 'Complete profile first';
+                        document.getElementById('productsChange').textContent = 'Complete profile first';
+                        document.getElementById('ordersChange').textContent = 'Complete profile first';
+                    } else {
+                        console.error('Error fetching stats:', data.message);
+                        document.getElementById('ratingChange').textContent = 'Error loading stats';
+                        document.getElementById('revenueChange').textContent = 'Error loading stats';
+                        document.getElementById('productsChange').textContent = 'Error loading stats';
+                        document.getElementById('ordersChange').textContent = 'Error loading stats';
+                    }
+                })
+                .catch(error => {
+                    console.error('Network error:', error);
+                    document.getElementById('ratingChange').textContent = 'Failed to load';
+                    document.getElementById('revenueChange').textContent = 'Failed to load';
+                    document.getElementById('productsChange').textContent = 'Failed to load';
+                    document.getElementById('ordersChange').textContent = 'Failed to load';
+                });
+        });
+    </script>
 </body>
 </html>
