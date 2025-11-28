@@ -145,6 +145,12 @@ try {
                         if ($provider) {
                             // Create multiple bookings if quantity > 1
                             for ($i = 0; $i < $quantity; $i++) {
+                                $booking_number = $i + 1;
+                                $service_description = 'Booked via ' . $product['title'];
+                                if ($quantity > 1) {
+                                    $service_description .= " (#" . $booking_number . " of " . $quantity . ")";
+                                }
+
                                 $booking_id = $booking_class->create_booking(
                                     $customer_id,
                                     $product['provider_id'],
@@ -153,15 +159,15 @@ try {
                                     '10:00:00',
                                     1.0,
                                     floatval($item['price']),
-                                    'Booked via ' . $product['title'] . ($quantity > 1 ? " (#{$i + 1} of {$quantity})" : ''),
+                                    $service_description,
                                     ''
                                 );
 
                                 if ($booking_id) {
                                     $bookings_created++;
-                                    error_log("Booking created: ID={$booking_id} for order {$order_id}, item quantity {$i + 1}/{$quantity}");
+                                    error_log("Booking created: ID={$booking_id} for order {$order_id}, item quantity {$booking_number}/{$quantity}");
                                 } else {
-                                    error_log("Failed to create booking for order {$order_id}, item quantity {$i + 1}/{$quantity}");
+                                    error_log("Failed to create booking for order {$order_id}, item quantity {$booking_number}/{$quantity}");
                                 }
                             }
                         }
