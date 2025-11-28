@@ -53,12 +53,11 @@ class gallery_class extends db_connection {
         $query = "SELECT g.*,
                          b.booking_id, b.customer_id, b.provider_id, b.booking_date, b.service_description,
                          c.name as customer_name, c.email as customer_email,
-                         p.business_name, sp.name as provider_name
+                         p.business_name
                   FROM pb_photo_galleries g
                   LEFT JOIN pb_bookings b ON g.booking_id = b.booking_id
                   LEFT JOIN pb_customer c ON b.customer_id = c.id
                   LEFT JOIN pb_service_providers p ON b.provider_id = p.provider_id
-                  LEFT JOIN pb_customer sp ON p.customer_id = sp.id
                   WHERE g.gallery_id = ?";
 
         $stmt = $this->db->prepare($query);
@@ -87,12 +86,11 @@ class gallery_class extends db_connection {
         $query = "SELECT g.*,
                          b.booking_id, b.customer_id, b.provider_id, b.booking_date, b.service_description,
                          c.name as customer_name, c.email as customer_email,
-                         p.business_name, sp.name as provider_name
+                         p.business_name
                   FROM pb_photo_galleries g
                   LEFT JOIN pb_bookings b ON g.booking_id = b.booking_id
                   LEFT JOIN pb_customer c ON b.customer_id = c.id
                   LEFT JOIN pb_service_providers p ON b.provider_id = p.provider_id
-                  LEFT JOIN pb_customer sp ON p.customer_id = sp.id
                   WHERE g.access_code = ?";
 
         $stmt = $this->db->prepare($query);
