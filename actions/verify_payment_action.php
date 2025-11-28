@@ -2,14 +2,13 @@
 /**
  * Verify Payment Action - AJAX endpoint for payment verification
  * actions/verify_payment_action.php
- * This is called after Paystack payment completes
  */
 
-// Disable all output buffering and error display to ensure clean JSON
+// Disable error display to ensure clean JSON
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-// Start output buffering to catch any accidental output
+// Start output buffering
 ob_start();
 
 header('Content-Type: application/json');
@@ -18,7 +17,7 @@ try {
     require_once __DIR__ . '/../settings/core.php';
     require_once __DIR__ . '/../settings/paystack_config.php';
 
-    // Clear any buffered output before JSON
+    // Clear any buffered output
     ob_clean();
 
     requireLogin();
@@ -31,19 +30,24 @@ try {
     $reference = isset($_POST['reference']) ? trim($_POST['reference']) : '';
     $customer_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 
-    if (!$reference || !$customer_id) {
-        echo json_encode(['success' => false, 'message' => 'Missing reference or customer ID']);
+    if (!$reference) {
+        echo json_encode(['success' => false, 'message' => 'Missing payment reference']);
         exit;
     }
 
-    // Check if Paystack constants are defined
+    if (!$customer_id) {
+        echo json_encode(['success' => false, 'message' => 'User not logged in']);
+        exit;
+    }
+
+    // Check Paystack configuration
     if (!defined('PAYSTACK_VERIFY_URL') || !defined('PAYSTACK_SECRET_KEY')) {
-        error_log('Paystack constants not defined');
-        echo json_encode(['success' => false, 'message' => 'Payment configuration error']);
+        error_log('Paystack configuration missing');
+        echo json_encode(['success' => false, 'message' => 'Payment system not configured']);
         exit;
     }
 
-    // Verify payment with Paystack
+    // Verify payment with Paystack API
     $curl = curl_init();
     curl_setopt_array($curl, array(
         CURLOPT_URL => PAYSTACK_VERIFY_URL . $reference,
@@ -66,69 +70,77 @@ try {
 
     if ($curl_error) {
         error_log('Paystack verification curl error: ' . $curl_error);
-        echo json_encode(['success' => false, 'message' => 'Payment verification failed - network error']);
+        echo json_encode(['success' => false, 'message' => 'Network error verifying payment']);
         exit;
     }
 
     if ($http_code !== 200) {
         error_log("Paystack API returned HTTP $http_code: $response");
-        echo json_encode(['success' => false, 'message' => 'Payment verification failed - API error']);
+        echo json_encode(['success' => false, 'message' => 'Payment verification failed']);
         exit;
     }
 
     $result = json_decode($response, true);
 
-    // Check if payment was successful
-    if (!isset($result['status']) || !$result['status'] || !isset($result['data']['status'])) {
-        error_log('Paystack response invalid: ' . json_encode($result));
-        echo json_encode(['success' => false, 'message' => 'Payment verification failed - invalid response']);
+    // Validate Paystack response
+    if (!isset($result['status']) || !$result['status']) {
+        error_log('Invalid Paystack response: ' . json_encode($result));
+        echo json_encode(['success' => false, 'message' => 'Invalid payment response']);
         exit;
     }
 
-    if ($result['data']['status'] !== 'success') {
+    if (!isset($result['data']['status']) || $result['data']['status'] !== 'success') {
         echo json_encode(['success' => false, 'message' => 'Payment was not successful']);
         exit;
     }
 
-    // Get order ID from metadata
+    // Extract order ID from metadata
     $order_id = isset($result['data']['metadata']['order_id']) ? intval($result['data']['metadata']['order_id']) : 0;
 
     if (!$order_id) {
-        error_log('No order ID in Paystack metadata');
+        error_log('No order ID in Paystack metadata: ' . json_encode($result['data']['metadata']));
         echo json_encode(['success' => false, 'message' => 'Order not found in payment']);
         exit;
     }
 
-    // Get order and verify it belongs to current user
+    // Verify order belongs to current user
     $order_class = new order_class();
     $order = $order_class->get_order_by_id($order_id);
 
     if (!$order) {
+        error_log("Order not found: $order_id");
         echo json_encode(['success' => false, 'message' => 'Order not found']);
         exit;
     }
 
     if ($order['customer_id'] != $customer_id) {
-        error_log("Order customer mismatch: order customer={$order['customer_id']}, session customer={$customer_id}");
-        echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
+        error_log("Order ownership mismatch: order customer={$order['customer_id']}, session customer=$customer_id");
+        echo json_encode(['success' => false, 'message' => 'Unauthorized']);
         exit;
     }
 
-    // Update order payment status to 'paid'
+    // Update order payment status and reference
     if (!$order_class->update_payment_status($order_id, 'paid')) {
-        error_log("Failed to update order {$order_id} payment status");
-        echo json_encode(['success' => false, 'message' => 'Failed to update order status']);
+        error_log("Failed to update order $order_id payment status");
+        echo json_encode(['success' => false, 'message' => 'Failed to update order']);
         exit;
     }
 
-    // Get order items and create bookings for service products
+    // Save payment reference
+    $db = new db_connection();
+    if ($db->db_connect()) {
+        $sql = "UPDATE pb_orders SET payment_reference = '$reference' WHERE order_id = $order_id";
+        $db->db_write_query($sql);
+    }
+
+    // Process order items and create bookings for services
     $order_items = $order_class->get_order_items($order_id);
     $bookings_created = 0;
+    $errors = [];
 
-    if ($order_items && is_array($order_items) && count($order_items) > 0) {
+    if ($order_items && is_array($order_items)) {
         $booking_class = new booking_class();
         $product_class = new product_class();
-        $provider_class = new provider_class();
 
         foreach ($order_items as $item) {
             $product_id = intval($item['product_id']);
@@ -137,62 +149,56 @@ try {
             try {
                 $product = $product_class->get_product_by_id($product_id);
 
-                if ($product) {
-                    // For service products, create booking(s) - ONE PER QUANTITY
-                    if ($product['product_type'] === 'service') {
-                        $provider = $provider_class->get_provider_by_id($product['provider_id']);
+                if ($product && $product['product_type'] === 'service') {
+                    // Create booking(s) - one per quantity
+                    for ($i = 0; $i < $quantity; $i++) {
+                        $booking_number = $i + 1;
+                        $service_description = $product['title'];
+                        if ($quantity > 1) {
+                            $service_description .= " (#" . $booking_number . " of " . $quantity . ")";
+                        }
 
-                        if ($provider) {
-                            // Create multiple bookings if quantity > 1
-                            for ($i = 0; $i < $quantity; $i++) {
-                                $booking_number = $i + 1;
-                                $service_description = 'Booked via ' . $product['title'];
-                                if ($quantity > 1) {
-                                    $service_description .= " (#" . $booking_number . " of " . $quantity . ")";
-                                }
+                        // Call with correct 7 parameters
+                        $booking_id = $booking_class->create_booking(
+                            $customer_id,
+                            $product['provider_id'],
+                            $product_id,
+                            date('Y-m-d', strtotime('+1 day')),
+                            '10:00:00',
+                            $service_description,
+                            'Paid via Paystack'
+                        );
 
-                                $booking_id = $booking_class->create_booking(
-                                    $customer_id,
-                                    $product['provider_id'],
-                                    $product_id,
-                                    date('Y-m-d', strtotime('+1 day')), // Default to tomorrow
-                                    '10:00:00',
-                                    1.0,
-                                    floatval($item['price']),
-                                    $service_description,
-                                    ''
-                                );
-
-                                if ($booking_id) {
-                                    $bookings_created++;
-                                    error_log("Booking created: ID={$booking_id} for order {$order_id}, item quantity {$booking_number}/{$quantity}");
-                                } else {
-                                    error_log("Failed to create booking for order {$order_id}, item quantity {$booking_number}/{$quantity}");
-                                }
-                            }
+                        if ($booking_id) {
+                            // CRITICAL: Update booking status to 'confirmed' since payment is complete
+                            $db->db_write_query("UPDATE pb_bookings SET status = 'confirmed' WHERE booking_id = $booking_id");
+                            $bookings_created++;
+                            error_log("Booking created and confirmed: ID=$booking_id for order $order_id");
+                        } else {
+                            $errors[] = "Failed to create booking for product $product_id";
+                            error_log("Failed to create booking for product $product_id, order $order_id");
                         }
                     }
                 }
             } catch (Exception $e) {
-                error_log("Error creating booking for product {$product_id}: " . $e->getMessage());
-                // Continue processing other items even if one fails
+                $errors[] = "Error processing product $product_id: " . $e->getMessage();
+                error_log("Error creating booking for product $product_id: " . $e->getMessage());
             }
         }
     }
 
-    // Clear user's cart
+    // Clear cart
     try {
         $cart_class = new cart_class();
         $cart_class->clear_cart($customer_id);
     } catch (Exception $e) {
         error_log("Error clearing cart: " . $e->getMessage());
-        // Non-critical, continue
     }
 
-    // Return success with order ID
+    // Return success
     echo json_encode([
         'success' => true,
-        'message' => 'Payment successful',
+        'message' => 'Payment verified successfully',
         'order_id' => $order_id,
         'bookings_created' => $bookings_created,
         'redirect' => SITE_URL . '/customer/order_confirmation.php?order_id=' . $order_id
@@ -200,17 +206,15 @@ try {
     exit;
 
 } catch (Exception $e) {
-    // Clear any buffered output
     ob_clean();
-    error_log('Verify payment error: ' . $e->getMessage());
+    error_log('Payment verification exception: ' . $e->getMessage());
     error_log('Stack trace: ' . $e->getTraceAsString());
-    echo json_encode(['success' => false, 'message' => 'Error verifying payment: ' . $e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'System error: ' . $e->getMessage()]);
     exit;
 } catch (Error $e) {
-    // Catch fatal errors
     ob_clean();
-    error_log('Verify payment fatal error: ' . $e->getMessage());
-    echo json_encode(['success' => false, 'message' => 'System error during payment verification']);
+    error_log('Payment verification fatal error: ' . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'System error occurred']);
     exit;
 }
 ?>
