@@ -119,18 +119,34 @@ try {
         exit;
     }
 
-    // Update order payment status and reference
+    // Update order payment status
+    error_log("VERIFY PAYMENT: Updating order $order_id status to 'paid'");
     if (!$order_class->update_payment_status($order_id, 'paid')) {
-        error_log("Failed to update order $order_id payment status");
-        echo json_encode(['success' => false, 'message' => 'Failed to update order']);
+        error_log("VERIFY PAYMENT ERROR: Failed to update payment status for order $order_id");
+        echo json_encode(['success' => false, 'message' => 'Failed to update order payment status']);
         exit;
     }
+    error_log("VERIFY PAYMENT: Order $order_id status updated to 'paid' successfully");
 
     // Save payment reference
     $db = new db_connection();
-    if ($db->db_connect()) {
-        $sql = "UPDATE pb_orders SET payment_reference = '$reference' WHERE order_id = $order_id";
-        $db->db_write_query($sql);
+    if (!$db->db_connect()) {
+        error_log("VERIFY PAYMENT ERROR: Database connection failed when saving payment reference");
+        echo json_encode(['success' => false, 'message' => 'Database connection error']);
+        exit;
+    }
+
+    $reference_escaped = $db->db->real_escape_string($reference);
+    $sql = "UPDATE pb_orders SET payment_reference = '$reference_escaped' WHERE order_id = $order_id";
+    error_log("VERIFY PAYMENT: Executing SQL: $sql");
+
+    $update_result = $db->db_write_query($sql);
+    if (!$update_result) {
+        $mysql_error = $db->db ? $db->db->error : 'Unknown';
+        error_log("VERIFY PAYMENT ERROR: Failed to save payment reference for order $order_id (MySQL error: $mysql_error)");
+        // Don't exit - continue with booking creation
+    } else {
+        error_log("VERIFY PAYMENT: Payment reference '$reference' saved for order $order_id");
     }
 
     // Process order items and create bookings for services
@@ -171,12 +187,20 @@ try {
 
                         if ($booking_id) {
                             // CRITICAL: Update booking status to 'confirmed' since payment is complete
-                            $db->db_write_query("UPDATE pb_bookings SET status = 'confirmed' WHERE booking_id = $booking_id");
-                            $bookings_created++;
-                            error_log("Booking created and confirmed: ID=$booking_id for order $order_id");
+                            $update_sql = "UPDATE pb_bookings SET status = 'confirmed' WHERE booking_id = $booking_id";
+                            error_log("VERIFY PAYMENT: Updating booking $booking_id status to 'confirmed'");
+
+                            if ($db->db_write_query($update_sql)) {
+                                $bookings_created++;
+                                error_log("VERIFY PAYMENT: Booking $booking_id created and confirmed for order $order_id");
+                            } else {
+                                $mysql_error = $db->db ? $db->db->error : 'Unknown';
+                                error_log("VERIFY PAYMENT ERROR: Booking $booking_id created but failed to update status (MySQL error: $mysql_error)");
+                                $bookings_created++;
+                            }
                         } else {
                             $errors[] = "Failed to create booking for product $product_id";
-                            error_log("Failed to create booking for product $product_id, order $order_id");
+                            error_log("VERIFY PAYMENT ERROR: Failed to create booking for product $product_id, order $order_id");
                         }
                     }
                 }
