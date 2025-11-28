@@ -64,7 +64,28 @@ foreach ($all_orders as $order) {
 // Get recent bookings (limit to 3)
 $recent_bookings = array_slice($recent_bookings, 0, 3);
 
-// Get review class to check which bookings have been reviewed
+// Get recent orders (limit to 3) - need to get order items with product details
+$recent_orders = [];
+$order_items_map = [];
+if (count($all_orders) > 0) {
+    $recent_orders_data = array_slice($all_orders, 0, 3);
+    foreach ($recent_orders_data as $order) {
+        $order_items = $order_class->get_order_items($order['order_id']);
+        if ($order_items && is_array($order_items)) {
+            $order['items'] = $order_items;
+            $recent_orders[] = $order;
+
+            // Store provider IDs from order items for review checking
+            foreach ($order_items as $item) {
+                if (isset($item['product_id'])) {
+                    $order_items_map[$order['order_id']][] = $item;
+                }
+            }
+        }
+    }
+}
+
+// Get review class to check which bookings and orders have been reviewed
 $reviewed_bookings = [];
 $review_class = null;
 try {
@@ -228,6 +249,85 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         <h3 class="empty-state-title">No Bookings Yet</h3>
                         <p class="empty-state-text">You haven't booked any photography services yet. Start by exploring our photographers!</p>
                         <a href="<?php echo SITE_URL; ?>/shop.php" class="btn btn-primary">Browse Photographers</a>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Orders Section -->
+            <div style="margin-top: var(--spacing-xxl);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                    <h2 style="color: var(--primary); margin: 0;">Recent Orders</h2>
+                    <a href="<?php echo SITE_URL; ?>/customer/orders.php" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View All</a>
+                </div>
+
+                <?php if ($recent_orders && count($recent_orders) > 0): ?>
+                    <div style="display: grid; gap: var(--spacing-lg);">
+                        <?php foreach ($recent_orders as $order): ?>
+                            <div style="background: var(--white); border-radius: var(--border-radius); padding: var(--spacing-lg); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); border-left: 4px solid var(--secondary);">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--spacing-md);">
+                                    <div>
+                                        <h3 style="color: var(--primary); font-weight: 600; margin: 0 0 var(--spacing-xs) 0;">
+                                            Order #<?php echo isset($order['order_id']) ? $order['order_id'] : 'N/A'; ?>
+                                        </h3>
+                                        <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                                            <?php
+                                            if (isset($order['order_date'])) {
+                                                echo date('M d, Y', strtotime($order['order_date']));
+                                            }
+                                            ?>
+                                        </p>
+                                    </div>
+                                    <span style="display: inline-block; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-transform: capitalize;
+                                        <?php
+                                        $payment_status = isset($order['payment_status']) ? $order['payment_status'] : 'unknown';
+                                        if ($payment_status === 'pending') {
+                                            echo 'background: rgba(255, 152, 0, 0.15); color: #f57f17;';
+                                        } elseif ($payment_status === 'paid') {
+                                            echo 'background: rgba(76, 175, 80, 0.15); color: #2e7d32;';
+                                        } else {
+                                            echo 'background: rgba(244, 67, 54, 0.15); color: #b71c1c;';
+                                        }
+                                        ?>
+                                    ">
+                                        <?php echo htmlspecialchars($payment_status); ?>
+                                    </span>
+                                </div>
+
+                                <?php if (isset($order['items']) && count($order['items']) > 0): ?>
+                                    <div style="margin-bottom: var(--spacing-md);">
+                                        <p style="color: var(--text-secondary); margin: 0 0 var(--spacing-sm) 0; font-size: 0.9rem; font-weight: 600;">Items:</p>
+                                        <?php foreach (array_slice($order['items'], 0, 2) as $item): ?>
+                                            <p style="color: var(--text-secondary); margin: 0 0 4px 0; font-size: 0.9rem;">
+                                                • <?php echo htmlspecialchars($item['title'] ?? 'Product'); ?> (x<?php echo isset($item['quantity']) ? $item['quantity'] : 1; ?>)
+                                            </p>
+                                        <?php endforeach; ?>
+                                        <?php if (count($order['items']) > 2): ?>
+                                            <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; font-style: italic;">
+                                                +<?php echo count($order['items']) - 2; ?> more item(s)
+                                            </p>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="color: var(--primary); font-weight: 700; font-size: 1.1rem;">
+                                        Total: ₵<?php echo number_format($order['total_amount'] ?? 0, 2); ?>
+                                    </div>
+                                    <a href="<?php echo SITE_URL; ?>/customer/orders.php" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="empty-state">
+                        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <h3 class="empty-state-title">No Orders Yet</h3>
+                        <p class="empty-state-text">You haven't placed any orders yet. Browse our marketplace to discover amazing products!</p>
+                        <a href="<?php echo SITE_URL; ?>/shop.php" class="btn btn-primary">Browse Marketplace</a>
                     </div>
                 <?php endif; ?>
             </div>
