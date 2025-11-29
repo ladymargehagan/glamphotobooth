@@ -267,6 +267,65 @@ class review_class extends db_connection {
     }
 
     /**
+     * Get review by order and provider (for vendor product reviews)
+     * Checks if customer has already reviewed this vendor for this specific order
+     */
+    public function get_review_by_order_and_provider($order_id, $provider_id) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
+        $order_id = intval($order_id);
+        $provider_id = intval($provider_id);
+
+        $query = "SELECT * FROM pb_reviews WHERE order_id = ? AND provider_id = ? LIMIT 1";
+
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param("ii", $order_id, $provider_id);
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            return $result->fetch_assoc();
+        }
+        return false;
+    }
+
+    /**
+     * Add review for order (vendor products)
+     */
+    public function add_order_review($customer_id, $provider_id, $order_id, $rating, $comment = '') {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
+        $customer_id = intval($customer_id);
+        $provider_id = intval($provider_id);
+        $order_id = intval($order_id);
+        $rating = intval($rating);
+        $comment = $this->db->real_escape_string($comment);
+
+        $query = "INSERT INTO pb_reviews (customer_id, provider_id, order_id, rating, comment)
+                  VALUES (?, ?, ?, ?, ?)";
+
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param("iiiis", $customer_id, $provider_id, $order_id, $rating, $comment);
+
+        if ($stmt->execute()) {
+            // Update provider rating
+            $this->update_provider_rating($provider_id);
+            return $this->db->insert_id;
+        }
+        return false;
+    }
+
+    /**
      * Update existing review
      */
     public function update_review($review_id, $rating, $comment = '') {

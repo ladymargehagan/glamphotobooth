@@ -8,9 +8,9 @@
 class review_controller {
 
     /**
-     * Validate and add review
+     * Validate and add review (supports both bookings and orders)
      */
-    public function add_review_ctr($customer_id, $provider_id, $booking_id, $rating, $comment) {
+    public function add_review_ctr($customer_id, $provider_id, $booking_id, $rating, $comment, $order_id = 0) {
         // Validate inputs
         if (!is_numeric($customer_id) || $customer_id <= 0) {
             return ['success' => false, 'message' => 'Invalid customer ID'];
@@ -18,10 +18,6 @@ class review_controller {
 
         if (!is_numeric($provider_id) || $provider_id <= 0) {
             return ['success' => false, 'message' => 'Invalid provider ID'];
-        }
-
-        if (!is_numeric($booking_id) || $booking_id <= 0) {
-            return ['success' => false, 'message' => 'Invalid booking ID'];
         }
 
         // Validate rating (1-5 stars)
@@ -36,52 +32,100 @@ class review_controller {
             return ['success' => false, 'message' => 'Comment cannot exceed 500 characters'];
         }
 
-        // Check if booking is completed
-        $booking_class = new booking_class();
-        $booking = $booking_class->get_booking_by_id($booking_id);
-
-        if (!$booking) {
-            return ['success' => false, 'message' => 'Booking not found'];
-        }
-
-        if ($booking['status'] !== 'completed') {
-            return ['success' => false, 'message' => 'Can only review completed bookings'];
-        }
-
-        // Verify customer is the one who made booking
-        if (intval($booking['customer_id']) !== intval($customer_id)) {
-            return ['success' => false, 'message' => 'You can only review your own bookings'];
-        }
-
-        // Check if already reviewed this booking
         $review_class = new review_class();
-        $existing_review = $review_class->get_review_by_booking($booking_id);
 
-        if ($existing_review) {
-            // Check if review can be edited (within 7 days)
-            $review_time = strtotime($existing_review['created_at']);
-            $current_time = time();
-            $days_passed = ($current_time - $review_time) / (60 * 60 * 24);
+        // Determine if this is a booking review or order review
+        $is_order_review = ($order_id > 0);
 
-            if ($days_passed > 7) {
-                return ['success' => false, 'message' => 'You have already reviewed this booking'];
+        if ($is_order_review) {
+            // Handle order-based review (vendor product)
+            if (!class_exists('order_class')) {
+                require_once __DIR__ . '/../classes/order_class.php';
+            }
+            $order_class = new order_class();
+            $order = $order_class->get_order_by_id($order_id);
+
+            if (!$order) {
+                return ['success' => false, 'message' => 'Order not found'];
             }
 
-            // Update existing review
-            if ($review_class->update_review($existing_review['review_id'], $rating, $comment)) {
-                return ['success' => true, 'message' => 'Review updated successfully', 'review_id' => $existing_review['review_id']];
+            // Verify customer owns this order
+            if (intval($order['customer_id']) !== intval($customer_id)) {
+                return ['success' => false, 'message' => 'You can only review your own orders'];
+            }
+
+            // Only allow reviews for paid orders
+            if ($order['payment_status'] !== 'paid') {
+                return ['success' => false, 'message' => 'Can only review paid orders'];
+            }
+
+            // Check if already reviewed this vendor for this order
+            $existing_review = $review_class->get_review_by_order_and_provider($order_id, $provider_id);
+
+            if ($existing_review) {
+                return ['success' => false, 'message' => 'You have already reviewed this vendor for this order'];
+            }
+
+            // Add new order review
+            $review_id = $review_class->add_order_review($customer_id, $provider_id, $order_id, $rating, $comment);
+
+            if ($review_id) {
+                return ['success' => true, 'message' => 'Review added successfully', 'review_id' => $review_id];
             } else {
-                return ['success' => false, 'message' => 'Failed to update review'];
+                return ['success' => false, 'message' => 'Failed to add review'];
             }
-        }
-
-        // Add new review
-        $review_id = $review_class->add_review($customer_id, $provider_id, $booking_id, $rating, $comment);
-
-        if ($review_id) {
-            return ['success' => true, 'message' => 'Review added successfully', 'review_id' => $review_id];
         } else {
-            return ['success' => false, 'message' => 'Failed to add review'];
+            // Handle booking-based review (photographer service)
+            if (!is_numeric($booking_id) || $booking_id <= 0) {
+                return ['success' => false, 'message' => 'Invalid booking ID'];
+            }
+
+            // Check if booking is completed
+            $booking_class = new booking_class();
+            $booking = $booking_class->get_booking_by_id($booking_id);
+
+            if (!$booking) {
+                return ['success' => false, 'message' => 'Booking not found'];
+            }
+
+            if ($booking['status'] !== 'completed') {
+                return ['success' => false, 'message' => 'Can only review completed bookings'];
+            }
+
+            // Verify customer is the one who made booking
+            if (intval($booking['customer_id']) !== intval($customer_id)) {
+                return ['success' => false, 'message' => 'You can only review your own bookings'];
+            }
+
+            // Check if already reviewed this booking
+            $existing_review = $review_class->get_review_by_booking($booking_id);
+
+            if ($existing_review) {
+                // Check if review can be edited (within 7 days)
+                $review_time = strtotime($existing_review['created_at']);
+                $current_time = time();
+                $days_passed = ($current_time - $review_time) / (60 * 60 * 24);
+
+                if ($days_passed > 7) {
+                    return ['success' => false, 'message' => 'You have already reviewed this booking'];
+                }
+
+                // Update existing review
+                if ($review_class->update_review($existing_review['review_id'], $rating, $comment)) {
+                    return ['success' => true, 'message' => 'Review updated successfully', 'review_id' => $existing_review['review_id']];
+                } else {
+                    return ['success' => false, 'message' => 'Failed to update review'];
+                }
+            }
+
+            // Add new review
+            $review_id = $review_class->add_review($customer_id, $provider_id, $booking_id, $rating, $comment);
+
+            if ($review_id) {
+                return ['success' => true, 'message' => 'Review added successfully', 'review_id' => $review_id];
+            } else {
+                return ['success' => false, 'message' => 'Failed to add review'];
+            }
         }
     }
 
