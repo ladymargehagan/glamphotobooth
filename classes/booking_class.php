@@ -180,5 +180,21 @@ class booking_class extends db_connection {
 
         return array_values($available_slots);
     }
+
+    /**
+     * Get all bookings (for admin dashboard)
+     */
+    public function get_all_bookings() {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
+        $sql = "SELECT b.*, c.name as customer_name, sp.business_name as provider_name
+                FROM pb_bookings b
+                LEFT JOIN pb_customer c ON b.customer_id = c.id
+                LEFT JOIN pb_service_providers sp ON b.provider_id = sp.provider_id
+                ORDER BY b.created_at DESC";
+        return $this->db_fetch_all($sql);
+    }
 }
 ?>

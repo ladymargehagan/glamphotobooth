@@ -83,7 +83,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <a href="<?php echo SITE_URL; ?>/admin/category.php" class="card-action">Go to Categories →</a>
                 </div>
 
-                <div class="dashboard-card">
+                <!-- <div class="dashboard-card">
                     <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
@@ -91,9 +91,9 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <h3 class="card-title">User Management</h3>
                     <p class="card-subtitle">Manage users, roles, and permissions</p>
                     <a href="<?php echo SITE_URL; ?>/admin/manage_users.php" class="card-action">View Users →</a>
-                </div>
+                </div> -->
 
-                <div class="dashboard-card">
+                <!-- <div class="dashboard-card">
                     <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="2" y="5" width="20" height="14" rx="2"></rect>
                         <path d="M2 10h20"></path>
@@ -102,7 +102,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <p class="card-subtitle">Track and manage all orders</p>
                     <a href="<?php echo SITE_URL; ?>/admin/manage_orders.php" class="card-action">View Orders →</a>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Recent Activity -->
             <div>
