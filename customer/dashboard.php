@@ -358,7 +358,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                                         Total: ₵<?php echo number_format($order['total_amount'] ?? 0, 2); ?>
                                     </div>
                                     <div style="display: flex; gap: var(--spacing-sm);">
-                                        <a href="<?php echo SITE_URL; ?>/customer/orders.php" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
+                                        <a href="<?php echo SITE_URL; ?>/customer/order_confirmation.php?order_id=<?php echo $order['order_id']; ?>" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
                                         <?php if (isset($order['payment_status']) && $order['payment_status'] === 'paid' && isset($order['vendor_provider_ids']) && !empty($order['vendor_provider_ids'])): ?>
                                             <?php
                                             // Get first vendor provider ID for the review button
