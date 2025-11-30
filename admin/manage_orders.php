@@ -41,10 +41,8 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <input type="text" id="searchInput" class="search-input" placeholder="Search orders by ID or customer...">
                     <select id="statusFilter" class="status-filter">
                         <option value="">All Statuses</option>
-                        <option value="pending">Pending</option>
                         <option value="paid">Paid</option>
                         <option value="failed">Failed</option>
-                        <option value="refunded">Refunded</option>
                     </select>
                 </div>
             </div>
@@ -69,6 +67,25 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 </table>
             </div>
         </main>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-overlay" onclick="closeOrderModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order Details</h2>
+                <button type="button" class="modal-close" onclick="closeOrderModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body" id="orderDetailsContent">
+                <p style="text-align: center; color: var(--text-secondary);">Loading order details...</p>
+            </div>
+        </div>
     </div>
 
     <style>
@@ -138,12 +155,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             border-bottom: none;
         }
 
-        /* Status Badge Additions */
-        .status-refunded {
-            background: rgba(33, 150, 243, 0.15);
-            color: #0d47a1;
-        }
-
         /* Action Buttons */
         .action-btn {
             padding: 0.4rem 0.9rem;
@@ -170,15 +181,130 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             box-shadow: 0 4px 12px rgba(16, 33, 82, 0.2);
         }
 
-        .btn-refund {
-            background: #2196f3;
-            color: var(--white);
+        /* Order Details Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
 
-        .btn-refund:hover {
-            background: #1565c0;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            z-index: 1001;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.35rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            padding: 0;
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+        }
+
+        .modal-body {
+            padding: var(--spacing-lg);
+        }
+
+        .order-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .order-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .order-detail-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .order-detail-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .order-items-section {
+            margin-top: var(--spacing-lg);
+        }
+
+        .order-items-section h3 {
+            color: var(--primary);
+            margin-bottom: var(--spacing-md);
+            font-size: 1.1rem;
+        }
+
+        .order-item {
+            background: rgba(226, 196, 146, 0.05);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .order-item-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .order-item-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--spacing-xs);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
         }
 
         /* Responsive */
@@ -251,7 +377,10 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 .catch(error => console.error('Error loading orders:', error));
         }
 
+        let allOrders = []; // Store all orders globally
+
         function displayOrders(orders) {
+            allOrders = orders; // Store for later use
             const tbody = document.querySelector('#ordersTable tbody');
             if (!orders || orders.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No orders found</td></tr>';
@@ -268,7 +397,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <td>${new Date(order.order_date).toLocaleDateString()}</td>
                     <td>
                         <button class="action-btn btn-view" onclick="viewOrder(${order.order_id})">View</button>
-                        ${order.payment_status === 'paid' ? `<button class="action-btn btn-refund" onclick="refundOrder(${order.order_id})">Refund</button>` : ''}
                     </td>
                 </tr>
             `).join('');
@@ -292,14 +420,79 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         }
 
         function viewOrder(orderId) {
-            alert('View order #' + orderId + ' - Feature coming soon');
+            // Fetch full order details
+            fetch(window.siteUrl + '/actions/fetch_order_details_action.php?order_id=' + orderId)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayOrderDetails(data.order);
+                    } else {
+                        alert('Failed to load order details: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading order details:', error);
+                    alert('Error loading order details');
+                });
         }
 
-        function refundOrder(orderId) {
-            if (!confirm('Are you sure you want to refund order #' + orderId + '?')) {
-                return;
+        function displayOrderDetails(order) {
+            const modal = document.getElementById('orderModal');
+            const content = document.getElementById('orderDetailsContent');
+
+            // Build order details HTML
+            let html = `
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Order ID:</span>
+                    <span class="order-detail-value">#${order.order_id}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Customer ID:</span>
+                    <span class="order-detail-value">${order.customer_id}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Order Date:</span>
+                    <span class="order-detail-value">${new Date(order.order_date).toLocaleString()}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Total Amount:</span>
+                    <span class="order-detail-value">₵${parseFloat(order.total_amount).toFixed(2)}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Payment Status:</span>
+                    <span class="order-detail-value"><span class="status-badge status-${order.payment_status}">${order.payment_status}</span></span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Payment Reference:</span>
+                    <span class="order-detail-value">${order.payment_reference || 'N/A'}</span>
+                </div>
+            `;
+
+            // Add order items if available
+            if (order.items && order.items.length > 0) {
+                html += `
+                    <div class="order-items-section">
+                        <h3>Order Items</h3>
+                        ${order.items.map(item => `
+                            <div class="order-item">
+                                <div class="order-item-title">${item.product_title || 'Product #' + item.product_id}</div>
+                                <div class="order-item-details">
+                                    <span>Quantity: ${item.qty}</span>
+                                    <span>₵${parseFloat(item.price).toFixed(2)}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
             }
-            alert('Refund order #' + orderId + ' - Feature coming soon');
+
+            content.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        function closeOrderModal() {
+            const modal = document.getElementById('orderModal');
+            modal.classList.remove('active');
         }
     </script>
 </body>
