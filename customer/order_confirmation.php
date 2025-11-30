@@ -64,12 +64,8 @@ if ($has_vendor_products && $order['payment_status'] === 'paid') {
             if ($review) {
                 $reviewed_vendors[$provider_id] = true;
                 $vendor_reviews[$provider_id] = $review;
-
-                // Check if review can be edited (within 7 days)
-                $review_time = strtotime($review['review_date'] ?? 'now');
-                $current_time = time();
-                $days_passed = ($current_time - $review_time) / (60 * 60 * 24);
-                $can_edit_review[$provider_id] = ($days_passed <= 7);
+                // Allow editing reviews anytime
+                $can_edit_review[$provider_id] = true;
             } else {
                 $reviewed_vendors[$provider_id] = false;
             }

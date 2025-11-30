@@ -86,22 +86,16 @@ $role_config = [
                         'active_pages' => ['dashboard.php']
                     ],
                     [
-                        'label' => 'Inventory',
-                        'url' => '/vendor/inventory.php',
-                        'icon' => '<circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>',
-                        'active_pages' => ['inventory.php']
-                    ],
-                    [
                         'label' => 'Orders',
                         'url' => '/vendor/orders.php',
                         'icon' => '<path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2M6 9v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9M10 5V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"></path>',
-                        'active_pages' => ['orders.php']
+                        'active_pages' => ['orders.php', 'order_details.php']
                     ],
                     [
                         'label' => 'My Products',
                         'url' => '/vendor/manage_products.php',
                         'icon' => '<path d="M12 5v14M5 12h14"></path>',
-                        'active_pages' => ['manage_products.php', 'add_product.php', 'edit_product.php'],
+                        'active_pages' => ['manage_products.php', 'add_product.php', 'edit_product.php', 'inventory.php'],
                         'active_keywords' => ['product']
                     ]
                 ]

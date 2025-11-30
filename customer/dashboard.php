@@ -209,19 +209,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 </div>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="dashboard-grid">
-                <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                        <circle cx="12" cy="13" r="4"></circle>
-                    </svg>
-                    <h3 class="card-title">Browse Photographers</h3>
-                    <p class="card-subtitle">Discover talented photographers ready to capture your moments</p>
-                    <a href="<?php echo SITE_URL; ?>/shop.php" class="card-action">Start Browsing →</a>
-                </div>
-            </div>
-
             <!-- Bookings Section -->
             <div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
@@ -291,8 +278,8 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                             <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
                         </svg>
                         <h3 class="empty-state-title">No Bookings Yet</h3>
-                        <p class="empty-state-text">You haven't booked any photography services yet. Start by exploring our photographers!</p>
-                        <a href="<?php echo SITE_URL; ?>/shop.php" class="btn btn-primary">Browse Photographers</a>
+                        <p class="empty-state-text">You haven't booked any photography services yet. Start by exploring the marketplace!</p>
+                        <a href="<?php echo SITE_URL; ?>/shop.php" class="btn btn-primary">Browse Marketplace</a>
                     </div>
                 <?php endif; ?>
             </div>
