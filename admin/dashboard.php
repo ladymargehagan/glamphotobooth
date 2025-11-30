@@ -261,39 +261,78 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
         function loadDashboardStats() {
             fetch(window.siteUrl + '/actions/fetch_dashboard_stats_action.php')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('HTTP error, status = ' + response.status);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         updateDashboard(data.stats);
                     } else {
                         console.error('Failed to load stats:', data.message);
+                        showStatsError(data.message || 'Failed to load statistics');
                     }
                 })
-                .catch(error => console.error('Error loading stats:', error));
+                .catch(error => {
+                    console.error('Error loading stats:', error);
+                    showStatsError('Failed to load statistics: ' + error.message);
+                });
+        }
+
+        function showStatsError(message) {
+            // Show error in stat cards
+            const errorText = 'Error loading';
+            document.getElementById('totalUsers').textContent = '—';
+            document.getElementById('totalOrders').textContent = '—';
+            document.getElementById('totalRevenue').textContent = '₵—';
+            document.getElementById('totalBookings').textContent = '—';
+            document.getElementById('revenueStatus').textContent = errorText;
         }
 
         function updateDashboard(stats) {
-            // Update stat cards
-            document.getElementById('totalUsers').textContent = stats.total_users;
-            document.getElementById('customersCount').textContent = stats.total_customers;
-            document.getElementById('photographersCount').textContent = stats.total_photographers;
-            document.getElementById('totalOrders').textContent = stats.total_orders;
-            document.getElementById('pendingOrders').textContent = stats.pending_orders;
-            document.getElementById('totalRevenue').textContent = '₵' + stats.total_revenue;
-            document.getElementById('totalBookings').textContent = stats.total_bookings;
-            document.getElementById('completedBookings').textContent = stats.completed_bookings;
+            // Validate stats object
+            if (!stats || typeof stats !== 'object') {
+                showStatsError('Invalid data format');
+                return;
+            }
+
+            // Update stat cards with safe access
+            document.getElementById('totalUsers').textContent = stats.total_users || 0;
+            document.getElementById('customersCount').textContent = stats.total_customers || 0;
+            document.getElementById('photographersCount').textContent = stats.total_photographers || 0;
+            document.getElementById('totalOrders').textContent = stats.total_orders || 0;
+            document.getElementById('pendingOrders').textContent = stats.pending_orders || 0;
+
+            // Format revenue properly - ensure it's a number
+            const revenue = parseFloat(stats.total_revenue) || 0;
+            document.getElementById('totalRevenue').textContent = '₵' + revenue.toFixed(2);
+
+            document.getElementById('totalBookings').textContent = stats.total_bookings || 0;
+            document.getElementById('completedBookings').textContent = stats.completed_bookings || 0;
 
             // Set revenue status
-            const revenueStatus = stats.total_revenue > 0 ? 'Platform revenue from paid orders' : 'No revenue yet';
+            const revenueStatus = revenue > 0 ? 'Platform revenue from paid orders' : 'No revenue yet';
             document.getElementById('revenueStatus').textContent = revenueStatus;
 
-            // Draw charts
-            drawOrdersChart(stats.orders_by_status);
-            drawBookingsChart(stats.bookings_by_status);
+            // Draw charts - with validation
+            if (stats.orders_by_status && typeof stats.orders_by_status === 'object') {
+                drawOrdersChart(stats.orders_by_status);
+            }
 
-            // Update tables
-            updateRecentOrdersTable(stats.recent_orders);
-            updateRecentBookingsTable(stats.recent_bookings);
+            if (stats.bookings_by_status && typeof stats.bookings_by_status === 'object') {
+                drawBookingsChart(stats.bookings_by_status);
+            }
+
+            // Update tables - with validation
+            if (Array.isArray(stats.recent_orders)) {
+                updateRecentOrdersTable(stats.recent_orders);
+            }
+
+            if (Array.isArray(stats.recent_bookings)) {
+                updateRecentBookingsTable(stats.recent_bookings);
+            }
         }
 
         function drawOrdersChart(data) {
@@ -375,15 +414,23 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 return;
             }
 
-            tbody.innerHTML = orders.map(order => `
-                <tr>
-                    <td>#${order.order_id}</td>
-                    <td>${order.customer_id}</td>
-                    <td>₵${parseFloat(order.total_amount).toFixed(2)}</td>
-                    <td><span class="status-badge status-${order.payment_status}">${order.payment_status}</span></td>
-                    <td>${new Date(order.order_date).toLocaleDateString()}</td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = orders.map(order => {
+                const orderId = order.order_id || 'N/A';
+                const customerId = order.customer_name || order.customer_id || 'Unknown';
+                const amount = parseFloat(order.total_amount || 0).toFixed(2);
+                const status = order.payment_status || 'unknown';
+                const date = order.order_date ? new Date(order.order_date).toLocaleDateString() : 'N/A';
+
+                return `
+                    <tr>
+                        <td>#${orderId}</td>
+                        <td>${customerId}</td>
+                        <td>₵${amount}</td>
+                        <td><span class="status-badge status-${status}">${status}</span></td>
+                        <td>${date}</td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function updateRecentBookingsTable(bookings) {
@@ -393,15 +440,23 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 return;
             }
 
-            tbody.innerHTML = bookings.map(booking => `
-                <tr>
-                    <td>#${booking.booking_id}</td>
-                    <td>${booking.customer_id}</td>
-                    <td>${booking.provider_id || 'N/A'}</td>
-                    <td><span class="status-badge status-${booking.status}">${booking.status}</span></td>
-                    <td>${new Date(booking.created_at).toLocaleDateString()}</td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = bookings.map(booking => {
+                const bookingId = booking.booking_id || 'N/A';
+                const customerId = booking.customer_name || booking.customer_id || 'Unknown';
+                const providerId = booking.business_name || booking.provider_id || 'N/A';
+                const status = booking.status || 'unknown';
+                const date = booking.created_at ? new Date(booking.created_at).toLocaleDateString() : 'N/A';
+
+                return `
+                    <tr>
+                        <td>#${bookingId}</td>
+                        <td>${customerId}</td>
+                        <td>${providerId}</td>
+                        <td><span class="status-badge status-${status}">${status}</span></td>
+                        <td>${date}</td>
+                    </tr>
+                `;
+            }).join('');
         }
     </script>
 </body>
