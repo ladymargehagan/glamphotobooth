@@ -40,9 +40,11 @@ class payment_request_class extends db_connection {
         $available = round(floatval($available), 2);
         $payment_method = $this->db->real_escape_string($payment_method);
         
-        // Ensure payment_method is valid (remove paypal if it exists in enum)
-        if ($payment_method === 'paypal') {
-            $payment_method = 'other';
+        // Ensure payment_method is valid for enum (only: bank_transfer, mobile_money, other)
+        // If database enum still has paypal, this will prevent errors
+        $valid_methods = ['bank_transfer', 'mobile_money', 'other'];
+        if (!in_array($payment_method, $valid_methods)) {
+            $payment_method = 'other'; // Default to 'other' if invalid
         }
         
         // Parse payment details
@@ -70,20 +72,46 @@ class payment_request_class extends db_connection {
         $payment_details_escaped = $this->db->real_escape_string($payment_details_json);
         $payment_details_sql = "'$payment_details_escaped'";
         
+        // Build the SQL query - match your exact database structure
+        // Use prepared statement approach for safety
         $sql = "INSERT INTO pb_payment_requests 
                 (provider_id, user_role, requested_amount, available_earnings, payment_method, payment_details, account_name, account_number, bank_name, mobile_network, status)
                 VALUES ($provider_id, $user_role, $requested_amount, $available, '$payment_method', $payment_details_sql, $account_name_sql, $account_number_sql, $bank_name_sql, $mobile_network_sql, 'pending')";
+        
+        // Double-check payment_method is valid (in case enum still has paypal)
+        if (!in_array($payment_method, ['bank_transfer', 'mobile_money', 'other'])) {
+            error_log('WARNING: Invalid payment_method detected: ' . $payment_method . ', defaulting to other');
+            $payment_method = 'other';
+            // Rebuild SQL with corrected method
+            $sql = "INSERT INTO pb_payment_requests 
+                    (provider_id, user_role, requested_amount, available_earnings, payment_method, payment_details, account_name, account_number, bank_name, mobile_network, status)
+                    VALUES ($provider_id, $user_role, $requested_amount, $available, '$payment_method', $payment_details_sql, $account_name_sql, $account_number_sql, $bank_name_sql, $mobile_network_sql, 'pending')";
+        }
 
         error_log('Payment request SQL: ' . $sql);
+        error_log('Provider ID: ' . $provider_id . ', Available: ' . $available . ', Requested: ' . $requested_amount);
         
         if ($this->db_write_query($sql)) {
             $request_id = $this->last_insert_id();
+            error_log('Payment request created successfully with ID: ' . $request_id);
             return ['success' => true, 'request_id' => $request_id];
         }
         
         $error = $this->db ? $this->db->error : 'Unknown database error';
-        error_log('Payment request SQL error: ' . $error . ' | SQL: ' . $sql);
-        return ['success' => false, 'message' => 'Failed to create payment request. Error: ' . $error];
+        $errno = $this->db ? $this->db->errno : 0;
+        error_log('Payment request SQL error: ' . $error . ' (Error #' . $errno . ') | SQL: ' . $sql);
+        
+        // Provide user-friendly error message
+        $user_message = 'Failed to create payment request. ';
+        if ($errno == 1265) {
+            $user_message .= 'Invalid payment method. Please select a valid payment method.';
+        } else if ($errno == 1366) {
+            $user_message .= 'Invalid data format. Please check your input.';
+        } else {
+            $user_message .= 'Please try again or contact support.';
+        }
+        
+        return ['success' => false, 'message' => $user_message];
     }
 
     /**
