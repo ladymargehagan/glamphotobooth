@@ -2,8 +2,7 @@
 
 /* Layout */
 .dashboard-layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
+    display: flex;
     min-height: 100vh;
     gap: 0;
 }
@@ -23,11 +22,12 @@
 }
 
 .dashboard-content {
-    grid-column: 2;
+    flex: 1;
     margin-left: 280px;
     padding: var(--spacing-xl);
     background: var(--light-gray);
     min-height: 100vh;
+    width: calc(100% - 280px);
 }
 
 .sidebar-header {
@@ -340,7 +340,7 @@
 /* Responsive */
 @media (max-width: 768px) {
     .dashboard-layout {
-        grid-template-columns: 1fr;
+        flex-direction: column;
     }
 
     .dashboard-sidebar {
@@ -362,6 +362,7 @@
 
     .dashboard-content {
         margin-left: 0;
+        width: 100%;
         padding: var(--spacing-lg);
     }
 
