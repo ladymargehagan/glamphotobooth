@@ -1,28 +1,13 @@
 <?php
 /**
- * Vendor Inventory Page
+ * Vendor Inventory Page - Redirect to Manage Products
  * vendor/inventory.php
  */
 require_once __DIR__ . '/../settings/core.php';
 
-// Check if logged in
-requireLogin();
-
-// Check if user is vendor (role 3)
-if ($_SESSION['user_role'] != 3) {
-    header('Location: ' . SITE_URL . '/index.php');
-    exit;
-}
-
-// Check if provider profile exists
-$user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
-$provider_class = new provider_class();
-$provider = $provider_class->get_provider_by_customer($user_id);
-
-if (!$provider) {
-    header('Location: ' . SITE_URL . '/customer/profile_setup.php');
-    exit;
-}
+// Redirect to manage_products.php
+header('Location: ' . SITE_URL . '/vendor/manage_products.php');
+exit;
 
 // Get all products for this vendor
 $product_class = new product_class();

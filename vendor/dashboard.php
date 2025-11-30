@@ -140,7 +140,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <div class="profile-banner-title">Complete Your Business Profile</div>
                     <div class="profile-banner-text">Set up your business information to start selling products and receiving orders.</div>
                 </div>
-                <a href="<?php echo SITE_URL; ?>/customer/edit_profile.php" class="profile-banner-action">Complete Profile</a>
+                <a href="<?php echo SITE_URL; ?>/vendor/edit_profile.php" class="profile-banner-action">Complete Profile</a>
             </div>
             <?php endif; ?>
 
@@ -165,39 +165,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <div class="stat-label">Total Orders</div>
                     <div class="stat-value" id="ordersValue">0</div>
                     <div class="stat-change" id="ordersChange">Loading...</div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="dashboard-grid">
-                <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <circle cx="9" cy="21" r="1"></circle>
-                        <circle cx="20" cy="21" r="1"></circle>
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                    </svg>
-                    <h3 class="card-title">Manage Inventory</h3>
-                    <p class="card-subtitle">View and manage your product inventory</p>
-                    <a href="<?php echo SITE_URL; ?>/vendor/inventory.php" class="card-action">View Inventory →</a>
-                </div>
-
-                <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
-                    </svg>
-                    <h3 class="card-title">View Orders</h3>
-                    <p class="card-subtitle">Manage customer orders and payments</p>
-                    <a href="<?php echo SITE_URL; ?>/vendor/orders.php" class="card-action">View Orders →</a>
-                </div>
-
-                <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <line x1="12" y1="1" x2="12" y2="23"></line>
-                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                    </svg>
-                    <h3 class="card-title">View Revenue</h3>
-                    <p class="card-subtitle">Track earnings and payment history</p>
-                    <a href="<?php echo SITE_URL; ?>/customer/earnings.php" class="card-action">View Revenue →</a>
                 </div>
             </div>
         </main>

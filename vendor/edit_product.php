@@ -16,7 +16,7 @@ $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 $product_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($product_id <= 0) {
-    header('Location: ' . SITE_URL . '/customer/manage_products.php');
+    header('Location: ' . SITE_URL . '/vendor/manage_products.php');
     exit;
 }
 
@@ -24,7 +24,7 @@ $provider_class = new provider_class();
 $provider = $provider_class->get_provider_by_customer($user_id);
 
 if (!$provider) {
-    header('Location: ' . SITE_URL . '/customer/profile_setup.php');
+    header('Location: ' . SITE_URL . '/vendor/profile_setup.php');
     exit;
 }
 
@@ -33,7 +33,7 @@ $product_class = new product_class();
 $product = $product_class->get_product_by_id($product_id);
 
 if (!$product || $product['provider_id'] != $provider['provider_id']) {
-    header('Location: ' . SITE_URL . '/customer/manage_products.php');
+    header('Location: ' . SITE_URL . '/vendor/manage_products.php');
     exit;
 }
 
@@ -330,7 +330,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         <h1>Edit Product</h1>
                         <p>Update your product or service listing</p>
                     </div>
-                    <a href="<?php echo SITE_URL; ?>/customer/manage_products.php" class="btn btn-primary" style="padding: 0.5rem 1rem; text-decoration: none;">← Back to Dashboard</a>
+                    <a href="<?php echo SITE_URL; ?>/vendor/manage_products.php" class="btn btn-primary" style="padding: 0.5rem 1rem; text-decoration: none;">← Back to Dashboard</a>
                 </div>
 
         <div class="product-card">
@@ -446,7 +446,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
                 <!-- Actions -->
                 <div class="form-actions">
-                    <a href="<?php echo SITE_URL; ?>/customer/manage_products.php" class="btn-cancel">Cancel</a>
+                    <a href="<?php echo SITE_URL; ?>/vendor/manage_products.php" class="btn-cancel">Cancel</a>
                     <button type="submit" class="btn-submit" id="submitBtn">Update Product</button>
                 </div>
             </form>
@@ -626,7 +626,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                             uploadProductImage(document.querySelector('input[name="product_id"]').value);
                         } else {
                             setTimeout(() => {
-                                window.location.href = '../customer/manage_products.php';
+                                window.location.href = '../vendor/manage_products.php';
                             }, 1500);
                         }
                     } else {
@@ -662,13 +662,13 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         console.error('Image upload error:', data);
                     }
                     setTimeout(() => {
-                        window.location.href = '../customer/manage_products.php';
+                        window.location.href = '../vendor/manage_products.php';
                     }, 1500);
                 })
                 .catch((error) => {
                     console.error('Image upload network error:', error);
                     setTimeout(() => {
-                        window.location.href = '../customer/manage_products.php';
+                        window.location.href = '../vendor/manage_products.php';
                     }, 1500);
                 });
             }

@@ -17,7 +17,7 @@ $provider_class = new provider_class();
 $provider = $provider_class->get_provider_by_customer($user_id);
 
 if (!$provider) {
-    header('Location: ' . SITE_URL . '/customer/profile_setup.php');
+    header('Location: ' . SITE_URL . '/vendor/profile_setup.php');
     exit;
 }
 
@@ -314,7 +314,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         <h1>Add New Product</h1>
                         <p>Create a new product or service listing</p>
                     </div>
-                    <a href="<?php echo SITE_URL; ?>/customer/manage_products.php" class="btn btn-primary" style="padding: 0.5rem 1rem; text-decoration: none;">← Back to Dashboard</a>
+                    <a href="<?php echo SITE_URL; ?>/vendor/manage_products.php" class="btn btn-primary" style="padding: 0.5rem 1rem; text-decoration: none;">← Back to Dashboard</a>
                 </div>
 
         <div class="product-card">
@@ -430,7 +430,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
                 <!-- Actions -->
                 <div class="form-actions">
-                    <a href="<?php echo SITE_URL; ?>/customer/manage_products.php" class="btn-cancel">Cancel</a>
+                    <a href="<?php echo SITE_URL; ?>/vendor/manage_products.php" class="btn-cancel">Cancel</a>
                     <button type="submit" class="btn-submit" id="submitBtn">Add Product</button>
                 </div>
             </form>

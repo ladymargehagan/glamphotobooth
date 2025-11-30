@@ -17,7 +17,7 @@ $provider_class = new provider_class();
 $provider = $provider_class->get_provider_by_customer($user_id);
 
 if (!$provider) {
-    header('Location: ' . SITE_URL . '/customer/profile_setup.php');
+    header('Location: ' . SITE_URL . '/vendor/profile_setup.php');
     exit;
 }
 
@@ -299,7 +299,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <h1>Manage Products</h1>
                     <div style="display: flex; gap: var(--spacing-md);">
                         <a href="<?php echo SITE_URL; ?>/<?php echo $user_role === 2 ? 'photographer' : 'vendor'; ?>/dashboard.php" class="btn-add-product" style="background: rgba(16, 33, 82, 0.1); color: var(--primary);">← Back to Dashboard</a>
-                        <a href="<?php echo SITE_URL; ?>/customer/add_product.php" class="btn-add-product">+ Add New Product</a>
+                        <a href="<?php echo SITE_URL; ?>/vendor/add_product.php" class="btn-add-product">+ Add New Product</a>
                     </div>
                 </div>
 
@@ -330,7 +330,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     </svg>
                     <h3 class="empty-state-title">No Products Yet</h3>
                     <p class="empty-state-text">Start building your catalog by adding your first product or service</p>
-                    <a href="<?php echo SITE_URL; ?>/customer/add_product.php" class="btn-add-product">Create Your First Product</a>
+                    <a href="<?php echo SITE_URL; ?>/vendor/add_product.php" class="btn-add-product">Create Your First Product</a>
                 </div>
             <?php else: ?>
                 <?php foreach ($products as $product): ?>
@@ -351,7 +351,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                             <div class="product-description"><?php echo htmlspecialchars(substr($product['description'], 0, 100)); ?>...</div>
                             <div class="product-price">₵<?php echo number_format($product['price'], 2); ?></div>
                             <div class="product-actions">
-                                <a href="<?php echo SITE_URL; ?>/customer/edit_product.php?id=<?php echo htmlspecialchars($product['product_id']); ?>" class="product-action-btn btn-edit">Edit</a>
+                                <a href="<?php echo SITE_URL; ?>/vendor/edit_product.php?id=<?php echo htmlspecialchars($product['product_id']); ?>" class="product-action-btn btn-edit">Edit</a>
                                 <button type="button" class="product-action-btn btn-delete" onclick="deleteProduct(<?php echo htmlspecialchars($product['product_id']); ?>)">Delete</button>
                             </div>
                         </div>

@@ -20,7 +20,7 @@ $provider_class = new provider_class();
 $provider = $provider_class->get_provider_by_customer($user_id);
 
 if (!$provider) {
-    header('Location: ' . SITE_URL . '/customer/profile_setup.php');
+    header('Location: ' . SITE_URL . '/vendor/profile_setup.php');
     exit;
 }
 
@@ -218,7 +218,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="<?php echo SITE_URL; ?>/customer/order_confirmation.php?order_id=<?php echo $order['order_id']; ?>" class="order-action">View</a>
+                                        <a href="<?php echo SITE_URL; ?>/vendor/order_details.php?order_id=<?php echo $order['order_id']; ?>" class="order-action">View</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -233,7 +233,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         </svg>
                         <h3 class="empty-state-title">No Orders Yet</h3>
                         <p class="empty-state-text">You don't have any orders yet. Add products to your inventory to start receiving orders.</p>
-                        <a href="<?php echo SITE_URL; ?>/customer/add_product.php" class="btn-primary">Add Products</a>
+                        <a href="<?php echo SITE_URL; ?>/vendor/add_product.php" class="btn-primary">Add Products</a>
                     </div>
                 </div>
             <?php endif; ?>
