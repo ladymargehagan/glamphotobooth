@@ -72,33 +72,38 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     </div>
 
     <style>
+        /* Search and Filter */
         .search-filter {
             display: flex;
             gap: var(--spacing-md);
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .search-input,
         .status-filter {
             padding: 0.75rem 1rem;
-            border: 1px solid rgba(226, 196, 146, 0.3);
+            border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
-            font-family: inherit;
+            font-family: var(--font-sans);
             font-size: 0.95rem;
+            transition: var(--transition);
+            background: var(--white);
         }
 
         .search-input {
             flex: 1;
-            min-width: 200px;
+            min-width: 250px;
         }
 
         .search-input:focus,
         .status-filter:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(92, 154, 173, 0.1);
+            box-shadow: 0 0 0 3px rgba(16, 33, 82, 0.1);
         }
 
+        /* Orders Table */
         .orders-table {
             width: 100%;
             border-collapse: collapse;
@@ -111,89 +116,88 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             font-weight: 600;
             color: var(--primary);
             border-bottom: 2px solid rgba(226, 196, 146, 0.2);
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
 
         .orders-table td {
             padding: var(--spacing-md);
             border-bottom: 1px solid rgba(226, 196, 146, 0.1);
+            color: var(--text-primary);
         }
 
-        .orders-table tr:last-child td {
+        .orders-table tbody tr {
+            transition: var(--transition);
+        }
+
+        .orders-table tbody tr:hover {
+            background: rgba(226, 196, 146, 0.02);
+        }
+
+        .orders-table tbody tr:last-child td {
             border-bottom: none;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: capitalize;
-        }
-
-        .status-pending {
-            background: rgba(255, 152, 0, 0.15);
-            color: #f57f17;
-        }
-
-        .status-paid {
-            background: rgba(76, 175, 80, 0.15);
-            color: #2e7d32;
-        }
-
-        .status-failed {
-            background: rgba(244, 67, 54, 0.15);
-            color: #b71c1c;
-        }
-
+        /* Status Badge Additions */
         .status-refunded {
             background: rgba(33, 150, 243, 0.15);
             color: #0d47a1;
         }
 
+        /* Action Buttons */
         .action-btn {
-            padding: 0.4rem 0.8rem;
-            margin: 0 2px;
+            padding: 0.4rem 0.9rem;
+            margin: 0 0.15rem;
             border: none;
-            border-radius: 4px;
-            font-size: 0.8rem;
+            border-radius: var(--border-radius);
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             text-decoration: none;
             display: inline-block;
+            font-family: var(--font-sans);
         }
 
         .btn-view {
             background: var(--primary);
-            color: white;
+            color: var(--white);
         }
 
         .btn-view:hover {
             background: #0d1a3a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 33, 82, 0.2);
         }
 
         .btn-refund {
             background: #2196f3;
-            color: white;
+            color: var(--white);
         }
 
         .btn-refund:hover {
             background: #1565c0;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
         }
 
+        /* Responsive */
         @media (max-width: 768px) {
             .search-filter {
                 flex-direction: column;
+                gap: var(--spacing-sm);
             }
 
             .search-input,
             .status-filter {
                 width: 100%;
+                min-width: 100%;
             }
 
             .orders-table {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
+                display: block;
+                overflow-x: auto;
             }
 
             .orders-table th,
@@ -202,8 +206,20 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             }
 
             .action-btn {
-                padding: 0.3rem 0.6rem;
-                font-size: 0.75rem;
+                padding: 0.35rem 0.7rem;
+                font-size: 0.8rem;
+                margin: 0.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-card {
+                padding: var(--spacing-md);
+            }
+
+            .orders-table th,
+            .orders-table td {
+                padding: var(--spacing-xs) var(--spacing-sm);
             }
         }
     </style>
