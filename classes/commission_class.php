@@ -141,11 +141,11 @@ class commission_class extends db_connection {
 
         $provider_id = intval($provider_id);
         
-        // Total earnings
+        // Total earnings from commissions
         $total_earnings = $this->get_provider_total_earnings($provider_id);
         
         // Total requested (pending, approved, or paid)
-        $sql = "SELECT SUM(requested_amount) as total_requested 
+        $sql = "SELECT COALESCE(SUM(requested_amount), 0) as total_requested 
                 FROM pb_payment_requests 
                 WHERE provider_id = $provider_id 
                 AND status IN ('pending', 'approved', 'paid')";
@@ -153,7 +153,7 @@ class commission_class extends db_connection {
         $total_requested = $result ? floatval($result['total_requested']) : 0;
         
         $available = $total_earnings - $total_requested;
-        return max(0, $available); // Can't be negative
+        return max(0, round($available, 2)); // Can't be negative, round to 2 decimals
     }
 
     /**
