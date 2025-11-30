@@ -104,7 +104,6 @@ $cssPath = SITE_URL . '/css/style.css';
         window.loginUrl = '<?php echo SITE_URL; ?>/auth/login.php';
         window.siteUrl = '<?php echo SITE_URL; ?>';
     </script>
-    <script src="<?php echo SITE_URL; ?>/js/cart.js"></script>
     <style>
         .upload-container {
             max-width: 1000px;
@@ -403,14 +402,6 @@ $cssPath = SITE_URL . '/css/style.css';
 
                 <div class="navbar-actions flex gap-sm">
                     <?php if (isLoggedIn()): ?>
-                        <a href="<?php echo SITE_URL; ?>/customer/cart.php" class="cart-icon" title="Shopping Cart" style="position: relative; display: flex; align-items: center;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
-                                <circle cx="9" cy="21" r="1"></circle>
-                                <circle cx="20" cy="21" r="1"></circle>
-                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                            </svg>
-                            <span id="cartBadge" class="cart-badge" style="display: none;"></span>
-                        </a>
                         <a href="<?php echo getDashboardUrl(); ?>" class="btn btn-sm btn-outline">Dashboard</a>
                         <a href="<?php echo SITE_URL; ?>/actions/logout.php" class="btn btn-sm btn-primary">Logout</a>
                     <?php else: ?>

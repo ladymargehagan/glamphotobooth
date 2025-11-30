@@ -19,7 +19,7 @@ $provider_class = new provider_class();
 $provider = $provider_class->get_provider_by_customer($user_id);
 
 if (!$provider) {
-    header('Location: ' . SITE_URL . '/customer/profile_setup.php');
+    header('Location: ' . SITE_URL . '/photographer/edit_profile.php');
     exit;
 }
 
@@ -309,8 +309,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             <!-- Filter Tabs -->
             <div class="filter-tabs">
                 <a href="?status=all" class="filter-tab <?php echo $status_filter === 'all' ? 'active' : ''; ?>">All</a>
-                <a href="?status=pending" class="filter-tab <?php echo $status_filter === 'pending' ? 'active' : ''; ?>">Pending</a>
-                <a href="?status=confirmed" class="filter-tab <?php echo $status_filter === 'confirmed' ? 'active' : ''; ?>">Confirmed</a>
+                <a href="?status=confirmed" class="filter-tab <?php echo $status_filter === 'confirmed' ? 'active' : ''; ?>">Active</a>
                 <a href="?status=completed" class="filter-tab <?php echo $status_filter === 'completed' ? 'active' : ''; ?>">Completed</a>
             </div>
 
@@ -361,19 +360,15 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                             <?php endif; ?>
 
                             <div class="booking-actions">
-                                <?php if ($booking['status'] === 'pending'): ?>
-                                    <div style="padding: 0.5rem 1rem; background: rgba(255, 152, 0, 0.1); border-radius: 4px; color: #f57f17; font-size: 0.85rem;">
-                                        Awaiting customer payment confirmation
-                                    </div>
-                                <?php elseif ($booking['status'] === 'confirmed' || $booking['status'] === 'accepted'): ?>
+                                <?php if ($booking['status'] === 'confirmed' || $booking['status'] === 'accepted'): ?>
                                     <button class="btn-action btn-complete" onclick="updateBookingStatus(<?php echo $booking['booking_id']; ?>, 'completed')">Mark as Completed</button>
                                 <?php endif; ?>
-                                
+
                                 <?php if ($booking['status'] === 'completed'): ?>
-                                    <a href="<?php echo SITE_URL; ?>/customer/upload_photos.php?booking_id=<?php echo $booking['booking_id']; ?>" class="btn-action btn-view">Upload Photos</a>
+                                    <a href="<?php echo SITE_URL; ?>/photographer/upload_photos.php?booking_id=<?php echo $booking['booking_id']; ?>" class="btn-action btn-view">Upload Photos</a>
                                 <?php endif; ?>
-                                
-                                <a href="?booking_id=<?php echo $booking['booking_id']; ?>&status=<?php echo $status_filter; ?>" class="btn-action btn-view">View Details</a>
+
+                                <a href="<?php echo SITE_URL; ?>/photographer/booking_details.php?booking_id=<?php echo $booking['booking_id']; ?>" class="btn-action btn-view">View Details</a>
                             </div>
                         </div>
                     <?php endforeach; ?>
