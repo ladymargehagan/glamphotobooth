@@ -147,9 +147,19 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             color: #f57f17;
         }
 
+        .status-confirmed, .status-accepted {
+            background: rgba(76, 175, 80, 0.15);
+            color: #2e7d32;
+        }
+
         .status-completed {
             background: rgba(33, 150, 243, 0.15);
             color: #0d47a1;
+        }
+
+        .status-rejected, .status-cancelled {
+            background: rgba(244, 67, 54, 0.15);
+            color: #b71c1c;
         }
 
         .booking-details-grid {

@@ -184,7 +184,8 @@ try {
     $orders_by_status = [
         'pending' => 0,
         'paid' => 0,
-        'failed' => 0
+        'failed' => 0,
+        'refunded' => 0
     ];
     try {
         if (!empty($all_orders)) {
@@ -204,7 +205,10 @@ try {
     // Bookings by Status
     $bookings_by_status = [
         'pending' => 0,
-        'completed' => 0
+        'confirmed' => 0,
+        'completed' => 0,
+        'cancelled' => 0,
+        'rejected' => 0
     ];
     try {
         if (!empty($all_bookings)) {

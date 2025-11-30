@@ -23,6 +23,7 @@ $profileComplete = $provider ? true : false;
 // Get booking statistics and recent bookings
 $booking_stats = [
     'pending' => 0,
+    'confirmed' => 0,
     'completed' => 0,
     'total' => 0
 ];
@@ -155,7 +156,12 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 <div class="stat-card">
                     <div class="stat-label">Pending Requests</div>
                     <div class="stat-value"><?php echo intval($booking_stats['pending'] ?? 0); ?></div>
-                    <div class="stat-change">Complete the service</div>
+                    <div class="stat-change">Review incoming bookings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Confirmed Bookings</div>
+                    <div class="stat-value"><?php echo intval($booking_stats['confirmed'] ?? 0); ?></div>
+                    <div class="stat-change">Upcoming sessions</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Completed Bookings</div>
@@ -235,6 +241,8 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                                         <?php
                                         if ($booking['status'] === 'pending') {
                                             echo 'background: rgba(255, 152, 0, 0.15); color: #f57f17;';
+                                        } elseif ($booking['status'] === 'confirmed') {
+                                            echo 'background: rgba(76, 175, 80, 0.15); color: #2e7d32;';
                                         } elseif ($booking['status'] === 'completed') {
                                             echo 'background: rgba(33, 150, 243, 0.15); color: #0d47a1;';
                                         } else {

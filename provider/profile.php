@@ -86,7 +86,7 @@ $cssPath = SITE_URL . '/css/style.css';
         .profile-hero {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 3rem var(--spacing-xl) var(--spacing-xxl);
+            padding: var(--spacing-xxl) var(--spacing-xl);
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: var(--spacing-xl);
@@ -159,7 +159,7 @@ $cssPath = SITE_URL . '/css/style.css';
         .products-section {
             max-width: 1200px;
             margin: 0 auto;
-            padding: var(--spacing-xxl) var(--spacing-xl);
+            padding: 0 var(--spacing-xl) var(--spacing-xxl);
         }
         .products-section h2 {
             font-family: var(--font-serif);
@@ -223,7 +223,7 @@ $cssPath = SITE_URL . '/css/style.css';
         .reviews-section {
             max-width: 1200px;
             margin: 0 auto;
-            padding: var(--spacing-xxl) var(--spacing-xl) var(--spacing-xxl);
+            padding: 0 var(--spacing-xl) var(--spacing-xxl);
             border-top: 1px solid rgba(226,196,146,0.3);
         }
         .reviews-section h2 {
@@ -285,7 +285,7 @@ $cssPath = SITE_URL . '/css/style.css';
                 </nav>
 
                 <div class="navbar-actions flex gap-sm">
-                    <?php if (isLoggedIn() && isset($_SESSION['user_role']) && $_SESSION['user_role'] == 4): ?>
+                    <?php if (isLoggedIn()): ?>
                         <a href="<?php echo SITE_URL; ?>/customer/cart.php" class="cart-icon" title="Shopping Cart" style="position: relative; display: flex; align-items: center;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
                                 <circle cx="9" cy="21" r="1"></circle>
@@ -294,8 +294,6 @@ $cssPath = SITE_URL . '/css/style.css';
                             </svg>
                             <span id="cartBadge" class="cart-badge" style="display: none;"></span>
                         </a>
-                    <?php endif; ?>
-                    <?php if (isLoggedIn()): ?>
                         <a href="<?php echo getDashboardUrl(); ?>" class="btn btn-sm btn-outline">Dashboard</a>
                         <a href="<?php echo SITE_URL; ?>/actions/logout.php" class="btn btn-sm btn-primary">Logout</a>
                     <?php else: ?>
@@ -374,15 +372,9 @@ $cssPath = SITE_URL . '/css/style.css';
                             <div class="product-type"><?php echo ucfirst(htmlspecialchars($product['product_type'])); ?></div>
                             <div class="product-price">₵<?php echo number_format($product['price'], 2); ?></div>
                             <div class="product-actions">
-                                <?php if (isLoggedIn() && isset($_SESSION['user_role']) && $_SESSION['user_role'] == 4): ?>
-                                    <button class="btn btn-sm btn-outline" onclick="addToCart(<?php echo intval($product['product_id']); ?>, '<?php echo htmlspecialchars(addslashes($product['title'])); ?>', <?php echo floatval($product['price']); ?>)">
-                                        Add to Cart
-                                    </button>
-                                <?php elseif (!isLoggedIn()): ?>
-                                    <a href="<?php echo SITE_URL; ?>/auth/login.php" class="btn btn-sm btn-outline" style="text-align: center; text-decoration: none;">
-                                        Login to Buy
-                                    </a>
-                                <?php endif; ?>
+                                <button class="btn btn-sm btn-outline" onclick="addToCart(<?php echo intval($product['product_id']); ?>, '<?php echo htmlspecialchars(addslashes($product['title'])); ?>', <?php echo floatval($product['price']); ?>)">
+                                    Add to Cart
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -411,10 +403,6 @@ $cssPath = SITE_URL . '/css/style.css';
                     </p>
                 </div>
             <?php endforeach; ?>
-        <?php elseif (!empty($provider['total_reviews']) && intval($provider['total_reviews']) > 0): ?>
-            <p style="color: var(--text-secondary); font-style: italic;">
-                Reviews are loading... Please refresh the page.
-            </p>
         <?php else: ?>
             <p style="color: var(--text-secondary); font-style: italic;">
                 No reviews yet. Book a service to be the first to leave a review.

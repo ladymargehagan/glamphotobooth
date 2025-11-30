@@ -31,7 +31,7 @@ if ($booking_id <= 0) {
     exit;
 }
 
-$allowed_statuses = ['completed'];
+$allowed_statuses = ['pending', 'confirmed', 'accepted', 'rejected', 'completed', 'cancelled'];
 if (!in_array($status, $allowed_statuses)) {
     echo json_encode(['success' => false, 'message' => 'Invalid status']);
     exit;
@@ -69,7 +69,11 @@ if (intval($booking['provider_id']) !== intval($provider['provider_id'])) {
 // Update booking status
 if ($booking_class->update_booking_status($booking_id, $status)) {
     $status_messages = [
-        'completed' => 'Booking marked as completed'
+        'confirmed' => 'Booking confirmed successfully',
+        'accepted' => 'Booking accepted successfully',
+        'rejected' => 'Booking rejected',
+        'completed' => 'Booking marked as completed',
+        'cancelled' => 'Booking cancelled'
     ];
     
     echo json_encode([

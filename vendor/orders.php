@@ -115,6 +115,11 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             color: #c62828;
         }
 
+        .status-refunded {
+            background: rgba(158, 158, 158, 0.15);
+            color: #616161;
+        }
+
         .order-action {
             color: var(--primary);
             text-decoration: none;
