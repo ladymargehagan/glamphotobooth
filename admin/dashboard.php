@@ -64,45 +64,18 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             <div class="charts-row">
                 <div class="chart-card">
                     <h3 class="chart-title">Orders by Status</h3>
-                    <canvas id="ordersChart" width="400" height="150"></canvas>
+                    <div class="chart-container">
+                        <canvas id="ordersChart"></canvas>
+                    </div>
                 </div>
                 <div class="chart-card">
                     <h3 class="chart-title">Bookings by Status</h3>
-                    <canvas id="bookingsChart" width="400" height="150"></canvas>
+                    <div class="chart-container">
+                        <canvas id="bookingsChart"></canvas>
+                    </div>
                 </div>
             </div>
 
-            <!-- Quick Links -->
-            <div class="dashboard-grid">
-                <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
-                    </svg>
-                    <h3 class="card-title">Manage Categories</h3>
-                    <p class="card-subtitle">Add, edit, or delete product and service categories</p>
-                    <a href="<?php echo SITE_URL; ?>/admin/category.php" class="card-action">Go to Categories →</a>
-                </div>
-
-                <!-- <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                    <h3 class="card-title">User Management</h3>
-                    <p class="card-subtitle">Manage users, roles, and permissions</p>
-                    <a href="<?php echo SITE_URL; ?>/admin/manage_users.php" class="card-action">View Users →</a>
-                </div> -->
-
-                <!-- <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                        <path d="M2 10h20"></path>
-                    </svg>
-                    <h3 class="card-title">Order Management</h3>
-                    <p class="card-subtitle">Track and manage all orders</p>
-                    <a href="<?php echo SITE_URL; ?>/admin/manage_orders.php" class="card-action">View Orders →</a>
-                </div>
-            </div> -->
 
             <!-- Recent Activity -->
             <div>
@@ -151,7 +124,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     <style>
         .charts-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: var(--spacing-lg);
             margin: var(--spacing-lg) 0;
         }
@@ -168,6 +141,11 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             margin: 0 0 var(--spacing-md) 0;
             font-size: 1.1rem;
             font-weight: 600;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
         }
 
         .activity-table {

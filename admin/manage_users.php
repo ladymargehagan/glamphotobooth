@@ -278,7 +278,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <td><span class="status-badge status-active">Active</span></td>
                     <td>${new Date(user.created_at).toLocaleDateString()}</td>
                     <td>
-                        <button class="action-btn btn-view" onclick="viewUser(${user.id})">View</button>
                         <button class="action-btn btn-delete" onclick="deleteUser(${user.id}, '${user.name}')">Delete</button>
                     </td>
                 </tr>
@@ -310,10 +309,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
                 row.style.display = (matchesSearch && matchesRole) ? '' : 'none';
             });
-        }
-
-        function viewUser(userId) {
-            alert('View user #' + userId + ' - Feature coming soon');
         }
 
         function deleteUser(userId, userName) {
