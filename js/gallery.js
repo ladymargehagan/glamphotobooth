@@ -177,16 +177,22 @@ function deletePhoto(photoId) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Remove photo element
-                    event.target.closest('.photo-item').style.animation = 'fadeOut 0.3s';
-                    setTimeout(() => {
-                        event.target.closest('.photo-item').remove();
-                        // Reload if no photos left
-                        const items = document.querySelectorAll('.photo-item');
-                        if (items.length === 0) {
-                            location.reload();
+                    // Find and remove photo element
+                    const photoItems = document.querySelectorAll('.photo-item');
+                    photoItems.forEach(item => {
+                        const deleteBtn = item.querySelector('.photo-item-delete');
+                        if (deleteBtn && deleteBtn.getAttribute('onclick')?.includes(photoId)) {
+                            item.style.animation = 'fadeOut 0.3s';
+                            setTimeout(() => {
+                                item.remove();
+                                // Reload if no photos left
+                                const remaining = document.querySelectorAll('.photo-item');
+                                if (remaining.length === 0) {
+                                    location.reload();
+                                }
+                            }, 300);
                         }
-                    }, 300);
+                    });
                 } else {
                     showErrorAlert('Error', data.message || 'Failed to delete photo');
                 }
