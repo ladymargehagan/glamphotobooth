@@ -48,15 +48,11 @@ function getStatusClass(status, type = 'order') {
         order: {
             'pending': 'status-pending',
             'paid': 'status-paid',
-            'failed': 'status-failed',
-            'refunded': 'status-refunded'
+            'failed': 'status-failed'
         },
         booking: {
             'pending': 'status-pending',
-            'confirmed': 'status-confirmed',
-            'completed': 'status-completed',
-            'cancelled': 'status-cancelled',
-            'rejected': 'status-cancelled'
+            'completed': 'status-completed'
         },
         role: {
             'admin': 'role-admin',

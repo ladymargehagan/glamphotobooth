@@ -44,7 +44,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         <option value="pending">Pending</option>
                         <option value="paid">Paid</option>
                         <option value="failed">Failed</option>
-                        <option value="refunded">Refunded</option>
                     </select>
                 </div>
             </div>
@@ -144,11 +143,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         .status-failed {
             background: rgba(244, 67, 54, 0.15);
             color: #b71c1c;
-        }
-
-        .status-refunded {
-            background: rgba(33, 150, 243, 0.15);
-            color: #0d47a1;
         }
 
         .action-btn {

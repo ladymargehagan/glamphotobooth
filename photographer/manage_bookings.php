@@ -145,19 +145,9 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             color: #f57f17;
         }
 
-        .status-confirmed, .status-accepted {
-            background: rgba(76, 175, 80, 0.15);
-            color: #2e7d32;
-        }
-
         .status-completed {
             background: rgba(33, 150, 243, 0.15);
             color: #0d47a1;
-        }
-
-        .status-rejected, .status-cancelled {
-            background: rgba(244, 67, 54, 0.15);
-            color: #b71c1c;
         }
 
         .booking-details-grid {
@@ -214,24 +204,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             font-size: 0.85rem;
             text-decoration: none;
             display: inline-block;
-        }
-
-        .btn-accept {
-            background: #2e7d32;
-            color: var(--white);
-        }
-
-        .btn-accept:hover {
-            background: #1b5e20;
-        }
-
-        .btn-reject {
-            background: #c62828;
-            color: var(--white);
-        }
-
-        .btn-reject:hover {
-            background: #b71c1c;
         }
 
         .btn-complete {
@@ -310,7 +282,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             <div class="filter-tabs">
                 <a href="?status=all" class="filter-tab <?php echo $status_filter === 'all' ? 'active' : ''; ?>">All</a>
                 <a href="?status=pending" class="filter-tab <?php echo $status_filter === 'pending' ? 'active' : ''; ?>">Pending</a>
-                <a href="?status=confirmed" class="filter-tab <?php echo $status_filter === 'confirmed' ? 'active' : ''; ?>">Confirmed</a>
                 <a href="?status=completed" class="filter-tab <?php echo $status_filter === 'completed' ? 'active' : ''; ?>">Completed</a>
             </div>
 
@@ -362,17 +333,13 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
                             <div class="booking-actions">
                                 <?php if ($booking['status'] === 'pending'): ?>
-                                    <div style="padding: 0.5rem 1rem; background: rgba(255, 152, 0, 0.1); border-radius: 4px; color: #f57f17; font-size: 0.85rem;">
-                                        Awaiting customer payment confirmation
-                                    </div>
-                                <?php elseif ($booking['status'] === 'confirmed' || $booking['status'] === 'accepted'): ?>
                                     <button class="btn-action btn-complete" onclick="updateBookingStatus(<?php echo $booking['booking_id']; ?>, 'completed')">Mark as Completed</button>
                                 <?php endif; ?>
-                                
+
                                 <?php if ($booking['status'] === 'completed'): ?>
                                     <a href="<?php echo SITE_URL; ?>/customer/upload_photos.php?booking_id=<?php echo $booking['booking_id']; ?>" class="btn-action btn-view">Upload Photos</a>
                                 <?php endif; ?>
-                                
+
                                 <a href="?booking_id=<?php echo $booking['booking_id']; ?>&status=<?php echo $status_filter; ?>" class="btn-action btn-view">View Details</a>
                             </div>
                         </div>

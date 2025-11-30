@@ -196,11 +196,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             color: #0d47a1;
         }
 
-        .status-confirmed {
-            background: rgba(76, 175, 80, 0.15);
-            color: #2e7d32;
-        }
-
         .status-cancelled {
             background: rgba(244, 67, 54, 0.15);
             color: #b71c1c;
@@ -318,19 +313,17 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Pending', 'Paid', 'Failed', 'Refunded'],
+                    labels: ['Pending', 'Paid', 'Failed'],
                     datasets: [{
                         data: [
                             data.pending || 0,
                             data.paid || 0,
-                            data.failed || 0,
-                            data.refunded || 0
+                            data.failed || 0
                         ],
                         backgroundColor: [
                             '#ff9800',
                             '#4caf50',
-                            '#f44336',
-                            '#2196f3'
+                            '#f44336'
                         ],
                         borderColor: '#fff',
                         borderWidth: 2
@@ -353,21 +346,15 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Pending', 'Confirmed', 'Completed', 'Cancelled', 'Rejected'],
+                    labels: ['Pending', 'Completed'],
                     datasets: [{
                         data: [
                             data.pending || 0,
-                            data.confirmed || 0,
-                            data.completed || 0,
-                            data.cancelled || 0,
-                            data.rejected || 0
+                            data.completed || 0
                         ],
                         backgroundColor: [
                             '#ff9800',
-                            '#2196f3',
-                            '#4caf50',
-                            '#f44336',
-                            '#757575'
+                            '#4caf50'
                         ],
                         borderColor: '#fff',
                         borderWidth: 2

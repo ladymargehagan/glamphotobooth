@@ -204,18 +204,10 @@ try {
                         );
 
                         if ($booking_id) {
-                            // CRITICAL: Update booking status to 'confirmed' since payment is complete
-                            $update_sql = "UPDATE pb_bookings SET status = 'confirmed' WHERE booking_id = $booking_id";
-                            error_log("VERIFY PAYMENT: Updating booking $booking_id status to 'confirmed'");
-
-                            if ($db->db_write_query($update_sql)) {
-                                $bookings_created++;
-                                error_log("VERIFY PAYMENT: Booking $booking_id created and confirmed for order $order_id");
-                            } else {
-                                $mysql_error = $db->db ? $db->db->error : 'Unknown';
-                                error_log("VERIFY PAYMENT ERROR: Booking $booking_id created but failed to update status (MySQL error: $mysql_error)");
-                                $bookings_created++;
-                            }
+                            // Booking is created with 'pending' status since payment is complete
+                            // Photographers will mark it as 'completed' when the service is done
+                            $bookings_created++;
+                            error_log("VERIFY PAYMENT: Booking $booking_id created for order $order_id");
                         } else {
                             $errors[] = "Failed to create booking for product $product_id";
                             error_log("VERIFY PAYMENT ERROR: Failed to create booking for product $product_id, order $order_id");

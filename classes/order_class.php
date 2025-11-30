@@ -96,7 +96,7 @@ class order_class extends db_connection {
         $order_id = intval($order_id);
         $status = $this->db->real_escape_string($status);
 
-        $valid_statuses = ['pending', 'paid', 'failed', 'refunded'];
+        $valid_statuses = ['pending', 'paid', 'failed'];
         if (!in_array($status, $valid_statuses)) {
             return false;
         }

@@ -35,7 +35,6 @@ $stats = [
     'total_bookings' => count($all_bookings),
     'total_orders' => count($all_orders),
     'pending' => 0,
-    'confirmed' => 0,
     'completed' => 0,
     'paid_orders' => 0
 ];
@@ -45,8 +44,6 @@ foreach ($all_bookings as $booking) {
     if (isset($booking['status'])) {
         if ($booking['status'] === 'pending') {
             $stats['pending']++;
-        } elseif ($booking['status'] === 'confirmed' || $booking['status'] === 'accepted') {
-            $stats['confirmed']++;
         } elseif ($booking['status'] === 'completed') {
             $stats['completed']++;
         }
@@ -190,12 +187,12 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 <div class="stat-card">
                     <div class="stat-label">Total Bookings</div>
                     <div class="stat-value"><?php echo $stats['total_bookings']; ?></div>
-                    <div class="stat-change"><?php echo $stats['confirmed'] + $stats['completed']; ?> completed</div>
+                    <div class="stat-change"><?php echo $stats['completed']; ?> completed</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Pending Bookings</div>
                     <div class="stat-value"><?php echo $stats['pending']; ?></div>
-                    <div class="stat-change">Awaiting provider response</div>
+                    <div class="stat-change">Awaiting completion</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Product Orders</div>
@@ -253,8 +250,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                                         $status = isset($booking['status']) ? $booking['status'] : 'unknown';
                                         if ($status === 'pending') {
                                             echo 'background: rgba(255, 152, 0, 0.15); color: #f57f17;';
-                                        } elseif ($status === 'confirmed' || $status === 'accepted') {
-                                            echo 'background: rgba(76, 175, 80, 0.15); color: #2e7d32;';
                                         } elseif ($status === 'completed') {
                                             echo 'background: rgba(33, 150, 243, 0.15); color: #0d47a1;';
                                         } else {

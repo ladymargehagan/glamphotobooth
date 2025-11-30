@@ -95,37 +95,33 @@ class booking_class extends db_connection {
         if (!$this->db_connect()) {
             return [
                 'pending' => 0,
-                'confirmed' => 0,
                 'completed' => 0,
                 'total' => 0
             ];
         }
 
         $provider_id = intval($provider_id);
-        
+
         // Get counts by status
-        $sql = "SELECT 
+        $sql = "SELECT
                     COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending,
-                    COUNT(CASE WHEN status = 'confirmed' OR status = 'accepted' THEN 1 END) as confirmed,
                     COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed,
                     COUNT(*) as total
-                FROM pb_bookings 
+                FROM pb_bookings
                 WHERE provider_id = $provider_id";
-        
+
         $result = $this->db_fetch_one($sql);
-        
+
         if ($result) {
             return [
                 'pending' => intval($result['pending'] ?? 0),
-                'confirmed' => intval($result['confirmed'] ?? 0),
                 'completed' => intval($result['completed'] ?? 0),
                 'total' => intval($result['total'] ?? 0)
             ];
         }
-        
+
         return [
             'pending' => 0,
-            'confirmed' => 0,
             'completed' => 0,
             'total' => 0
         ];
@@ -163,7 +159,7 @@ class booking_class extends db_connection {
 
         // Get booked times for this date
         $sql = "SELECT booking_time FROM pb_bookings
-                WHERE provider_id = $provider_id AND booking_date = '$booking_date' AND status IN ('pending', 'confirmed', 'accepted')";
+                WHERE provider_id = $provider_id AND booking_date = '$booking_date' AND status IN ('pending', 'completed')";
         $results = $this->db_fetch_all($sql);
 
         $booked_times = [];
