@@ -165,5 +165,77 @@ class customer_class extends db_connection {
         $result = $this->db_fetch_one($sql);
         return $result ? intval($result['total']) : 0;
     }
+
+    /**
+     * Delete customer (admin only)
+     * Handles cascading deletes for related records
+     */
+    public function delete_customer($id) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
+        $id = intval($id);
+
+        try {
+            // Start transaction
+            $this->db->begin_transaction();
+
+            // Delete from pb_reviews (customer reviews)
+            $sql = "DELETE FROM pb_reviews WHERE customer_id = $id";
+            if (!$this->db_write_query($sql)) {
+                throw new Exception('Failed to delete customer reviews');
+            }
+
+            // Delete from pb_cart (shopping cart items)
+            $sql = "DELETE FROM pb_cart WHERE customer_id = $id";
+            if (!$this->db_write_query($sql)) {
+                throw new Exception('Failed to delete customer cart');
+            }
+
+            // Delete from pb_bookings (service bookings)
+            $sql = "DELETE FROM pb_bookings WHERE customer_id = $id";
+            if (!$this->db_write_query($sql)) {
+                throw new Exception('Failed to delete customer bookings');
+            }
+
+            // Delete from pb_orders (product orders)
+            // Note: This has ON DELETE RESTRICT, so we need to delete order items first
+            $sql = "SELECT order_id FROM pb_orders WHERE customer_id = $id";
+            $orders = $this->db_fetch_all($sql);
+
+            if ($orders && is_array($orders)) {
+                foreach ($orders as $order) {
+                    $order_id = intval($order['order_id']);
+                    $sql = "DELETE FROM pb_order_items WHERE order_id = $order_id";
+                    if (!$this->db_write_query($sql)) {
+                        throw new Exception('Failed to delete order items');
+                    }
+                }
+            }
+
+            // Now delete orders
+            $sql = "DELETE FROM pb_orders WHERE customer_id = $id";
+            if (!$this->db_write_query($sql)) {
+                throw new Exception('Failed to delete customer orders');
+            }
+
+            // Finally delete customer
+            $sql = "DELETE FROM pb_customer WHERE id = $id";
+            if (!$this->db_write_query($sql)) {
+                throw new Exception('Failed to delete customer');
+            }
+
+            // Commit transaction
+            $this->db->commit();
+            return true;
+
+        } catch (Exception $e) {
+            // Rollback on error
+            $this->db->rollback();
+            error_log('Delete customer error: ' . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>

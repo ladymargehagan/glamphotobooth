@@ -226,9 +226,11 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         }
     </style>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="<?php echo SITE_URL; ?>/js/admin.js"></script>
     <script>
         window.siteUrl = '<?php echo SITE_URL; ?>';
+        window.csrfToken = '<?php echo generateCSRFToken(); ?>';
 
         document.addEventListener('DOMContentLoaded', function() {
             loadUsers();
@@ -277,6 +279,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <td>${new Date(user.created_at).toLocaleDateString()}</td>
                     <td>
                         <button class="action-btn btn-view" onclick="viewUser(${user.id})">View</button>
+                        <button class="action-btn btn-delete" onclick="deleteUser(${user.id}, '${user.name}')">Delete</button>
                     </td>
                 </tr>
             `).join('');
@@ -311,6 +314,64 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
         function viewUser(userId) {
             alert('View user #' + userId + ' - Feature coming soon');
+        }
+
+        function deleteUser(userId, userName) {
+            Swal.fire({
+                title: 'Delete User?',
+                html: `Are you sure you want to delete <strong>${userName}</strong>? This action is permanent and will also delete all associated records (orders, bookings, reviews, etc.).`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f44336',
+                cancelButtonColor: '#757575',
+                confirmButtonText: 'Yes, Delete User',
+                cancelButtonText: 'Cancel',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    performDeleteUser(userId, userName);
+                }
+            });
+        }
+
+        function performDeleteUser(userId, userName) {
+            const formData = new FormData();
+            formData.append('user_id', userId);
+            formData.append('csrf_token', window.csrfToken);
+
+            fetch(window.siteUrl + '/actions/delete_user_action.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: `User "${userName}" has been deleted successfully.`,
+                        icon: 'success',
+                        confirmButtonColor: '#5c9aad'
+                    }).then(() => {
+                        loadUsers();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.message || 'Failed to delete user',
+                        icon: 'error',
+                        confirmButtonColor: '#5c9aad'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred while deleting the user',
+                    icon: 'error',
+                    confirmButtonColor: '#5c9aad'
+                });
+            });
         }
     </script>
 </body>
