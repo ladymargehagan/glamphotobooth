@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         }
 
         // Fetch order items
-        $items_sql = "SELECT oi.order_item_id, oi.product_id, oi.qty, oi.price,
+        $items_sql = "SELECT oi.item_id, oi.product_id, oi.quantity as qty, oi.price,
                              p.title as product_title
                       FROM pb_order_items oi
                       LEFT JOIN pb_products p ON oi.product_id = p.product_id
