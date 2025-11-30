@@ -175,53 +175,17 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 </div>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="dashboard-grid">
-                <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M6 9h12M6 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"></path>
-                    </svg>
-                    <h3 class="card-title">Manage Bookings</h3>
-                    <p class="card-subtitle">Review and respond to client booking requests</p>
-                    <a href="<?php echo SITE_URL; ?>/photographer/manage_bookings.php" class="card-action">View Requests →</a>
-                </div>
-
-                <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M12 5v14M5 12h14"></path>
-                    </svg>
-                    <h3 class="card-title">Manage Services</h3>
-                    <p class="card-subtitle">Create and edit your photography services</p>
-                    <a href="<?php echo SITE_URL; ?>/customer/manage_products.php" class="card-action">Manage Services →</a>
-                </div>
-
-                <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <polyline points="21 15 16 10 5 21"></polyline>
-                    </svg>
-                    <h3 class="card-title">Photo Galleries</h3>
-                    <p class="card-subtitle">Manage client photo galleries and uploads</p>
-                    <a href="<?php echo SITE_URL; ?>/photographer/galleries.php" class="card-action">View Galleries →</a>
-                </div>
-
-                <div class="dashboard-card">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <line x1="12" y1="1" x2="12" y2="23"></line>
-                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                    </svg>
-                    <h3 class="card-title">View Earnings</h3>
-                    <p class="card-subtitle">Track your income and payment history</p>
-                    <a href="<?php echo SITE_URL; ?>/customer/earnings.php" class="card-action">View Earnings →</a>
-                </div>
+            <!-- Recent Bookings Header Info -->
+            <div style="margin-bottom: var(--spacing-lg);">
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                    View and manage your recent booking requests below. Click "View Details" to see full booking information and customer reviews.
+                </p>
             </div>
 
             <!-- Recent Bookings Section -->
             <div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
                     <h2 style="color: var(--primary); margin: 0;">Recent Booking Requests</h2>
-                    <a href="<?php echo SITE_URL; ?>/customer/manage_bookings.php" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View All</a>
                 </div>
 
                 <?php if ($profileComplete && $recent_bookings && count($recent_bookings) > 0): ?>
@@ -282,7 +246,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                                 </div>
 
                                 <div style="display: flex; gap: var(--spacing-sm);">
-                                    <a href="<?php echo SITE_URL; ?>/customer/manage_bookings.php?booking_id=<?php echo $booking['booking_id']; ?>" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
+                                    <a href="<?php echo SITE_URL; ?>/photographer/booking_details.php?booking_id=<?php echo $booking['booking_id']; ?>" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">View Details</a>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -300,7 +264,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                                 You don't have any booking requests yet. Your clients will see your profile once you add services!
                             <?php endif; ?>
                         </p>
-                        <a href="<?php echo SITE_URL; ?>/customer/profile_setup.php" class="btn btn-primary">Complete Your Profile</a>
+                        <a href="<?php echo SITE_URL; ?>/photographer/edit_profile.php" class="btn btn-primary">Complete Your Profile</a>
                     </div>
                 <?php endif; ?>
             </div>

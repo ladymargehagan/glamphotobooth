@@ -50,6 +50,11 @@
 
                 <div class="navbar-actions flex gap-sm">
                     <?php if (isLoggedIn()): ?>
+                        <?php
+                        // Only show cart for customers (role 4)
+                        $user_role = isset($_SESSION['user_role']) ? intval($_SESSION['user_role']) : 4;
+                        if ($user_role == 4):
+                        ?>
                         <a href="<?php echo SITE_URL; ?>/customer/cart.php" class="cart-icon" title="Shopping Cart" style="position: relative; display: flex; align-items: center;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
                                 <circle cx="9" cy="21" r="1"></circle>
@@ -58,6 +63,7 @@
                             </svg>
                             <span id="cartBadge" class="cart-badge" style="display: none;"></span>
                         </a>
+                        <?php endif; ?>
                         <a href="<?php echo getDashboardUrl(); ?>" class="btn btn-sm btn-outline">Dashboard</a>
                         <a href="<?php echo SITE_URL; ?>/actions/logout.php" class="btn btn-sm btn-primary">Logout</a>
                     <?php else: ?>
