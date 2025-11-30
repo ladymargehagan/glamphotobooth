@@ -17,7 +17,7 @@ $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 $booking_id = isset($_GET['booking_id']) ? intval($_GET['booking_id']) : 0;
 
 if ($booking_id <= 0) {
-    header('Location: ' . SITE_URL . '/customer/manage_bookings.php');
+    header('Location: ' . SITE_URL . '/photographer/dashboard.php');
     exit;
 }
 
@@ -27,7 +27,7 @@ $booking = $booking_class->get_booking_by_id($booking_id);
 
 if (!$booking) {
     error_log("UPLOAD_PHOTOS: Booking $booking_id not found");
-    header('Location: ' . SITE_URL . '/customer/manage_bookings.php');
+    header('Location: ' . SITE_URL . '/photographer/dashboard.php');
     exit;
 }
 
@@ -39,7 +39,7 @@ $provider = $provider_class->get_provider_by_customer($user_id);
 
 if (!$provider) {
     error_log("UPLOAD_PHOTOS: User $user_id is not a provider");
-    header('Location: ' . SITE_URL . '/customer/manage_bookings.php');
+    header('Location: ' . SITE_URL . '/photographer/dashboard.php');
     exit;
 }
 
@@ -47,14 +47,14 @@ error_log("UPLOAD_PHOTOS: Provider found - provider_id: {$provider['provider_id'
 
 if (intval($provider['provider_id']) !== intval($booking['provider_id'])) {
     error_log("UPLOAD_PHOTOS: Permission denied - provider_id mismatch: {$provider['provider_id']} != {$booking['provider_id']}");
-    header('Location: ' . SITE_URL . '/customer/manage_bookings.php');
+    header('Location: ' . SITE_URL . '/photographer/dashboard.php');
     exit;
 }
 
-// Check if booking is completed
-if ($booking['status'] !== 'completed') {
-    error_log("UPLOAD_PHOTOS: Booking status is '{$booking['status']}', not 'completed'");
-    header('Location: ' . SITE_URL . '/customer/manage_bookings.php');
+// Check if booking is confirmed or completed
+if ($booking['status'] !== 'completed' && $booking['status'] !== 'confirmed') {
+    error_log("UPLOAD_PHOTOS: Booking status is '{$booking['status']}', not 'completed' or 'confirmed'");
+    header('Location: ' . SITE_URL . '/photographer/dashboard.php');
     exit;
 }
 
@@ -68,7 +68,7 @@ if (!$gallery) {
     $gallery_id = $gallery_class->create_gallery($booking_id, $provider['provider_id']);
     if (!$gallery_id) {
         error_log("UPLOAD_PHOTOS ERROR: Failed to create gallery for booking $booking_id");
-        header('Location: ' . SITE_URL . '/customer/manage_bookings.php');
+        header('Location: ' . SITE_URL . '/photographer/dashboard.php');
         exit;
     }
     error_log("UPLOAD_PHOTOS: Gallery created with ID: $gallery_id");
@@ -423,7 +423,7 @@ $cssPath = SITE_URL . '/css/style.css';
     </header>
 
     <div class="upload-container">
-        <a href="<?php echo SITE_URL; ?>/customer/manage_bookings.php" class="btn-back">← Back to Bookings</a>
+        <a href="<?php echo SITE_URL; ?>/photographer/booking_details.php?booking_id=<?php echo $booking_id; ?>" class="btn-back">← Back to Booking Details</a>
 
         <div class="upload-header">
             <h1>Upload Photos</h1>
