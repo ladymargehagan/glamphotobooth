@@ -143,14 +143,8 @@ try {
     // Total Products - Count from database directly
     try {
         $db = new db_connection();
-        if ($db->db_connect()) {
-            $result = $db->db_read_query("SELECT COUNT(*) as total FROM pb_products WHERE is_active = 1");
-            if ($result && $result->num_rows > 0) {
-                $row = $result->fetch_assoc();
-                $stats['total_products'] = intval($row['total'] ?? 0);
-            } else {
-                $stats['total_products'] = 0;
-            }
+        if ($db->db_query("SELECT * FROM pb_products WHERE is_active = 1")) {
+            $stats['total_products'] = intval($db->db_count() ?? 0);
         } else {
             $stats['total_products'] = 0;
         }
