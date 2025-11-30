@@ -217,12 +217,64 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         document.getElementById('paymentRequestForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const formData = new FormData(this);
+            const paymentMethod = document.getElementById('payment_method').value;
+            const requestedAmount = document.getElementById('requested_amount').value;
+            
+            // Validate amount
+            if (!requestedAmount || parseFloat(requestedAmount) <= 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please enter a valid amount',
+                    confirmButtonColor: '#102152'
+                });
+                return;
+            }
+            
+            // Get account number based on payment method
+            let accountNumber = '';
+            if (paymentMethod === 'bank_transfer') {
+                accountNumber = document.getElementById('account_number').value;
+            } else if (paymentMethod === 'mobile_money') {
+                accountNumber = document.getElementById('account_number_mobile').value;
+            } else {
+                // For paypal or other, use account_number field if it exists
+                const accountField = document.getElementById('account_number');
+                if (accountField) {
+                    accountNumber = accountField.value;
+                }
+            }
+            
+            // Validate account number
+            if (!accountNumber || accountNumber.trim() === '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Account number is required',
+                    confirmButtonColor: '#102152'
+                });
+                return;
+            }
+            
+            // Build form data
+            const formData = new FormData();
+            formData.append('requested_amount', requestedAmount);
+            formData.append('payment_method', paymentMethod);
+            formData.append('account_number', accountNumber);
             formData.append('csrf_token', window.csrfToken);
             
-            // Handle mobile money account number
-            if (formData.get('payment_method') === 'mobile_money') {
-                formData.set('account_number', document.getElementById('account_number_mobile').value);
+            // Add bank transfer specific fields
+            if (paymentMethod === 'bank_transfer') {
+                const accountName = document.getElementById('account_name').value;
+                const bankName = document.getElementById('bank_name').value;
+                if (accountName) formData.append('account_name', accountName);
+                if (bankName) formData.append('bank_name', bankName);
+            }
+            
+            // Add mobile money specific fields
+            if (paymentMethod === 'mobile_money') {
+                const mobileNetwork = document.getElementById('mobile_network').value;
+                if (mobileNetwork) formData.append('mobile_network', mobileNetwork);
             }
 
             Swal.fire({
@@ -257,6 +309,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 }
             })
             .catch(error => {
+                console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
