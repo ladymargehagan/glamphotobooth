@@ -42,7 +42,7 @@ try {
 
     // Verify user is the provider
     $provider_class = new provider_class();
-    $provider = $provider_class->get_provider_by_customer_id($user_id);
+    $provider = $provider_class->get_provider_by_customer($user_id);
 
     if (!$provider || intval($provider['provider_id']) !== intval($photo['provider_id'])) {
         echo json_encode(['success' => false, 'message' => 'You do not have permission to delete this photo']);
