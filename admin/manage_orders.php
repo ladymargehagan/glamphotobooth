@@ -164,24 +164,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             display: inline-block;
         }
 
-        .btn-view {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-view:hover {
-            background: #0d1a3a;
-        }
-
-        .btn-refund {
-            background: #2196f3;
-            color: white;
-        }
-
-        .btn-refund:hover {
-            background: #1565c0;
-        }
-
         @media (max-width: 768px) {
             .search-filter {
                 flex-direction: column;
@@ -250,10 +232,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <td><span class="status-badge status-${order.payment_status}">${order.payment_status}</span></td>
                     <td>${order.payment_reference || '-'}</td>
                     <td>${new Date(order.order_date).toLocaleDateString()}</td>
-                    <td>
-                        <button class="action-btn btn-view" onclick="viewOrder(${order.order_id})">View</button>
-                        ${order.payment_status === 'paid' ? `<button class="action-btn btn-refund" onclick="refundOrder(${order.order_id})">Refund</button>` : ''}
-                    </td>
+                    <td>—</td>
                 </tr>
             `).join('');
         }
@@ -275,16 +254,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             });
         }
 
-        function viewOrder(orderId) {
-            alert('View order #' + orderId + ' - Feature coming soon');
-        }
-
-        function refundOrder(orderId) {
-            if (!confirm('Are you sure you want to refund order #' + orderId + '?')) {
-                return;
-            }
-            alert('Refund order #' + orderId + ' - Feature coming soon');
-        }
     </script>
 </body>
 </html>
