@@ -140,13 +140,22 @@ try {
         $stats['completed_bookings'] = 0;
     }
 
-    // Total Products
+    // Total Products - Count from database directly
     try {
-        $product_class = new product_class();
-        $all_products = $product_class->get_all_products() ?? [];
-        $stats['total_products'] = intval(count($all_products));
+        $db = new db_connection();
+        if ($db->db_connect()) {
+            $result = $db->db_read_query("SELECT COUNT(*) as total FROM pb_products WHERE is_active = 1");
+            if ($result && $result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $stats['total_products'] = intval($row['total'] ?? 0);
+            } else {
+                $stats['total_products'] = 0;
+            }
+        } else {
+            $stats['total_products'] = 0;
+        }
     } catch (Exception $e) {
-        error_log('Error getting products: ' . $e->getMessage());
+        error_log('Error getting product count: ' . $e->getMessage());
         $stats['total_products'] = 0;
     }
 
