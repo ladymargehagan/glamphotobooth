@@ -106,7 +106,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                                 <option value="">Select method</option>
                                 <option value="bank_transfer">Bank Transfer</option>
                                 <option value="mobile_money">Mobile Money</option>
-                                <option value="paypal">PayPal</option>
                                 <option value="other">Other</option>
                             </select>
                         </div>

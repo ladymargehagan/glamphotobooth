@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `pb_payment_requests` (
   `user_role` tinyint NOT NULL COMMENT '2=photographer, 3=vendor',
   `requested_amount` decimal(10,2) NOT NULL COMMENT 'Amount requested for payout',
   `available_earnings` decimal(10,2) NOT NULL COMMENT 'Total available earnings at time of request',
-  `payment_method` enum('bank_transfer','mobile_money','paypal','other') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'bank_transfer',
+  `payment_method` enum('bank_transfer','mobile_money','other') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'bank_transfer',
   `payment_details` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'JSON or text with payment account details',
   `account_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Account holder name',
   `account_number` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Bank account or mobile money number',

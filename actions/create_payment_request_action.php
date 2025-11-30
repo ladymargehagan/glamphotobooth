@@ -9,6 +9,9 @@ require_once __DIR__ . '/../settings/core.php';
 
 requireLogin();
 
+// Suppress any output before JSON
+ob_clean();
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
     exit;
@@ -48,7 +51,7 @@ if ($requested_amount <= 0) {
     exit;
 }
 
-$allowed_methods = ['bank_transfer', 'mobile_money', 'paypal', 'other'];
+$allowed_methods = ['bank_transfer', 'mobile_money', 'other'];
 if (!in_array($payment_method, $allowed_methods)) {
     echo json_encode(['success' => false, 'message' => 'Invalid payment method']);
     exit;
@@ -69,26 +72,43 @@ $payment_details = [
 
 // Create payment request
 require_once __DIR__ . '/../classes/payment_request_class.php';
-$payment_request_class = new payment_request_class();
+require_once __DIR__ . '/../classes/commission_class.php';
 
-$result = $payment_request_class->create_payment_request(
-    $provider_id,
-    $user_role,
-    $requested_amount,
-    $payment_method,
-    $payment_details
-);
-
-if ($result['success']) {
-    echo json_encode([
-        'success' => true,
-        'message' => 'Payment request submitted successfully',
-        'request_id' => $result['request_id']
-    ]);
-} else {
+try {
+    $payment_request_class = new payment_request_class();
+    
+    $result = $payment_request_class->create_payment_request(
+        $provider_id,
+        $user_role,
+        $requested_amount,
+        $payment_method,
+        $payment_details
+    );
+    
+    if (is_array($result) && isset($result['success'])) {
+        if ($result['success']) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Payment request submitted successfully',
+                'request_id' => $result['request_id']
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => $result['message'] ?? 'Failed to create payment request'
+            ]);
+        }
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to create payment request'
+        ]);
+    }
+} catch (Exception $e) {
+    error_log('Payment request error: ' . $e->getMessage());
     echo json_encode([
         'success' => false,
-        'message' => $result['message'] ?? 'Failed to create payment request'
+        'message' => 'An error occurred. Please try again.'
     ]);
 }
 ?>

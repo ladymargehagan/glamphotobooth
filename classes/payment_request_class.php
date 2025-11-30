@@ -12,10 +12,11 @@ class payment_request_class extends db_connection {
      */
     public function create_payment_request($provider_id, $user_role, $requested_amount, $payment_method, $payment_details) {
         if (!$this->db_connect()) {
-            return false;
+            return ['success' => false, 'message' => 'Database connection failed'];
         }
 
         // Validate amount
+        require_once __DIR__ . '/commission_class.php';
         $commission_class = new commission_class();
         $available = $commission_class->get_provider_available_earnings($provider_id);
         
@@ -47,11 +48,16 @@ class payment_request_class extends db_connection {
                 (provider_id, user_role, requested_amount, available_earnings, payment_method, account_name, account_number, bank_name, mobile_network, status)
                 VALUES ($provider_id, $user_role, $requested_amount, $available, '$payment_method', $account_name_sql, $account_number_sql, $bank_name_sql, $mobile_network_sql, 'pending')";
 
+        error_log('Payment request SQL: ' . $sql);
+        
         if ($this->db_write_query($sql)) {
-            return ['success' => true, 'request_id' => $this->last_insert_id()];
+            $request_id = $this->last_insert_id();
+            return ['success' => true, 'request_id' => $request_id];
         }
         
-        return ['success' => false, 'message' => 'Failed to create payment request'];
+        $error = $this->db ? $this->db->error : 'Unknown database error';
+        error_log('Payment request SQL error: ' . $error . ' | SQL: ' . $sql);
+        return ['success' => false, 'message' => 'Failed to create payment request. Please check your details and try again.'];
     }
 
     /**
