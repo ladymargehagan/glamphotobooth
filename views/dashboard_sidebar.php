@@ -222,7 +222,7 @@ if (!$config) {
 <aside class="dashboard-sidebar">
     <div class="sidebar-header">
         <a href="<?php echo SITE_URL; ?>" class="sidebar-logo">
-            <h3>PhotoMarket</h3>
+            <h3>GlamPhotobooth Accra</h3>
         </a>
     </div>
 

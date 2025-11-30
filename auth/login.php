@@ -10,7 +10,7 @@ if (isLoggedIn()) {
     exit;
 }
 
-$pageTitle = 'Login - PhotoMarket';
+$pageTitle = 'Login - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 ?>
 <!DOCTYPE html>
@@ -37,7 +37,7 @@ $cssPath = SITE_URL . '/css/style.css';
         <div class="auth-panel auth-panel-left">
             <div class="auth-panel-content">
                 <h1>Welcome Back</h1>
-                <p>Login to your PhotoMarket account to access bookings, manage services, and connect with professionals.</p>
+                <p>Login to your GlamPhotobooth Accra account to access bookings, manage services, and connect with professionals.</p>
 
                 <div class="auth-benefits">
                     <div class="benefit-item">

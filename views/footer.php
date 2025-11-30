@@ -8,7 +8,7 @@
     <div class="container">
         <div class="grid grid-4 gap-lg mb-xl">
             <div class="footer-section">
-                <h5 class="text-primary mb-md">PhotoMarket</h5>
+                <h5 class="text-primary mb-md">GlamPhotobooth Accra</h5>
                 <p class="text-muted text-sm">Premium photography services and equipment marketplace for Ghana's creative professionals.</p>
             </div>
 
@@ -32,7 +32,7 @@
         <div class="footer-divider mb-lg"></div>
 
         <div class="flex-between text-muted text-sm">
-            <p>&copy; 2024 PhotoMarket Ghana. All rights reserved.</p>
+            <p>&copy; 2024 GlamPhotobooth Accra Ghana. All rights reserved.</p>
             <p>Crafted with elegance for creative minds.</p>
         </div>
     </div>

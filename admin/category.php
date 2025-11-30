@@ -8,7 +8,7 @@ require_once __DIR__ . '/../settings/core.php';
 // Require admin access
 requireAdmin();
 
-$pageTitle = 'Manage Categories - PhotoMarket Admin';
+$pageTitle = 'Manage Categories - GlamPhotobooth Accra Admin';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

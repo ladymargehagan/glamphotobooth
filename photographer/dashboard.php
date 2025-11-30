@@ -43,7 +43,7 @@ if ($provider) {
     $recent_bookings = array_slice($provider_bookings, 0, 3);
 }
 
-$pageTitle = 'Photographer Dashboard - PhotoMarket';
+$pageTitle = 'Photographer Dashboard - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

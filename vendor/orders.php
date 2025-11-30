@@ -31,7 +31,7 @@ if (!$orders) {
     $orders = [];
 }
 
-$pageTitle = 'Orders - PhotoMarket';
+$pageTitle = 'Orders - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

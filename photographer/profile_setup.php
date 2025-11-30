@@ -13,7 +13,7 @@ if ($user_role == 4) { // Regular customer
     exit;
 }
 
-$pageTitle = 'Complete Your Profile - PhotoMarket';
+$pageTitle = 'Complete Your Profile - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

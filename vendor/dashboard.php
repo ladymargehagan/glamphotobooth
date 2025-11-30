@@ -20,7 +20,7 @@ $provider_class = new provider_class();
 $provider = $provider_class->get_provider_by_customer($user_id);
 $profileComplete = $provider ? true : false;
 
-$pageTitle = 'Vendor Dashboard - PhotoMarket';
+$pageTitle = 'Vendor Dashboard - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

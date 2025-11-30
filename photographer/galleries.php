@@ -31,7 +31,7 @@ if (!is_array($galleries)) {
     $galleries = [];
 }
 
-$pageTitle = 'Client Galleries - PhotoMarket';
+$pageTitle = 'Client Galleries - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

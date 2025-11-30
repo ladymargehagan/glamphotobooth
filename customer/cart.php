@@ -13,7 +13,7 @@ $cart_items = $cart_class->get_cart($user_id);
 $subtotal = $cart_class->get_cart_subtotal($user_id);
 $cart_count = $cart_class->get_cart_count($user_id);
 
-$pageTitle = 'Shopping Cart - PhotoMarket';
+$pageTitle = 'Shopping Cart - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 ?>
 <!DOCTYPE html>
@@ -341,7 +341,7 @@ $cssPath = SITE_URL . '/css/style.css';
             <div class="flex-between">
                 <div class="navbar-brand">
                     <a href="/" class="logo">
-                        <h3 class="font-serif text-primary m-0">PhotoMarket</h3>
+                        <h3 class="font-serif text-primary m-0">GlamPhotobooth Accra</h3>
                     </a>
                 </div>
 

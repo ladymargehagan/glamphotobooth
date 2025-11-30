@@ -25,7 +25,7 @@ if (!$provider) {
 $category_class = new category_class();
 $categories = $category_class->get_all_categories();
 
-$pageTitle = 'Add Product - PhotoMarket';
+$pageTitle = 'Add Product - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/settings/core.php';
 
-$pageTitle = 'PhotoMarket - Premium Photography Services & Equipment';
+$pageTitle = 'GlamPhotobooth Accra - Premium Photography Services & Equipment';
 $cssPath = SITE_URL . '/css/style.css';
 ?>
 <?php include 'views/header.php'; ?>

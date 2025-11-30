@@ -12,7 +12,7 @@ requireLogin();
 $reference = isset($_GET['reference']) ? trim($_GET['reference']) : '';
 $customer_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 
-$pageTitle = 'Payment Processing - PhotoMarket';
+$pageTitle = 'Payment Processing - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 ?>
 <!DOCTYPE html>
@@ -114,7 +114,7 @@ $cssPath = SITE_URL . '/css/style.css';
             <div class="flex-between">
                 <div class="navbar-brand">
                     <a href="/" class="logo">
-                        <h3 class="font-serif text-primary m-0">PhotoMarket</h3>
+                        <h3 class="font-serif text-primary m-0">GlamPhotobooth Accra</h3>
                     </a>
                 </div>
 

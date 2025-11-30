@@ -37,7 +37,7 @@ $total_earnings = $commission_class->get_provider_total_earnings($provider_id);
 $available_earnings = $commission_class->get_provider_available_earnings($provider_id);
 $requests = $payment_request_class->get_provider_requests($provider_id);
 
-$pageTitle = 'Payment Requests - PhotoMarket';
+$pageTitle = 'Payment Requests - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>
@@ -207,13 +207,24 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         window.siteUrl = '<?php echo SITE_URL; ?>';
         window.csrfToken = '<?php echo generateCSRFToken(); ?>';
 
-        document.getElementById('payment_method').addEventListener('change', function() {
-            const method = this.value;
-            document.getElementById('bankDetails').style.display = method === 'bank_transfer' ? 'grid' : 'none';
-            document.getElementById('mobileMoneyDetails').style.display = method === 'mobile_money' ? 'grid' : 'none';
-        });
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentMethodSelect = document.getElementById('payment_method');
+            const paymentRequestForm = document.getElementById('paymentRequestForm');
+            
+            // Only add listeners if elements exist (form might not be rendered if no available earnings)
+            if (paymentMethodSelect) {
+                paymentMethodSelect.addEventListener('change', function() {
+                    const method = this.value;
+                    const bankDetails = document.getElementById('bankDetails');
+                    const mobileMoneyDetails = document.getElementById('mobileMoneyDetails');
+                    if (bankDetails) bankDetails.style.display = method === 'bank_transfer' ? 'grid' : 'none';
+                    if (mobileMoneyDetails) mobileMoneyDetails.style.display = method === 'mobile_money' ? 'grid' : 'none';
+                });
+            }
 
-        document.getElementById('paymentRequestForm').addEventListener('submit', function(e) {
+            if (paymentRequestForm) {
+                paymentRequestForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             const paymentMethod = document.getElementById('payment_method').value;
@@ -233,11 +244,17 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             // Get account number based on payment method
             let accountNumber = '';
             if (paymentMethod === 'bank_transfer') {
-                accountNumber = document.getElementById('account_number').value;
+                const accountField = document.getElementById('account_number');
+                if (accountField) {
+                    accountNumber = accountField.value;
+                }
             } else if (paymentMethod === 'mobile_money') {
-                accountNumber = document.getElementById('account_number_mobile').value;
+                const accountField = document.getElementById('account_number_mobile');
+                if (accountField) {
+                    accountNumber = accountField.value;
+                }
             } else {
-                // For paypal or other, use account_number field if it exists
+                // For other, use account_number field if it exists
                 const accountField = document.getElementById('account_number');
                 if (accountField) {
                     accountNumber = accountField.value;
@@ -264,16 +281,22 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             
             // Add bank transfer specific fields
             if (paymentMethod === 'bank_transfer') {
-                const accountName = document.getElementById('account_name').value;
-                const bankName = document.getElementById('bank_name').value;
-                if (accountName) formData.append('account_name', accountName);
-                if (bankName) formData.append('bank_name', bankName);
+                const accountNameField = document.getElementById('account_name');
+                const bankNameField = document.getElementById('bank_name');
+                if (accountNameField && accountNameField.value) {
+                    formData.append('account_name', accountNameField.value);
+                }
+                if (bankNameField && bankNameField.value) {
+                    formData.append('bank_name', bankNameField.value);
+                }
             }
             
             // Add mobile money specific fields
             if (paymentMethod === 'mobile_money') {
-                const mobileNetwork = document.getElementById('mobile_network').value;
-                if (mobileNetwork) formData.append('mobile_network', mobileNetwork);
+                const mobileNetworkField = document.getElementById('mobile_network');
+                if (mobileNetworkField && mobileNetworkField.value) {
+                    formData.append('mobile_network', mobileNetworkField.value);
+                }
             }
 
             Swal.fire({
@@ -316,6 +339,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     confirmButtonColor: '#102152'
                 });
             });
+            }
         });
     </script>
 </body>

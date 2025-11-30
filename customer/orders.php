@@ -11,7 +11,7 @@ $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 $order_class = new order_class();
 $orders = $order_class->get_orders_by_customer($user_id);
 
-$pageTitle = 'My Orders - PhotoMarket';
+$pageTitle = 'My Orders - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

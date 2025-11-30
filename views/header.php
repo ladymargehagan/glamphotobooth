@@ -31,7 +31,7 @@
             <div class="flex-between">
                 <div class="navbar-brand">
                     <a href="/" class="logo">
-                        <h3 class="font-serif text-primary m-0">PhotoMarket</h3>
+                        <h3 class="font-serif text-primary m-0">GlamPhotobooth Accra</h3>
                     </a>
                 </div>
 

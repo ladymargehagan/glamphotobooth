@@ -54,59 +54,46 @@ try {
     $provider_products = $product_class->get_products_by_provider($provider_id);
     $stats['total_products'] = is_array($provider_products) ? count($provider_products) : 0;
 
-    // Calculate revenue from orders
+    // Get commission-based earnings (this is what vendors actually earn - 95% of order value)
+    require_once __DIR__ . '/../classes/commission_class.php';
+    $commission_class = new commission_class();
+    
+    $total_earnings = $commission_class->get_provider_total_earnings($provider_id);
+    $available_earnings = $commission_class->get_provider_available_earnings($provider_id);
+    
+    // Calculate monthly revenue from commissions
+    $current_month = date('Y-m');
+    $monthly_revenue = 0;
+    
+    if ($total_earnings > 0 && $commission_class->db_connect()) {
+        // Get commissions for current month
+        $provider_id_safe = intval($provider_id);
+        $sql = "SELECT SUM(provider_earnings) as monthly_total 
+                FROM pb_commissions 
+                WHERE provider_id = $provider_id_safe 
+                AND DATE_FORMAT(created_at, '%Y-%m') = '$current_month'";
+        $result = $commission_class->db_fetch_one($sql);
+        $monthly_revenue = $result ? floatval($result['monthly_total']) : 0;
+    }
+    
+    // Get order counts for display
     $order_class = new order_class();
     $vendor_orders = $order_class->get_orders_by_provider($provider_id);
-
-    $total_revenue = 0;
-    $monthly_revenue = 0;
+    
     $total_orders = 0;
     $pending_orders = 0;
-
-    $current_month = date('Y-m');
-
+    
     if ($vendor_orders && is_array($vendor_orders)) {
-        // Get product IDs for this vendor (for filtering order items)
-        $vendor_product_ids = is_array($provider_products) ? array_column($provider_products, 'product_id') : [];
-
         foreach ($vendor_orders as $order) {
-            // Get order items
-            $order_items = $order_class->get_order_items($order['order_id']);
-
-            if ($order_items && is_array($order_items)) {
-                $order_has_vendor_items = false;
-                $order_total = 0;
-
-                foreach ($order_items as $item) {
-                    // Check if this item belongs to vendor's products
-                    if (in_array($item['product_id'], $vendor_product_ids)) {
-                        $order_has_vendor_items = true;
-                        $item_total = floatval($item['quantity']) * floatval($item['price']);
-                        $order_total += $item_total;
-                    }
-                }
-
-                // Only count orders with vendor items
-                if ($order_has_vendor_items) {
-                    // Only count paid orders for revenue
-                    if ($order['payment_status'] === 'paid') {
-                        $total_revenue += $order_total;
-                        $total_orders++;
-
-                        // Check if order is from current month
-                        $order_month = date('Y-m', strtotime($order['order_date']));
-                        if ($order_month === $current_month) {
-                            $monthly_revenue += $order_total;
-                        }
-                    } elseif ($order['payment_status'] === 'pending') {
-                        $pending_orders++;
-                    }
-                }
+            if ($order['payment_status'] === 'paid') {
+                $total_orders++;
+            } elseif ($order['payment_status'] === 'pending') {
+                $pending_orders++;
             }
         }
     }
 
-    $stats['total_revenue'] = number_format($total_revenue, 2);
+    $stats['total_revenue'] = number_format($total_earnings, 2);
     $stats['monthly_revenue'] = number_format($monthly_revenue, 2);
     $stats['total_orders'] = $total_orders;
     $stats['pending_orders'] = $pending_orders;

@@ -17,7 +17,7 @@ if (!$cart_items || count($cart_items) == 0) {
     exit;
 }
 
-$pageTitle = 'Checkout - PhotoMarket';
+$pageTitle = 'Checkout - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 ?>
 <!DOCTYPE html>
@@ -276,7 +276,7 @@ $cssPath = SITE_URL . '/css/style.css';
             <div class="flex-between">
                 <div class="navbar-brand">
                     <a href="/" class="logo">
-                        <h3 class="font-serif text-primary m-0">PhotoMarket</h3>
+                        <h3 class="font-serif text-primary m-0">GlamPhotobooth Accra</h3>
                     </a>
                 </div>
 

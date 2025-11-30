@@ -26,7 +26,7 @@ if ($categories) {
     }
 }
 
-$pageTitle = 'Inventory - PhotoMarket';
+$pageTitle = 'Inventory - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

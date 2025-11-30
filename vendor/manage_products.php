@@ -25,7 +25,7 @@ if (!$provider) {
 $product_class = new product_class();
 $products = $product_class->get_products_by_provider($provider['provider_id']);
 
-$pageTitle = 'Manage Products - PhotoMarket';
+$pageTitle = 'Manage Products - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

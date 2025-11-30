@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/settings/core.php';
 
-$pageTitle = 'About Us - PhotoMarket';
+$pageTitle = 'About Us - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 ?>
 <!DOCTYPE html>
@@ -92,13 +92,13 @@ $cssPath = SITE_URL . '/css/style.css';
     <main>
         <div class="about-container">
             <div class="about-header">
-                <h1>About PhotoMarket</h1>
+                <h1>About GlamPhotobooth Accra</h1>
                 <p>Your premier marketplace for professional photography services and equipment</p>
             </div>
 
             <section class="about-section">
                 <h2>Our Mission</h2>
-                <p>PhotoMarket is dedicated to connecting Ghana's creative professionals with clients seeking exceptional photography services. We believe in empowering photographers, videographers, and creative professionals by providing them with a platform to showcase their talent and grow their business.</p>
+                <p>GlamPhotobooth Accra is dedicated to connecting Ghana's creative professionals with clients seeking exceptional photography services. We believe in empowering photographers, videographers, and creative professionals by providing them with a platform to showcase their talent and grow their business.</p>
                 <p>Our mission is to make professional photography services accessible, transparent, and affordable for everyone while supporting the thriving creative community in Ghana.</p>
             </section>
 
@@ -133,7 +133,7 @@ $cssPath = SITE_URL . '/css/style.css';
             </section>
 
             <section class="about-section">
-                <h2>Why Choose PhotoMarket?</h2>
+                <h2>Why Choose GlamPhotobooth Accra?</h2>
                 <p><strong>Verified Professionals:</strong> All photographers and sellers on our platform are verified and reviewed by customers.</p>
                 <p><strong>Transparent Pricing:</strong> No hidden fees. See exactly what you're paying for before you book.</p>
                 <p><strong>Secure Payments:</strong> Your payments are secure and protected through our trusted payment gateway.</p>
@@ -143,7 +143,7 @@ $cssPath = SITE_URL . '/css/style.css';
 
             <section class="about-section">
                 <h2>Get Started</h2>
-                <p>Whether you're looking for professional photography services or high-quality photography equipment, PhotoMarket makes it easy to find exactly what you need.</p>
+                <p>Whether you're looking for professional photography services or high-quality photography equipment, GlamPhotobooth Accra makes it easy to find exactly what you need.</p>
                 <p>
                     <a href="<?php echo SITE_URL; ?>/services.php" class="btn btn-primary">Browse Services</a>
                     <a href="<?php echo SITE_URL; ?>/shop.php" class="btn btn-secondary" style="margin-left: var(--spacing-md);">Shop Products</a>

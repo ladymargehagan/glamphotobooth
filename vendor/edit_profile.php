@@ -22,7 +22,7 @@ if (!$provider) {
     exit;
 }
 
-$pageTitle = 'Edit Profile - PhotoMarket';
+$pageTitle = 'Edit Profile - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

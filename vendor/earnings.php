@@ -99,7 +99,7 @@ usort($completed_transactions, function($a, $b) {
     return strtotime($b['date']) - strtotime($a['date']);
 });
 
-$pageTitle = 'Earnings - PhotoMarket';
+$pageTitle = 'Earnings - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

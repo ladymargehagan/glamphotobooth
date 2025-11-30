@@ -79,7 +79,7 @@ if (class_exists('review_class')) {
     }
 }
 
-$pageTitle = 'Order Details - PhotoMarket';
+$pageTitle = 'Order Details - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

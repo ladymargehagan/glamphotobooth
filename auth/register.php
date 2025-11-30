@@ -10,7 +10,7 @@ if (isLoggedIn()) {
     exit;
 }
 
-$pageTitle = 'Register - PhotoMarket';
+$pageTitle = 'Register - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 ?>
 <!DOCTYPE html>
@@ -36,7 +36,7 @@ $cssPath = SITE_URL . '/css/style.css';
         <!-- Left Panel - Hero -->
         <div class="auth-panel auth-panel-left">
             <div class="auth-panel-content">
-                <h1>Join PhotoMarket</h1>
+                <h1>Join GlamPhotobooth Accra</h1>
                 <p>Join Ghana's photography marketplace. Connect with professionals, browse services, and shop quality photography equipment.</p>
 
                 <div class="auth-benefits">

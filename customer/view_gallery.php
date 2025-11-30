@@ -10,7 +10,7 @@ $access_code = isset($_GET['code']) ? trim($_GET['code']) : '';
 
 if (empty($access_code)) {
     http_response_code(404);
-    $pageTitle = 'Gallery Not Found - PhotoMarket';
+    $pageTitle = 'Gallery Not Found - GlamPhotobooth Accra';
     $gallery = null;
 } else {
     // Validate access code
@@ -19,9 +19,9 @@ if (empty($access_code)) {
 
     if (!$gallery) {
         http_response_code(403);
-        $pageTitle = 'Access Denied - PhotoMarket';
+        $pageTitle = 'Access Denied - GlamPhotobooth Accra';
     } else {
-        $pageTitle = htmlspecialchars($gallery['title'] ?: 'Gallery') . ' - PhotoMarket';
+        $pageTitle = htmlspecialchars($gallery['title'] ?: 'Gallery') . ' - GlamPhotobooth Accra';
         $gallery_id = intval($gallery['gallery_id']);
         $photos = $gallery_class->get_gallery_photos($gallery_id);
     }
@@ -321,7 +321,7 @@ $cssPath = SITE_URL . '/css/style.css';
             <div class="flex-between">
                 <div class="navbar-brand">
                     <a href="/" class="logo">
-                        <h3 class="font-serif text-primary m-0">PhotoMarket</h3>
+                        <h3 class="font-serif text-primary m-0">GlamPhotobooth Accra</h3>
                     </a>
                 </div>
 

@@ -37,7 +37,7 @@ $total_earnings = $commission_class->get_provider_total_earnings($provider_id);
 $available_earnings = $commission_class->get_provider_available_earnings($provider_id);
 $requests = $payment_request_class->get_provider_requests($provider_id);
 
-$pageTitle = 'Payment Requests - PhotoMarket';
+$pageTitle = 'Payment Requests - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>
@@ -207,13 +207,24 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         window.siteUrl = '<?php echo SITE_URL; ?>';
         window.csrfToken = '<?php echo generateCSRFToken(); ?>';
 
-        document.getElementById('payment_method').addEventListener('change', function() {
-            const method = this.value;
-            document.getElementById('bankDetails').style.display = method === 'bank_transfer' ? 'grid' : 'none';
-            document.getElementById('mobileMoneyDetails').style.display = method === 'mobile_money' ? 'grid' : 'none';
-        });
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentMethodSelect = document.getElementById('payment_method');
+            const paymentRequestForm = document.getElementById('paymentRequestForm');
+            
+            // Only add listeners if elements exist (form might not be rendered if no available earnings)
+            if (paymentMethodSelect) {
+                paymentMethodSelect.addEventListener('change', function() {
+                    const method = this.value;
+                    const bankDetails = document.getElementById('bankDetails');
+                    const mobileMoneyDetails = document.getElementById('mobileMoneyDetails');
+                    if (bankDetails) bankDetails.style.display = method === 'bank_transfer' ? 'grid' : 'none';
+                    if (mobileMoneyDetails) mobileMoneyDetails.style.display = method === 'mobile_money' ? 'grid' : 'none';
+                });
+            }
 
-        document.getElementById('paymentRequestForm').addEventListener('submit', function(e) {
+            if (paymentRequestForm) {
+                paymentRequestForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             const paymentMethod = document.getElementById('payment_method').value;
@@ -316,6 +327,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     confirmButtonColor: '#102152'
                 });
             });
+            }
         });
     </script>
 </body>

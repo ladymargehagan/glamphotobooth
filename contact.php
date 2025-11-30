@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/settings/core.php';
 
-$pageTitle = 'Contact Us - PhotoMarket';
+$pageTitle = 'Contact Us - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 ?>
 <!DOCTYPE html>
@@ -192,7 +192,7 @@ $cssPath = SITE_URL . '/css/style.css';
                         <p>
                             <a href="<?php echo SITE_URL; ?>/services.php" style="color: var(--text-secondary); text-decoration: none; display: block; margin-bottom: 5px;">Browse Services</a>
                             <a href="<?php echo SITE_URL; ?>/shop.php" style="color: var(--text-secondary); text-decoration: none; display: block; margin-bottom: 5px;">Shop Products</a>
-                            <a href="<?php echo SITE_URL; ?>/about.php" style="color: var(--text-secondary); text-decoration: none;">About PhotoMarket</a>
+                            <a href="<?php echo SITE_URL; ?>/about.php" style="color: var(--text-secondary); text-decoration: none;">About GlamPhotobooth Accra</a>
                         </p>
                     </div>
                 </div>

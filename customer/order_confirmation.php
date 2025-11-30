@@ -75,7 +75,7 @@ if ($has_vendor_products && $order['payment_status'] === 'paid') {
     }
 }
 
-$pageTitle = 'Order Details - PhotoMarket';
+$pageTitle = 'Order Details - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>
@@ -319,7 +319,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             <div class="flex-between">
                 <div class="navbar-brand">
                     <a href="/" class="logo">
-                        <h3 class="font-serif text-primary m-0">PhotoMarket</h3>
+                        <h3 class="font-serif text-primary m-0">GlamPhotobooth Accra</h3>
                     </a>
                 </div>
 

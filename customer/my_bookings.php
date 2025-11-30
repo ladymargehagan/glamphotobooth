@@ -80,7 +80,7 @@ if ($selected_booking_id > 0) {
     }
 }
 
-$pageTitle = 'My Bookings - PhotoMarket';
+$pageTitle = 'My Bookings - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

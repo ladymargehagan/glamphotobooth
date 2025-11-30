@@ -151,7 +151,7 @@ try {
     error_log('Review class error: ' . $e->getMessage());
 }
 
-$pageTitle = 'Dashboard - PhotoMarket';
+$pageTitle = 'Dashboard - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

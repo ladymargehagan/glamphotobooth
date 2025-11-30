@@ -27,7 +27,7 @@ if (!$customer) {
     exit;
 }
 
-$pageTitle = 'My Profile - PhotoMarket';
+$pageTitle = 'My Profile - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

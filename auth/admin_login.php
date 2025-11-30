@@ -11,7 +11,7 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true) {
     exit;
 }
 
-$pageTitle = 'Admin Login - PhotoMarket';
+$pageTitle = 'Admin Login - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 ?>
 <!DOCTYPE html>
@@ -233,7 +233,7 @@ $cssPath = SITE_URL . '/css/style.css';
         <!-- Left Panel -->
         <div class="auth-panel auth-panel-left">
             <h2>Admin Portal</h2>
-            <p>Manage and oversee the PhotoMarket platform. Access administrative controls, monitor operations, and ensure smooth platform operations.</p>
+            <p>Manage and oversee the GlamPhotobooth Accra platform. Access administrative controls, monitor operations, and ensure smooth platform operations.</p>
         </div>
 
         <!-- Right Panel -->

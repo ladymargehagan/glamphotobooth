@@ -7,7 +7,7 @@ require_once __DIR__ . '/../settings/core.php';
 
 requireAdmin();
 
-$pageTitle = 'Payment Requests - PhotoMarket Admin';
+$pageTitle = 'Payment Requests - GlamPhotobooth Accra Admin';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

@@ -38,7 +38,7 @@ if (!$product || $product['product_type'] !== 'service') {
     exit;
 }
 
-$pageTitle = 'Book Service - PhotoMarket';
+$pageTitle = 'Book Service - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

@@ -16,7 +16,7 @@ if (!class_exists('category_class')) {
     require_once __DIR__ . '/classes/category_class.php';
 }
 
-$pageTitle = 'Photography Marketplace - PhotoMarket';
+$pageTitle = 'Photography Marketplace - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 
 // Get all categories for filter

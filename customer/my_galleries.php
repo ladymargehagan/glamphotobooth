@@ -61,7 +61,7 @@ try {
     error_log('Error fetching galleries: ' . $e->getMessage());
 }
 
-$pageTitle = 'My Galleries - PhotoMarket';
+$pageTitle = 'My Galleries - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>

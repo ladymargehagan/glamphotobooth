@@ -78,7 +78,7 @@ if (class_exists('gallery_class')) {
     }
 }
 
-$pageTitle = 'Booking Details - PhotoMarket';
+$pageTitle = 'Booking Details - GlamPhotobooth Accra';
 $cssPath = SITE_URL . '/css/style.css';
 $dashboardCss = SITE_URL . '/css/dashboard.css';
 ?>
