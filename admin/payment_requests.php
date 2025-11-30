@@ -249,13 +249,13 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             }
 
             tbody.innerHTML = requests.map(req => {
-                const providerName = req.business_name || req.provider_name || 'Provider #' + req.provider_id;
+                const providerName = (req.business_name || req.provider_name || 'Provider #' + req.provider_id).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
                 const providerType = req.user_role == 2 ? 'Photographer' : 'Vendor';
-                const accountInfo = req.payment_method === 'bank_transfer' 
+                const accountInfo = (req.payment_method === 'bank_transfer'
                     ? (req.account_number ? req.account_number + (req.bank_name ? ' (' + req.bank_name + ')' : '') : 'N/A')
-                    : (req.payment_method === 'mobile_money' 
+                    : (req.payment_method === 'mobile_money'
                         ? (req.account_number ? req.account_number + (req.mobile_network ? ' (' + req.mobile_network + ')' : '') : 'N/A')
-                        : req.account_number || 'N/A');
+                        : req.account_number || 'N/A')).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
                 let actions = '';
                 if (req.status === 'pending') {

@@ -172,7 +172,7 @@ try {
     $order_items = $order_class->get_order_items($order_id);
     $bookings_created = 0;
     $errors = [];
-    
+
     // Calculate commissions for vendor products
     require_once __DIR__ . '/../classes/commission_class.php';
     $commission_class = new commission_class();
@@ -180,6 +180,9 @@ try {
     if ($order_items && is_array($order_items)) {
         $booking_class = new booking_class();
         $product_class = new product_class();
+
+        // Aggregate items by provider for commission calculation
+        $provider_totals = [];
 
         foreach ($order_items as $item) {
             $product_id = intval($item['product_id']);
@@ -191,11 +194,13 @@ try {
                 $product = $product_class->get_product_by_id($product_id);
 
                 if ($product) {
-                    // Calculate commission for vendor products (non-service products)
+                    // Aggregate vendor product totals by provider
                     if ($product['product_type'] !== 'service' && isset($product['provider_id'])) {
                         $provider_id = intval($product['provider_id']);
-                        $commission_class->create_order_commission($order_id, $provider_id, $item_total);
-                        error_log("VERIFY PAYMENT: Commission calculated for order $order_id, product $product_id, provider $provider_id, amount $item_total");
+                        if (!isset($provider_totals[$provider_id])) {
+                            $provider_totals[$provider_id] = 0;
+                        }
+                        $provider_totals[$provider_id] += $item_total;
                     }
 
                     // Create booking for service products
@@ -242,6 +247,16 @@ try {
             } catch (Exception $e) {
                 $errors[] = "Error processing product $product_id: " . $e->getMessage();
                 error_log("Error creating booking for product $product_id: " . $e->getMessage());
+            }
+        }
+
+        // Create commission records for each provider
+        foreach ($provider_totals as $provider_id => $total_amount) {
+            $commission_result = $commission_class->create_order_commission($order_id, $provider_id, $total_amount);
+            if ($commission_result) {
+                error_log("VERIFY PAYMENT: Commission created for order $order_id, provider $provider_id, amount $total_amount");
+            } else {
+                error_log("VERIFY PAYMENT WARNING: Failed to create commission for order $order_id, provider $provider_id");
             }
         }
     }
