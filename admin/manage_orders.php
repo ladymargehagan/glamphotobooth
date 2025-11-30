@@ -20,6 +20,9 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo htmlspecialchars($cssPath); ?>">
     <link rel="stylesheet" href="<?php echo htmlspecialchars($dashboardCss); ?>">
+    <!-- SweetAlert2 Library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="dashboard-layout">
@@ -420,19 +423,40 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         }
 
         function viewOrder(orderId) {
+            // Show loading
+            Swal.fire({
+                title: 'Loading...',
+                text: 'Fetching order details',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             // Fetch full order details
             fetch(window.siteUrl + '/actions/fetch_order_details_action.php?order_id=' + orderId)
                 .then(response => response.json())
                 .then(data => {
+                    Swal.close();
                     if (data.success) {
                         displayOrderDetails(data.order);
                     } else {
-                        alert('Failed to load order details: ' + (data.message || 'Unknown error'));
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Failed to Load',
+                            text: data.message || 'Unknown error occurred',
+                            confirmButtonColor: '#102152'
+                        });
                     }
                 })
                 .catch(error => {
                     console.error('Error loading order details:', error);
-                    alert('Error loading order details');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to load order details',
+                        confirmButtonColor: '#102152'
+                    });
                 });
         }
 

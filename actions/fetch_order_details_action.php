@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
         // Fetch order details
         $sql = "SELECT order_id, customer_id, total_amount, payment_status,
-                       payment_reference, order_date, created_at
+                       payment_reference, order_date
                 FROM pb_orders
                 WHERE order_id = ?";
 
