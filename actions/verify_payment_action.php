@@ -168,9 +168,14 @@ try {
     }
 
     // Process order items and create bookings for services
+    // Also calculate commissions for vendor products
     $order_items = $order_class->get_order_items($order_id);
     $bookings_created = 0;
     $errors = [];
+    
+    // Calculate commissions for vendor products
+    require_once __DIR__ . '/../classes/commission_class.php';
+    $commission_class = new commission_class();
 
     if ($order_items && is_array($order_items)) {
         $booking_class = new booking_class();
@@ -179,46 +184,58 @@ try {
         foreach ($order_items as $item) {
             $product_id = intval($item['product_id']);
             $quantity = isset($item['quantity']) ? intval($item['quantity']) : 1;
+            $item_price = floatval($item['price']);
+            $item_total = $item_price * $quantity;
 
             try {
                 $product = $product_class->get_product_by_id($product_id);
 
-                if ($product && $product['product_type'] === 'service') {
-                    // Create booking(s) - one per quantity
-                    for ($i = 0; $i < $quantity; $i++) {
-                        $booking_number = $i + 1;
-                        $service_description = $product['title'];
-                        if ($quantity > 1) {
-                            $service_description .= " (#" . $booking_number . " of " . $quantity . ")";
-                        }
+                if ($product) {
+                    // Calculate commission for vendor products (non-service products)
+                    if ($product['product_type'] !== 'service' && isset($product['provider_id'])) {
+                        $provider_id = intval($product['provider_id']);
+                        $commission_class->create_order_commission($order_id, $provider_id, $item_total);
+                        error_log("VERIFY PAYMENT: Commission calculated for order $order_id, product $product_id, provider $provider_id, amount $item_total");
+                    }
 
-                        // Call with correct 7 parameters
-                        $booking_id = $booking_class->create_booking(
-                            $customer_id,
-                            $product['provider_id'],
-                            $product_id,
-                            date('Y-m-d', strtotime('+1 day')),
-                            '10:00:00',
-                            $service_description,
-                            'Paid via Paystack'
-                        );
-
-                        if ($booking_id) {
-                            // CRITICAL: Update booking status to 'confirmed' since payment is complete
-                            $update_sql = "UPDATE pb_bookings SET status = 'confirmed' WHERE booking_id = $booking_id";
-                            error_log("VERIFY PAYMENT: Updating booking $booking_id status to 'confirmed'");
-
-                            if ($db->db_write_query($update_sql)) {
-                                $bookings_created++;
-                                error_log("VERIFY PAYMENT: Booking $booking_id created and confirmed for order $order_id");
-                            } else {
-                                $mysql_error = $db->db ? $db->db->error : 'Unknown';
-                                error_log("VERIFY PAYMENT ERROR: Booking $booking_id created but failed to update status (MySQL error: $mysql_error)");
-                                $bookings_created++;
+                    // Create booking for service products
+                    if ($product['product_type'] === 'service') {
+                        // Create booking(s) - one per quantity
+                        for ($i = 0; $i < $quantity; $i++) {
+                            $booking_number = $i + 1;
+                            $service_description = $product['title'];
+                            if ($quantity > 1) {
+                                $service_description .= " (#" . $booking_number . " of " . $quantity . ")";
                             }
-                        } else {
-                            $errors[] = "Failed to create booking for product $product_id";
-                            error_log("VERIFY PAYMENT ERROR: Failed to create booking for product $product_id, order $order_id");
+
+                            // Call with correct 7 parameters
+                            $booking_id = $booking_class->create_booking(
+                                $customer_id,
+                                $product['provider_id'],
+                                $product_id,
+                                date('Y-m-d', strtotime('+1 day')),
+                                '10:00:00',
+                                $service_description,
+                                'Paid via Paystack'
+                            );
+
+                            if ($booking_id) {
+                                // CRITICAL: Update booking status to 'confirmed' since payment is complete
+                                $update_sql = "UPDATE pb_bookings SET status = 'confirmed' WHERE booking_id = $booking_id";
+                                error_log("VERIFY PAYMENT: Updating booking $booking_id status to 'confirmed'");
+
+                                if ($db->db_write_query($update_sql)) {
+                                    $bookings_created++;
+                                    error_log("VERIFY PAYMENT: Booking $booking_id created and confirmed for order $order_id");
+                                } else {
+                                    $mysql_error = $db->db ? $db->db->error : 'Unknown';
+                                    error_log("VERIFY PAYMENT ERROR: Booking $booking_id created but failed to update status (MySQL error: $mysql_error)");
+                                    $bookings_created++;
+                                }
+                            } else {
+                                $errors[] = "Failed to create booking for product $product_id";
+                                error_log("VERIFY PAYMENT ERROR: Failed to create booking for product $product_id, order $order_id");
+                            }
                         }
                     }
                 }

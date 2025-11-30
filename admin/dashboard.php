@@ -37,7 +37,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             </div>
 
             <!-- Stats Row -->
-            <div class="stats-row">
+            <div class="stats-row" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
                 <div class="stat-card">
                     <div class="stat-label">Total Users</div>
                     <div class="stat-value" id="totalUsers">-</div>
@@ -57,6 +57,11 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <div class="stat-label">Total Bookings</div>
                     <div class="stat-value" id="totalBookings">-</div>
                     <div class="stat-change"><span id="completedBookings">0</span> completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Platform Commission</div>
+                    <div class="stat-value" id="totalCommission">₵-</div>
+                    <div class="stat-change"><span id="pendingRequests">0</span> pending requests</div>
                 </div>
             </div>
 
@@ -237,6 +242,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
         document.addEventListener('DOMContentLoaded', function() {
             loadDashboardStats();
+            loadCommissionStats();
         });
 
         function loadDashboardStats() {
@@ -261,6 +267,19 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                 });
         }
 
+        function loadCommissionStats() {
+            fetch(window.siteUrl + '/actions/fetch_commission_stats_action.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const commission = parseFloat(data.stats.total_commission) || 0;
+                        document.getElementById('totalCommission').textContent = '₵' + commission.toFixed(2);
+                        document.getElementById('pendingRequests').textContent = data.pending_requests || 0;
+                    }
+                })
+                .catch(error => console.error('Error loading commission stats:', error));
+        }
+
         function showStatsError(message) {
             // Show error in stat cards
             const errorText = 'Error loading';
@@ -268,6 +287,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             document.getElementById('totalOrders').textContent = '—';
             document.getElementById('totalRevenue').textContent = '₵—';
             document.getElementById('totalBookings').textContent = '—';
+            document.getElementById('totalCommission').textContent = '₵—';
             document.getElementById('revenueStatus').textContent = errorText;
         }
 

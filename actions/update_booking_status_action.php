@@ -68,6 +68,19 @@ if (intval($booking['provider_id']) !== intval($provider['provider_id'])) {
 
 // Update booking status
 if ($booking_class->update_booking_status($booking_id, $status)) {
+    // If booking is marked as completed, calculate commission
+    if ($status === 'completed') {
+        require_once __DIR__ . '/../classes/commission_class.php';
+        $commission_class = new commission_class();
+        
+        $gross_amount = floatval($booking['total_price']);
+        $provider_id = intval($booking['provider_id']);
+        
+        // Create commission record
+        $commission_class->create_booking_commission($booking_id, $provider_id, $gross_amount);
+        error_log("BOOKING STATUS: Commission calculated for completed booking $booking_id, provider $provider_id, amount $gross_amount");
+    }
+    
     $status_messages = [
         'confirmed' => 'Booking confirmed successfully',
         'accepted' => 'Booking accepted successfully',

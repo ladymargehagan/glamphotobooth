@@ -26,12 +26,18 @@ if (!$provider) {
     exit;
 }
 
+// Get commission-based earnings
+require_once __DIR__ . '/../classes/commission_class.php';
+$commission_class = new commission_class();
+$provider_id = intval($provider['provider_id']);
+$total_earnings = $commission_class->get_provider_total_earnings($provider_id);
+$available_earnings = $commission_class->get_provider_available_earnings($provider_id);
+
 // Initialize earnings variables
-$total_earnings = 0;
 $completed_transactions = [];
 $earnings_by_month = [];
 
-// PHOTOGRAPHER EARNINGS (from bookings)
+// PHOTOGRAPHER EARNINGS (from bookings) - for display purposes
 if ($user_role == 2) {
     $booking_class = new booking_class();
     $all_bookings = $booking_class->get_provider_bookings($provider['provider_id']);
@@ -39,7 +45,6 @@ if ($user_role == 2) {
     if ($all_bookings) {
         foreach ($all_bookings as $booking) {
             if ($booking['status'] === 'completed') {
-                $total_earnings += floatval($booking['total_price']);
                 $completed_transactions[] = [
                     'date' => $booking['booking_date'],
                     'customer' => $booking['customer_name'] ?? 'Customer',
@@ -153,21 +158,34 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             <!-- Earnings Stats -->
             <div class="stats-row">
                 <div class="stat-card">
-                    <div class="stat-label">Total <?php echo $user_role == 2 ? 'Earnings' : 'Revenue'; ?></div>
+                    <div class="stat-label">Total Earnings</div>
                     <div class="stat-value">₵<?php echo number_format($total_earnings, 2); ?></div>
-                    <div class="stat-change"><?php echo count($completed_transactions); ?> <?php echo $user_role == 2 ? 'completed bookings' : 'sales'; ?></div>
+                    <div class="stat-change"><?php echo count($completed_transactions); ?> completed bookings</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label"><?php echo $user_role == 2 ? 'Completed Bookings' : 'Total Sales'; ?></div>
+                    <div class="stat-label">Available Balance</div>
+                    <div class="stat-value" style="color: #4caf50;">₵<?php echo number_format($available_earnings, 2); ?></div>
+                    <div class="stat-change">Ready to request</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Completed Bookings</div>
                     <div class="stat-value"><?php echo count($completed_transactions); ?></div>
-                    <div class="stat-change">From <?php echo $user_role == 2 ? 'completed work' : 'paid orders'; ?></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Average per <?php echo $user_role == 2 ? 'Booking' : 'Sale'; ?></div>
-                    <div class="stat-value">₵<?php echo count($completed_transactions) > 0 ? number_format($total_earnings / count($completed_transactions), 2) : '0.00'; ?></div>
-                    <div class="stat-change">Across all <?php echo $user_role == 2 ? 'bookings' : 'transactions'; ?></div>
+                    <div class="stat-change">From completed work</div>
                 </div>
             </div>
+
+            <!-- Payment Request CTA -->
+            <?php if ($available_earnings > 0): ?>
+            <div style="background: linear-gradient(135deg, rgba(16, 33, 82, 0.05) 0%, rgba(226, 196, 146, 0.1) 100%); border-radius: var(--border-radius); padding: var(--spacing-lg); margin-bottom: var(--spacing-lg); border-left: 4px solid var(--primary);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-md);">
+                    <div>
+                        <h3 style="color: var(--primary); margin: 0 0 var(--spacing-sm) 0;">Request Payment</h3>
+                        <p style="color: var(--text-secondary); margin: 0;">You have ₵<?php echo number_format($available_earnings, 2); ?> available for withdrawal</p>
+                    </div>
+                    <a href="<?php echo SITE_URL; ?>/photographer/payment_requests.php" class="btn btn-primary">Request Payment</a>
+                </div>
+            </div>
+            <?php endif; ?>
 
             <!-- Earnings by Month -->
             <?php if (!empty($earnings_by_month)): ?>
