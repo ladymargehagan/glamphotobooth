@@ -19,7 +19,7 @@ $provider_class = new provider_class();
 $provider = $provider_class->get_provider_by_customer($user_id);
 
 if (!$provider) {
-    header('Location: ' . SITE_URL . '/customer/profile_setup.php');
+    header('Location: ' . SITE_URL . '/photographer/profile_setup.php');
     exit;
 }
 
@@ -195,7 +195,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
                             <div class="gallery-actions">
                                 <a href="<?php echo SITE_URL; ?>/customer/view_gallery.php?id=<?php echo $gallery['gallery_id']; ?>&code=<?php echo htmlspecialchars($gallery['access_code']); ?>" class="btn-action btn-view" target="_blank">View Gallery</a>
-                                <a href="<?php echo SITE_URL; ?>/customer/upload_photos.php?booking_id=<?php echo $gallery['booking_id']; ?>" class="btn-action btn-upload">Upload/Edit Photos</a>
+                                <a href="<?php echo SITE_URL; ?>/photographer/upload_photos.php?booking_id=<?php echo $gallery['booking_id']; ?>" class="btn-action btn-upload">Upload/Edit Photos</a>
                             </div>
                         </div>
                     <?php endforeach; ?>
