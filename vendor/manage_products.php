@@ -337,7 +337,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <div class="product-card" data-product-id="<?php echo htmlspecialchars($product['product_id']); ?>">
                         <div class="product-image">
                             <?php if ($product['image']): ?>
-                                <img src="<?php echo SITE_URL . '/uploads/products/' . htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['title']); ?>" onerror="this.parentElement.textContent='📸'">
+                                <img src="<?php echo SITE_URL . '/uploads/products/' . basename(htmlspecialchars($product['image'])); ?>" alt="<?php echo htmlspecialchars($product['title']); ?>" onerror="this.parentElement.textContent='📸'">
                             <?php else: ?>
                                 📸
                             <?php endif; ?>
@@ -362,6 +362,9 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             </div>
         </main>
     </div>
+
+    <!-- CSRF Token -->
+    <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
 
     <script src="<?php echo SITE_URL; ?>/js/sweetalert.js"></script>
     <script src="<?php echo SITE_URL; ?>/js/product.js"></script>

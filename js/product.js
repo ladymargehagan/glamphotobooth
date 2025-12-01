@@ -278,7 +278,12 @@ function setupManageProducts() {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 showSuccess('Product deleted successfully');
@@ -286,12 +291,13 @@ function setupManageProducts() {
                     location.reload();
                 }, 1500);
             } else {
+                console.error('Delete failed:', data);
                 showError(data.message || 'Failed to delete product');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            showError('Network error. Please try again.');
+            console.error('Delete error:', error);
+            showError('Error: ' + error.message);
         });
     };
 

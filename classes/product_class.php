@@ -82,16 +82,6 @@ class product_class extends db_connection {
                 $where ORDER BY p.created_at DESC";
         $products = $this->db_fetch_all($sql);
 
-        // Fix image paths
-        if ($products && is_array($products)) {
-            foreach ($products as &$product) {
-                if (!empty($product['image'])) {
-                    $filename = basename($product['image']);
-                    $product['image'] = SITE_URL . '/uploads/products/' . $filename;
-                }
-            }
-        }
-
         return $products;
     }
 
@@ -112,16 +102,6 @@ class product_class extends db_connection {
                 INNER JOIN pb_service_providers sp ON p.provider_id = sp.provider_id
                 $where ORDER BY p.created_at DESC";
         $products = $this->db_fetch_all($sql);
-
-        // Fix image paths
-        if ($products && is_array($products)) {
-            foreach ($products as &$product) {
-                if (!empty($product['image'])) {
-                    $filename = basename($product['image']);
-                    $product['image'] = SITE_URL . '/uploads/products/' . $filename;
-                }
-            }
-        }
 
         return $products;
     }
