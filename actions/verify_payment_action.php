@@ -203,11 +203,47 @@ try {
                         $provider_totals[$provider_id] += $item_total;
                     }
 
-                    // Create booking for service products
+                    // Create or update booking for service products
                     if ($product['product_type'] === 'service') {
-                        // Create booking(s) - one per quantity
-                        for ($i = 0; $i < $quantity; $i++) {
-                            $booking_number = $i + 1;
+                        // Check if there are existing pending bookings for this customer, provider, and product
+                        $check_existing_sql = "SELECT booking_id FROM pb_bookings
+                                               WHERE customer_id = $customer_id
+                                               AND provider_id = " . intval($product['provider_id']) . "
+                                               AND product_id = $product_id
+                                               AND status = 'pending'
+                                               ORDER BY created_at DESC
+                                               LIMIT $quantity";
+                        $existing_bookings = $db->db_fetch_all($check_existing_sql);
+
+                        $existing_count = $existing_bookings ? count($existing_bookings) : 0;
+
+                        // Update existing bookings to 'confirmed'
+                        if ($existing_count > 0) {
+                            foreach ($existing_bookings as $existing) {
+                                $existing_booking_id = intval($existing['booking_id']);
+                                $update_sql = "UPDATE pb_bookings SET status = 'confirmed' WHERE booking_id = $existing_booking_id";
+                                error_log("VERIFY PAYMENT: Updating existing booking $existing_booking_id status to 'confirmed'");
+
+                                if ($db->db_write_query($update_sql)) {
+                                    $bookings_created++;
+                                    error_log("VERIFY PAYMENT: Existing booking $existing_booking_id confirmed for order $order_id");
+
+                                    // Create commission for this booking
+                                    $commission_result = $commission_class->create_booking_commission($existing_booking_id, intval($product['provider_id']), $item_price);
+                                    if ($commission_result) {
+                                        error_log("VERIFY PAYMENT: Commission created for booking $existing_booking_id");
+                                    }
+                                } else {
+                                    $mysql_error = $db->db ? $db->db->error : 'Unknown';
+                                    error_log("VERIFY PAYMENT ERROR: Failed to update booking $existing_booking_id status (MySQL error: $mysql_error)");
+                                }
+                            }
+                        }
+
+                        // Create new bookings for any remaining quantity
+                        $remaining_quantity = $quantity - $existing_count;
+                        for ($i = 0; $i < $remaining_quantity; $i++) {
+                            $booking_number = $existing_count + $i + 1;
                             $service_description = $product['title'];
                             if ($quantity > 1) {
                                 $service_description .= " (#" . $booking_number . " of " . $quantity . ")";
@@ -227,11 +263,17 @@ try {
                             if ($booking_id) {
                                 // CRITICAL: Update booking status to 'confirmed' since payment is complete
                                 $update_sql = "UPDATE pb_bookings SET status = 'confirmed' WHERE booking_id = $booking_id";
-                                error_log("VERIFY PAYMENT: Updating booking $booking_id status to 'confirmed'");
+                                error_log("VERIFY PAYMENT: Updating new booking $booking_id status to 'confirmed'");
 
                                 if ($db->db_write_query($update_sql)) {
                                     $bookings_created++;
-                                    error_log("VERIFY PAYMENT: Booking $booking_id created and confirmed for order $order_id");
+                                    error_log("VERIFY PAYMENT: New booking $booking_id created and confirmed for order $order_id");
+
+                                    // Create commission for this booking
+                                    $commission_result = $commission_class->create_booking_commission($booking_id, intval($product['provider_id']), $item_price);
+                                    if ($commission_result) {
+                                        error_log("VERIFY PAYMENT: Commission created for booking $booking_id");
+                                    }
                                 } else {
                                     $mysql_error = $db->db ? $db->db->error : 'Unknown';
                                     error_log("VERIFY PAYMENT ERROR: Booking $booking_id created but failed to update status (MySQL error: $mysql_error)");

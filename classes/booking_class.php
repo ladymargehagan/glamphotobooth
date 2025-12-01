@@ -22,6 +22,11 @@ class booking_class extends db_connection {
         $service_description = mysqli_real_escape_string($this->db, $service_description);
         $notes = mysqli_real_escape_string($this->db, $notes);
 
+        // Get customer contact info
+        $sql_customer = "SELECT contact FROM pb_customer WHERE id = $customer_id";
+        $customer = $this->db_fetch_one($sql_customer);
+        $contact = $customer && isset($customer['contact']) ? mysqli_real_escape_string($this->db, $customer['contact']) : null;
+
         // Get product price
         $sql_price = "SELECT price FROM pb_products WHERE product_id = $product_id";
         $result = $this->db_fetch_one($sql_price);
@@ -30,8 +35,10 @@ class booking_class extends db_connection {
         // Default duration is 1 hour
         $duration_hours = 1.00;
 
-        $sql = "INSERT INTO pb_bookings (customer_id, provider_id, product_id, booking_date, booking_time, service_description, notes, duration_hours, total_price, status)
-                VALUES ($customer_id, $provider_id, $product_id, '$booking_date', '$booking_time', '$service_description', '$notes', $duration_hours, $total_price, 'pending')";
+        // Include contact field in insert
+        $contact_value = $contact ? "'$contact'" : "NULL";
+        $sql = "INSERT INTO pb_bookings (customer_id, provider_id, product_id, booking_date, booking_time, service_description, notes, contact, duration_hours, total_price, status)
+                VALUES ($customer_id, $provider_id, $product_id, '$booking_date', '$booking_time', '$service_description', '$notes', $contact_value, $duration_hours, $total_price, 'pending')";
 
         if ($this->db_write_query($sql)) {
             return $this->last_insert_id();
@@ -48,7 +55,11 @@ class booking_class extends db_connection {
         }
 
         $booking_id = intval($booking_id);
-        $sql = "SELECT * FROM pb_bookings WHERE booking_id = $booking_id";
+        $sql = "SELECT b.*, c.name as customer_name, c.email, c.contact, p.title as product_title
+                FROM pb_bookings b
+                LEFT JOIN pb_customer c ON b.customer_id = c.id
+                LEFT JOIN pb_products p ON b.product_id = p.product_id
+                WHERE b.booking_id = $booking_id";
         return $this->db_fetch_one($sql);
     }
 
