@@ -244,15 +244,9 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     // Get account number based on payment method
                     let accountNumber = '';
                     if (paymentMethod === 'bank_transfer') {
-                        const accountField = document.getElementById('account_number');
-                        if (accountField) {
-                            accountNumber = accountField.value;
-                        }
+                        accountNumber = document.getElementById('account_number').value;
                     } else if (paymentMethod === 'mobile_money') {
-                        const accountField = document.getElementById('account_number_mobile');
-                        if (accountField) {
-                            accountNumber = accountField.value;
-                        }
+                        accountNumber = document.getElementById('account_number_mobile').value;
                     } else {
                         // For other, use account_number field if it exists
                         const accountField = document.getElementById('account_number');
@@ -281,22 +275,16 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
                     // Add bank transfer specific fields
                     if (paymentMethod === 'bank_transfer') {
-                        const accountNameField = document.getElementById('account_name');
-                        const bankNameField = document.getElementById('bank_name');
-                        if (accountNameField && accountNameField.value) {
-                            formData.append('account_name', accountNameField.value);
-                        }
-                        if (bankNameField && bankNameField.value) {
-                            formData.append('bank_name', bankNameField.value);
-                        }
+                        const accountName = document.getElementById('account_name').value;
+                        const bankName = document.getElementById('bank_name').value;
+                        if (accountName) formData.append('account_name', accountName);
+                        if (bankName) formData.append('bank_name', bankName);
                     }
 
                     // Add mobile money specific fields
                     if (paymentMethod === 'mobile_money') {
-                        const mobileNetworkField = document.getElementById('mobile_network');
-                        if (mobileNetworkField && mobileNetworkField.value) {
-                            formData.append('mobile_network', mobileNetworkField.value);
-                        }
+                        const mobileNetwork = document.getElementById('mobile_network').value;
+                        if (mobileNetwork) formData.append('mobile_network', mobileNetwork);
                     }
 
                     Swal.fire({
