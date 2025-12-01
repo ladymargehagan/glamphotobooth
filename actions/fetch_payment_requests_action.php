@@ -13,6 +13,7 @@ $user_role = isset($_SESSION['user_role']) ? intval($_SESSION['user_role']) : 4;
 $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 
 require_once __DIR__ . '/../classes/payment_request_class.php';
+require_once __DIR__ . '/../classes/provider_class.php';
 $payment_request_class = new payment_request_class();
 
 // Admin can see all requests

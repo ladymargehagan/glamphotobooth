@@ -228,17 +228,38 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         function loadRequests() {
             const status = document.getElementById('statusFilter').value;
             const url = window.siteUrl + '/actions/fetch_payment_requests_action.php' + (status ? '?status=' + status : '');
-            
+
             fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        displayRequests(data.requests);
-                    } else {
-                        console.error('Failed to load requests:', data.message);
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('HTTP error ' + response.status);
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.success) {
+                            displayRequests(data.requests);
+                        } else {
+                            console.error('Failed to load requests:', data.message);
+                            document.querySelector('#requestsTable tbody').innerHTML =
+                                '<tr><td colspan="9" style="text-align: center; padding: 20px; color: red;">Error: ' +
+                                (data.message || 'Failed to load requests') + '</td></tr>';
+                        }
+                    } catch (e) {
+                        console.error('JSON parse error:', e);
+                        console.error('Response text:', text);
+                        document.querySelector('#requestsTable tbody').innerHTML =
+                            '<tr><td colspan="9" style="text-align: center; padding: 20px; color: red;">Error loading requests. Check console for details.</td></tr>';
                     }
                 })
-                .catch(error => console.error('Error loading requests:', error));
+                .catch(error => {
+                    console.error('Error loading requests:', error);
+                    document.querySelector('#requestsTable tbody').innerHTML =
+                        '<tr><td colspan="9" style="text-align: center; padding: 20px; color: red;">Network error: ' +
+                        error.message + '</td></tr>';
+                });
         }
 
         function displayRequests(requests) {

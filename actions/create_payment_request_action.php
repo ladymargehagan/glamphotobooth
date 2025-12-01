@@ -29,6 +29,7 @@ if ($user_role != 2 && $user_role != 3) {
 $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 
 // Get provider details
+require_once __DIR__ . '/../classes/provider_class.php';
 $provider_class = new provider_class();
 $provider = $provider_class->get_provider_by_customer($user_id);
 
