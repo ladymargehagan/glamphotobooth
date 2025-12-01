@@ -139,20 +139,18 @@ class payment_request_class extends db_connection {
         }
 
         $sql = "SELECT pr.*,
-                       sp.business_name, sp.email,
-                       c.name as provider_name
+                       sp.business_name, sp.email, sp.name as provider_name
                 FROM pb_payment_requests pr
                 LEFT JOIN pb_service_providers sp ON pr.provider_id = sp.provider_id
-                LEFT JOIN pb_customer c ON sp.customer_id = c.id
                 WHERE 1=1";
-        
+
         if ($status) {
             $status = $this->db->real_escape_string($status);
             $sql .= " AND pr.status = '$status'";
         }
-        
+
         $sql .= " ORDER BY pr.requested_at DESC";
-        
+
         return $this->db_fetch_all($sql);
     }
 
@@ -166,13 +164,11 @@ class payment_request_class extends db_connection {
 
         $request_id = intval($request_id);
         $sql = "SELECT pr.*,
-                       sp.business_name, sp.email,
-                       c.name as provider_name
+                       sp.business_name, sp.email, sp.name as provider_name
                 FROM pb_payment_requests pr
                 LEFT JOIN pb_service_providers sp ON pr.provider_id = sp.provider_id
-                LEFT JOIN pb_customer c ON sp.customer_id = c.id
                 WHERE pr.request_id = $request_id";
-        
+
         return $this->db_fetch_one($sql);
     }
 
