@@ -1,2 +1,5 @@
 db_dump/ecommerce_2025A_lady_hagan (6).sql
 db_dump/
+db/fix_all_paid_bookings.sql
+db/URGENT_fix_booking_27.sql
+db/QUICK_FIX_booking_27.sql

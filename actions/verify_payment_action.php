@@ -206,16 +206,22 @@ try {
                     // Create or update booking for service products
                     if ($product['product_type'] === 'service') {
                         // Check if there are existing pending bookings for this customer, provider, and product
-                        $check_existing_sql = "SELECT booking_id FROM pb_bookings
-                                               WHERE customer_id = $customer_id
-                                               AND provider_id = " . intval($product['provider_id']) . "
-                                               AND product_id = $product_id
-                                               AND status = 'pending'
-                                               ORDER BY created_at DESC
+                        // Look for bookings created recently (within 30 minutes of order)
+                        $check_existing_sql = "SELECT b.booking_id
+                                               FROM pb_bookings b
+                                               JOIN pb_orders o ON o.order_id = $order_id
+                                               WHERE b.customer_id = $customer_id
+                                               AND b.provider_id = " . intval($product['provider_id']) . "
+                                               AND b.product_id = $product_id
+                                               AND b.status = 'pending'
+                                               AND ABS(TIMESTAMPDIFF(MINUTE, b.created_at, o.order_date)) <= 30
+                                               ORDER BY b.created_at DESC
                                                LIMIT $quantity";
                         $existing_bookings = $db->db_fetch_all($check_existing_sql);
 
                         $existing_count = $existing_bookings ? count($existing_bookings) : 0;
+
+                        error_log("VERIFY PAYMENT: Found $existing_count existing pending bookings for product $product_id, customer $customer_id, order $order_id");
 
                         // Update existing bookings to 'confirmed'
                         if ($existing_count > 0) {
