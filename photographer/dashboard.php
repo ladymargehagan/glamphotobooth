@@ -28,6 +28,7 @@ $booking_stats = [
     'total' => 0
 ];
 $recent_bookings = [];
+$active_services = 0;
 
 if ($provider) {
     $booking_class = new booking_class();
@@ -41,6 +42,12 @@ if ($provider) {
 
     // Get recent bookings (limit to 3)
     $recent_bookings = array_slice($provider_bookings, 0, 3);
+
+    // Get photographer's services
+    require_once __DIR__ . '/../classes/product_class.php';
+    $product_class = new product_class();
+    $services = $product_class->get_products_by_provider($provider['provider_id']);
+    $active_services = $services ? count(array_filter($services, function($s) { return $s['is_active'] == 1; })) : 0;
 }
 
 $pageTitle = 'Photographer Dashboard - GlamPhotobooth Accra';
@@ -154,6 +161,11 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             <!-- Stats Row -->
             <div class="stats-row">
                 <div class="stat-card">
+                    <div class="stat-label">Active Services</div>
+                    <div class="stat-value"><?php echo intval($active_services); ?></div>
+                    <div class="stat-change">Available for booking</div>
+                </div>
+                <div class="stat-card">
                     <div class="stat-label">Pending Requests</div>
                     <div class="stat-value"><?php echo intval($booking_stats['pending'] ?? 0); ?></div>
                     <div class="stat-change">Review incoming bookings</div>
@@ -168,10 +180,46 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <div class="stat-value"><?php echo intval($booking_stats['completed'] ?? 0); ?></div>
                     <div class="stat-change">Build your reputation</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-label">Total Bookings</div>
-                    <div class="stat-value"><?php echo intval($booking_stats['total'] ?? 0); ?></div>
-                    <div class="stat-change">All time bookings</div>
+            </div>
+
+            <!-- Services Management Section -->
+            <div style="margin-bottom: var(--spacing-lg);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                    <h2 style="color: var(--primary); margin: 0;">Your Services</h2>
+                    <a href="<?php echo SITE_URL; ?>/vendor/add_product.php" class="btn btn-primary" style="padding: 0.5rem 1.2rem; font-size: 0.85rem; text-decoration: none; display: inline-block;">+ Add New Service</a>
+                </div>
+
+                <div style="background: var(--white); border-radius: var(--border-radius); padding: var(--spacing-lg); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);">
+                    <?php if ($profileComplete && isset($services) && count($services) > 0): ?>
+                        <div style="display: grid; gap: var(--spacing-md);">
+                            <?php foreach (array_slice($services, 0, 3) as $service): ?>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-md); border-bottom: 1px solid rgba(226, 196, 146, 0.1);">
+                                    <div style="flex: 1;">
+                                        <h4 style="color: var(--primary); margin: 0 0 4px 0; font-weight: 600;">
+                                            <?php echo htmlspecialchars($service['title']); ?>
+                                        </h4>
+                                        <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                                            ₵<?php echo number_format($service['price'], 2); ?>
+                                            <span style="margin-left: var(--spacing-sm);">
+                                                <?php echo $service['is_active'] ? '<span style="color: #2e7d32; font-weight: 600;">✓ Active</span>' : '<span style="color: #b71c1c;">Inactive</span>'; ?>
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div style="display: flex; gap: var(--spacing-sm);">
+                                        <a href="<?php echo SITE_URL; ?>/vendor/edit_product.php?product_id=<?php echo $service['product_id']; ?>" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none;">Edit</a>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <div style="text-align: center; padding: var(--spacing-md); border-top: 1px solid rgba(226, 196, 146, 0.1);">
+                            <a href="<?php echo SITE_URL; ?>/vendor/manage_products.php" style="color: var(--primary); font-weight: 600; text-decoration: none;">View All Services (<?php echo count($services); ?>)</a>
+                        </div>
+                    <?php else: ?>
+                        <div style="text-align: center; padding: var(--spacing-lg);">
+                            <p style="color: var(--text-secondary); margin: 0 0 var(--spacing-md) 0;">No services yet. Create your first service to start receiving bookings!</p>
+                            <a href="<?php echo SITE_URL; ?>/vendor/add_product.php" class="btn btn-primary" style="padding: 0.6rem 1.5rem; text-decoration: none;">Create Your First Service</a>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
 

@@ -8,6 +8,7 @@
 ob_start();
 
 header('Content-Type: application/json');
+header('Connection: close');
 require_once __DIR__ . '/../settings/core.php';
 
 requireLogin();
@@ -91,9 +92,11 @@ require_once __DIR__ . '/../classes/commission_class.php';
 try {
     // Clear any output
     ob_clean();
-    
+
     $payment_request_class = new payment_request_class();
-    
+
+    error_log('Creating payment request - Provider ID: ' . $provider_id . ', Amount: ' . $requested_amount . ', Method: ' . $payment_method);
+
     $result = $payment_request_class->create_payment_request(
         $provider_id,
         $user_role,
@@ -101,44 +104,64 @@ try {
         $payment_method,
         $payment_details
     );
-    
+
+    error_log('Payment request result: ' . json_encode($result));
+
     // Clear output again before JSON
     ob_clean();
-    
+
     if (is_array($result) && isset($result['success'])) {
         if ($result['success']) {
-            echo json_encode([
+            http_response_code(200);
+            $response = json_encode([
                 'success' => true,
                 'message' => 'Payment request submitted successfully',
                 'request_id' => $result['request_id']
             ]);
+            echo $response;
         } else {
-            echo json_encode([
+            http_response_code(400);
+            $response = json_encode([
                 'success' => false,
                 'message' => $result['message'] ?? 'Failed to create payment request'
             ]);
+            echo $response;
         }
     } else {
-        echo json_encode([
+        http_response_code(500);
+        $response = json_encode([
             'success' => false,
             'message' => 'Failed to create payment request. Please try again.'
         ]);
+        echo $response;
     }
+
+    // Flush and close
+    @ob_end_clean();
+    exit(0);
 } catch (Exception $e) {
     ob_clean();
     error_log('Payment request error: ' . $e->getMessage());
     error_log('Stack trace: ' . $e->getTraceAsString());
-    echo json_encode([
+    http_response_code(500);
+    $response = json_encode([
         'success' => false,
         'message' => 'An error occurred. Please try again.'
     ]);
+    echo $response;
+    @ob_end_clean();
+    exit(0);
 } catch (Error $e) {
     ob_clean();
     error_log('Payment request fatal error: ' . $e->getMessage());
-    echo json_encode([
+    http_response_code(500);
+    $response = json_encode([
         'success' => false,
         'message' => 'System error occurred. Please contact support.'
     ]);
+    echo $response;
+    @ob_end_clean();
+    exit(0);
 }
 ?>
 
