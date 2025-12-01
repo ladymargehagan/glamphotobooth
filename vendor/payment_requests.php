@@ -328,6 +328,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         });
                     });
                 });
+            }
         });
     </script>
 </body>
