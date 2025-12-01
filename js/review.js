@@ -106,8 +106,15 @@ function submitReview() {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log('Review response:', data);
+
         if (data.success) {
             // Close modal immediately
             closeReviewModal();
@@ -131,14 +138,15 @@ function submitReview() {
                 }, 1500);
             }
         } else {
+            console.warn('Review submission failed:', data);
             showReviewError(data.message || 'Failed to submit review');
             submitBtn.disabled = false;
             submitBtn.textContent = 'Submit Review';
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        showReviewError('Error submitting review');
+        console.error('Review submission error:', error);
+        showReviewError('Error submitting review: ' + error.message);
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit Review';
     });

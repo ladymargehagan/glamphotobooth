@@ -50,6 +50,12 @@ try {
     $review_controller = new review_controller();
     $result = $review_controller->add_review_ctr($user_id, $provider_id, $booking_id, $rating, $comment, $order_id);
 
+    // Ensure we always return success if review was created/updated
+    if (!isset($result['success'])) {
+        $result['success'] = false;
+    }
+
+    error_log('Review action result: ' . json_encode($result));
     echo json_encode($result);
 } catch (Exception $e) {
     error_log('Review add error: ' . $e->getMessage());
