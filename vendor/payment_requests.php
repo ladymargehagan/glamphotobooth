@@ -225,121 +225,121 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
             if (paymentRequestForm) {
                 paymentRequestForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const paymentMethod = document.getElementById('payment_method').value;
-            const requestedAmount = document.getElementById('requested_amount').value;
-            
-            // Validate amount
-            if (!requestedAmount || parseFloat(requestedAmount) <= 0) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Please enter a valid amount',
-                    confirmButtonColor: '#102152'
-                });
-                return;
-            }
-            
-            // Get account number based on payment method
-            let accountNumber = '';
-            if (paymentMethod === 'bank_transfer') {
-                const accountField = document.getElementById('account_number');
-                if (accountField) {
-                    accountNumber = accountField.value;
-                }
-            } else if (paymentMethod === 'mobile_money') {
-                const accountField = document.getElementById('account_number_mobile');
-                if (accountField) {
-                    accountNumber = accountField.value;
-                }
-            } else {
-                // For other, use account_number field if it exists
-                const accountField = document.getElementById('account_number');
-                if (accountField) {
-                    accountNumber = accountField.value;
-                }
-            }
-            
-            // Validate account number
-            if (!accountNumber || accountNumber.trim() === '') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Account number is required',
-                    confirmButtonColor: '#102152'
-                });
-                return;
-            }
-            
-            // Build form data
-            const formData = new FormData();
-            formData.append('requested_amount', requestedAmount);
-            formData.append('payment_method', paymentMethod);
-            formData.append('account_number', accountNumber);
-            formData.append('csrf_token', window.csrfToken);
-            
-            // Add bank transfer specific fields
-            if (paymentMethod === 'bank_transfer') {
-                const accountNameField = document.getElementById('account_name');
-                const bankNameField = document.getElementById('bank_name');
-                if (accountNameField && accountNameField.value) {
-                    formData.append('account_name', accountNameField.value);
-                }
-                if (bankNameField && bankNameField.value) {
-                    formData.append('bank_name', bankNameField.value);
-                }
-            }
-            
-            // Add mobile money specific fields
-            if (paymentMethod === 'mobile_money') {
-                const mobileNetworkField = document.getElementById('mobile_network');
-                if (mobileNetworkField && mobileNetworkField.value) {
-                    formData.append('mobile_network', mobileNetworkField.value);
-                }
-            }
+                    e.preventDefault();
 
-            Swal.fire({
-                title: 'Submitting...',
-                text: 'Please wait',
-                allowOutsideClick: false,
-                didOpen: () => Swal.showLoading()
-            });
+                    const paymentMethod = document.getElementById('payment_method').value;
+                    const requestedAmount = document.getElementById('requested_amount').value;
 
-            fetch(window.siteUrl + '/actions/create_payment_request_action.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+                    // Validate amount
+                    if (!requestedAmount || parseFloat(requestedAmount) <= 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Please enter a valid amount',
+                            confirmButtonColor: '#102152'
+                        });
+                        return;
+                    }
+
+                    // Get account number based on payment method
+                    let accountNumber = '';
+                    if (paymentMethod === 'bank_transfer') {
+                        const accountField = document.getElementById('account_number');
+                        if (accountField) {
+                            accountNumber = accountField.value;
+                        }
+                    } else if (paymentMethod === 'mobile_money') {
+                        const accountField = document.getElementById('account_number_mobile');
+                        if (accountField) {
+                            accountNumber = accountField.value;
+                        }
+                    } else {
+                        // For other, use account_number field if it exists
+                        const accountField = document.getElementById('account_number');
+                        if (accountField) {
+                            accountNumber = accountField.value;
+                        }
+                    }
+
+                    // Validate account number
+                    if (!accountNumber || accountNumber.trim() === '') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Account number is required',
+                            confirmButtonColor: '#102152'
+                        });
+                        return;
+                    }
+
+                    // Build form data
+                    const formData = new FormData();
+                    formData.append('requested_amount', requestedAmount);
+                    formData.append('payment_method', paymentMethod);
+                    formData.append('account_number', accountNumber);
+                    formData.append('csrf_token', window.csrfToken);
+
+                    // Add bank transfer specific fields
+                    if (paymentMethod === 'bank_transfer') {
+                        const accountNameField = document.getElementById('account_name');
+                        const bankNameField = document.getElementById('bank_name');
+                        if (accountNameField && accountNameField.value) {
+                            formData.append('account_name', accountNameField.value);
+                        }
+                        if (bankNameField && bankNameField.value) {
+                            formData.append('bank_name', bankNameField.value);
+                        }
+                    }
+
+                    // Add mobile money specific fields
+                    if (paymentMethod === 'mobile_money') {
+                        const mobileNetworkField = document.getElementById('mobile_network');
+                        if (mobileNetworkField && mobileNetworkField.value) {
+                            formData.append('mobile_network', mobileNetworkField.value);
+                        }
+                    }
+
                     Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: data.message,
-                        confirmButtonColor: '#102152'
-                    }).then(() => {
-                        location.reload();
+                        title: 'Submitting...',
+                        text: 'Please wait',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
                     });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: data.message || 'Failed to submit payment request',
-                        confirmButtonColor: '#102152'
+
+                    fetch(window.siteUrl + '/actions/create_payment_request_action.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: data.message,
+                                confirmButtonColor: '#102152'
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message || 'Failed to submit payment request',
+                                confirmButtonColor: '#102152'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Network error. Please try again.',
+                            confirmButtonColor: '#102152'
+                        });
                     });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Network error. Please try again.',
-                    confirmButtonColor: '#102152'
                 });
-            });
-            }
         });
     </script>
 </body>
