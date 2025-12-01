@@ -367,6 +367,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
 
     <script src="<?php echo SITE_URL; ?>/js/sweetalert.js"></script>
-    <script src="<?php echo SITE_URL; ?>/js/product.js"></script>
+    <script src="<?php echo SITE_URL; ?>/js/product.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

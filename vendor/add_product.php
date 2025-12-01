@@ -439,6 +439,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         </main>
     </div>
 
-    <script src="<?php echo SITE_URL; ?>/js/product.js"></script>
+    <script src="<?php echo SITE_URL; ?>/js/product.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

@@ -398,7 +398,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     ?>
     <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
     <?php if (file_exists(__DIR__ . '/../js/review.js')): ?>
-    <script src="<?php echo SITE_URL; ?>/js/review.js"></script>
+    <script src="<?php echo SITE_URL; ?>/js/review.js?v=<?php echo time(); ?>"></script>
     <?php endif; ?>
     <script>
         window.siteUrl = '<?php echo SITE_URL; ?>';

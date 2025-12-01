@@ -347,7 +347,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
     <?php require_once __DIR__ . '/add_review.php'; ?>
     <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
     <script src="<?php echo SITE_URL; ?>/js/sweetalert.js"></script>
-    <script src="<?php echo SITE_URL; ?>/js/review.js"></script>
+    <script src="<?php echo SITE_URL; ?>/js/review.js?v=<?php echo time(); ?>"></script>
     <script>
         window.siteUrl = '<?php echo SITE_URL; ?>';
         window.csrfToken = '<?php echo generateCSRFToken(); ?>';
