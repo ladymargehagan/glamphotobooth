@@ -11,10 +11,6 @@ window.proceedToPayment = function(clickEvent) {
     const address = document.getElementById('address').value.trim();
     const csrfToken = document.querySelector('input[name="csrf_token"]').value;
 
-    // Get selected payment method and channel
-    const selectedPaymentRadio = document.querySelector('input[name="paymentMethod"]:checked');
-    const paymentChannel = selectedPaymentRadio ? selectedPaymentRadio.getAttribute('data-channel') : 'card';
-
     // Validate form
     if (!firstName || !lastName || !email || !phone || !address) {
         showError('Please fill in all delivery information');
@@ -34,7 +30,6 @@ window.proceedToPayment = function(clickEvent) {
     // Create order
     const formData = new FormData();
     formData.append('csrf_token', csrfToken);
-    formData.append('payment_channel', paymentChannel);
 
     fetch(window.siteUrl + '/actions/create_order_action.php', {
         method: 'POST',
@@ -76,7 +71,6 @@ window.proceedToPayment = function(clickEvent) {
             sessionStorage.setItem('customerName', firstName + ' ' + lastName);
             sessionStorage.setItem('customerEmail', email);
             sessionStorage.setItem('customerPhone', phone);
-            sessionStorage.setItem('paymentChannel', paymentChannel);
 
             // Redirect to payment initialization
             window.location.href = window.siteUrl + '/customer/payment.php?order_id=' + data.order_id;

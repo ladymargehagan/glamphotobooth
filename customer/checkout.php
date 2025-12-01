@@ -347,27 +347,6 @@ $cssPath = SITE_URL . '/css/style.css';
                         </div>
                     </div>
 
-                    <!-- Payment Method -->
-                    <div class="form-section">
-                        <h2>Payment Method</h2>
-                        <div class="payment-methods">
-                            <div class="payment-option">
-                                <input type="radio" id="paystack-card" name="paymentMethod" value="paystack" data-channel="card" checked>
-                                <label for="paystack-card">Card Payment (Debit/Credit Card)</label>
-                            </div>
-                            <div class="payment-option">
-                                <input type="radio" id="paystack-bank" name="paymentMethod" value="paystack" data-channel="bank">
-                                <label for="paystack-bank">Bank Transfer (Direct Bank Account)</label>
-                            </div>
-                            <div class="payment-option">
-                                <input type="radio" id="paystack-mobile" name="paymentMethod" value="paystack" data-channel="mobile_money">
-                                <label for="paystack-mobile">Mobile Money (MTN, Vodafone, AirtelTigo)</label>
-                            </div>
-                        </div>
-                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: var(--spacing-md);">
-                            All payments are securely processed through Paystack. Choose your preferred payment method above.
-                        </p>
-                    </div>
 
                     <!-- CSRF Token -->
                     <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
