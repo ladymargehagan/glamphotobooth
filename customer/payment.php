@@ -299,7 +299,7 @@ $cssPath = SITE_URL . '/css/style.css';
                 }
             });
 
-            handler.openIframe();
+            handler.openStandard();
         }
 
         function verifyPayment(reference) {
