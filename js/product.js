@@ -188,7 +188,7 @@ function setupAddProductForm() {
                     uploadProductImage(data.product_id);
                 } else {
                     setTimeout(() => {
-                        window.location.href = '../customer/manage_products.php';
+                        window.location.href = '../vendor/manage_products.php';
                     }, 1500);
                 }
             } else {
@@ -220,14 +220,14 @@ function setupAddProductForm() {
             if (data.success) {
                 showSuccess('Image uploaded successfully');
                 setTimeout(() => {
-                    window.location.href = '../customer/manage_products.php';
+                    window.location.href = '../vendor/manage_products.php';
                 }, 1500);
             } else {
                 // Product created but image upload failed
                 showError('Warning: Image upload failed - ' + (data.message || 'Unknown error'));
                 console.error('Image upload error:', data);
                 setTimeout(() => {
-                    window.location.href = '../customer/manage_products.php';
+                    window.location.href = '../vendor/manage_products.php';
                 }, 2000);
             }
         })
@@ -235,7 +235,7 @@ function setupAddProductForm() {
             // Silently fail and redirect anyway
             console.error('Image upload network error:', error);
             setTimeout(() => {
-                window.location.href = '../customer/manage_products.php';
+                window.location.href = '../vendor/manage_products.php';
             }, 1500);
         });
     }

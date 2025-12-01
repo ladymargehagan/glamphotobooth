@@ -337,7 +337,7 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                     <div class="product-card" data-product-id="<?php echo htmlspecialchars($product['product_id']); ?>">
                         <div class="product-image">
                             <?php if ($product['image']): ?>
-                                <img src="<?php echo SITE_URL . '/uploads/products/' . htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['title']); ?>">
+                                <img src="<?php echo SITE_URL . '/uploads/products/' . htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['title']); ?>" onerror="this.parentElement.textContent='📸'">
                             <?php else: ?>
                                 📸
                             <?php endif; ?>
