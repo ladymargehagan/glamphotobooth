@@ -279,9 +279,15 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
                         displayUsers(data.users);
                     } else {
                         console.error('Failed to load users:', data.message);
+                        const tbody = document.querySelector('#usersTable tbody');
+                        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 20px; color: red;">Error: ${data.message}</td></tr>`;
                     }
                 })
-                .catch(error => console.error('Error loading users:', error));
+                .catch(error => {
+                    console.error('Error loading users:', error);
+                    const tbody = document.querySelector('#usersTable tbody');
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 20px; color: red;">Error: ${error.message}</td></tr>`;
+                });
         }
 
         function displayUsers(users) {

@@ -20,7 +20,12 @@ try {
     $customer_class = new customer_class();
     $users = $customer_class->get_all_customers();
 
-    if ($users) {
+    if ($users === false) {
+        echo json_encode(['success' => false, 'message' => 'Failed to fetch users from database']);
+        exit;
+    }
+
+    if ($users && is_array($users)) {
         // Format users for display
         foreach ($users as &$user) {
             $user['email'] = htmlspecialchars($user['email']);
@@ -28,7 +33,7 @@ try {
         }
     }
 
-    echo json_encode(['success' => true, 'users' => $users ?? []]);
+    echo json_encode(['success' => true, 'users' => $users ?? [], 'count' => count($users ?? [])]);
 } catch (Exception $e) {
     error_log('Fetch users error: ' . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'Error fetching users: ' . $e->getMessage()]);
