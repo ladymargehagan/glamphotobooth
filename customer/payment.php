@@ -268,8 +268,9 @@ $cssPath = SITE_URL . '/css/style.css';
             button.disabled = true;
             button.textContent = 'Opening Paystack...';
 
-            // Use Paystack Inline (Popup) instead of redirect
-            // Paystack will show all available payment channels
+            // Initialize Paystack payment
+            // In test mode, card channel shows test outcomes (Success/Decline)
+            // In live mode, card channel shows real card entry form
             const handler = PaystackPop.setup({
                 key: publicKey,
                 email: email,
@@ -299,7 +300,7 @@ $cssPath = SITE_URL . '/css/style.css';
                 }
             });
 
-            handler.openStandard();
+            handler.openIframe();
         }
 
         function verifyPayment(reference) {
