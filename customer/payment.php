@@ -265,24 +265,24 @@ $cssPath = SITE_URL . '/css/style.css';
             const email = document.getElementById('customerEmail').value;
             const publicKey = document.getElementById('paystackPublicKey').value;
 
-            // Get payment channel from sessionStorage or default to all channels
+            // Get payment channel from sessionStorage for tracking (user's preference)
             const selectedChannel = sessionStorage.getItem('paymentChannel');
-            const channels = selectedChannel ? [selectedChannel] : ['card', 'bank', 'mobile_money'];
 
             button.disabled = true;
             button.textContent = 'Opening Paystack...';
 
             // Use Paystack Inline (Popup) instead of redirect
+            // Always offer all channels - Paystack will respect the user's selection in the popup
             const handler = PaystackPop.setup({
                 key: publicKey,
                 email: email,
                 amount: amount * 100, // Convert to pesewas/kobo
                 currency: 'GHS',
                 ref: 'ord_' + orderId + '_' + Math.floor((Math.random() * 1000000000) + 1),
-                channels: channels,
+                channels: ['card', 'bank', 'mobile_money'],
                 metadata: {
                     order_id: orderId,
-                    payment_channel: selectedChannel || 'all',
+                    preferred_channel: selectedChannel || 'card',
                     custom_fields: [
                         {
                             display_name: "Order ID",
