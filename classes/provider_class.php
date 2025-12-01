@@ -213,5 +213,83 @@ class provider_class extends db_connection {
                 FROM pb_service_providers WHERE email = '$email' LIMIT 1";
         return $this->db_fetch_one($sql);
     }
+
+    /**
+     * Delete provider (admin only)
+     * Handles cascading deletes for related records
+     */
+    public function delete_provider($provider_id) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
+        $provider_id = intval($provider_id);
+
+        try {
+            // Start transaction
+            $this->db->begin_transaction();
+
+            // Delete from pb_reviews (provider reviews)
+            $sql = "DELETE FROM pb_reviews WHERE provider_id = $provider_id";
+            if (!$this->db_write_query($sql)) {
+                throw new Exception('Failed to delete provider reviews');
+            }
+
+            // Delete from pb_bookings (service bookings)
+            $sql = "DELETE FROM pb_bookings WHERE provider_id = $provider_id";
+            if (!$this->db_write_query($sql)) {
+                throw new Exception('Failed to delete provider bookings');
+            }
+
+            // Delete from pb_photo_galleries (photo galleries)
+            $sql = "DELETE FROM pb_photo_galleries WHERE provider_id = $provider_id";
+            if (!$this->db_write_query($sql)) {
+                throw new Exception('Failed to delete provider galleries');
+            }
+
+            // Delete from pb_products (vendor products)
+            // Note: This has ON DELETE CASCADE, but we delete items first
+            $sql = "SELECT product_id FROM pb_products WHERE provider_id = $provider_id";
+            $products = $this->db_fetch_all($sql);
+
+            if ($products && is_array($products)) {
+                foreach ($products as $product) {
+                    $product_id = intval($product['product_id']);
+                    $sql = "DELETE FROM pb_order_items WHERE product_id = $product_id";
+                    if (!$this->db_write_query($sql)) {
+                        throw new Exception('Failed to delete product order items');
+                    }
+                }
+            }
+
+            // Now delete products
+            $sql = "DELETE FROM pb_products WHERE provider_id = $provider_id";
+            if (!$this->db_write_query($sql)) {
+                throw new Exception('Failed to delete provider products');
+            }
+
+            // Delete from pb_payment_requests
+            $sql = "DELETE FROM pb_payment_requests WHERE provider_id = $provider_id";
+            if (!$this->db_write_query($sql)) {
+                throw new Exception('Failed to delete payment requests');
+            }
+
+            // Finally delete provider
+            $sql = "DELETE FROM pb_service_providers WHERE provider_id = $provider_id";
+            if (!$this->db_write_query($sql)) {
+                throw new Exception('Failed to delete provider');
+            }
+
+            // Commit transaction
+            $this->db->commit();
+            return true;
+
+        } catch (Exception $e) {
+            // Rollback on error
+            $this->db->rollback();
+            error_log('Delete provider error: ' . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>

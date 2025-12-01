@@ -141,6 +141,81 @@ class customer_class extends db_connection {
     }
 
     /**
+     * Get all users (from both pb_customer and pb_service_providers)
+     * Returns unified user list with all roles
+     */
+    public function get_all_users() {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
+        // Get customers
+        $customer_sql = "SELECT id, name, email, country as country, city, contact, user_role, created_at, updated_at FROM pb_customer";
+        $customers = $this->db_fetch_all($customer_sql);
+
+        // Get service providers (photographers and vendors)
+        $provider_sql = "SELECT provider_id as id, name, email, NULL as country, city, contact, user_role, created_at, updated_at FROM pb_service_providers";
+        $providers = $this->db_fetch_all($provider_sql);
+
+        // Merge both arrays
+        $all_users = array();
+
+        if ($customers && is_array($customers)) {
+            $all_users = array_merge($all_users, $customers);
+        }
+
+        if ($providers && is_array($providers)) {
+            $all_users = array_merge($all_users, $providers);
+        }
+
+        // Sort by created_at DESC
+        usort($all_users, function($a, $b) {
+            return strtotime($b['created_at'] ?? 0) - strtotime($a['created_at'] ?? 0);
+        });
+
+        return !empty($all_users) ? $all_users : array();
+    }
+
+    /**
+     * Get users by role (from both pb_customer and pb_service_providers)
+     */
+    public function get_users_by_role($role) {
+        if (!$this->db_connect()) {
+            return false;
+        }
+
+        $role = intval($role);
+        $all_users = array();
+
+        // Get from pb_customer
+        $customer_sql = "SELECT id, name, email, country, city, contact, user_role, created_at, updated_at FROM pb_customer WHERE user_role = $role";
+        $customers = $this->db_fetch_all($customer_sql);
+
+        // Get from pb_service_providers (roles 2 and 3)
+        if ($role === 2 || $role === 3) {
+            $provider_sql = "SELECT provider_id as id, name, email, NULL as country, city, contact, user_role, created_at, updated_at FROM pb_service_providers WHERE user_role = $role";
+            $providers = $this->db_fetch_all($provider_sql);
+            if ($providers && is_array($providers)) {
+                $all_users = $providers;
+            }
+        }
+
+        // Add customers
+        if ($customers && is_array($customers)) {
+            $all_users = array_merge($all_users, $customers);
+        }
+
+        // Sort by created_at DESC
+        if (!empty($all_users)) {
+            usort($all_users, function($a, $b) {
+                return strtotime($b['created_at'] ?? 0) - strtotime($a['created_at'] ?? 0);
+            });
+        }
+
+        return !empty($all_users) ? $all_users : array();
+    }
+
+    /**
      * Get customers by role
      */
     public function get_customers_by_role($role) {

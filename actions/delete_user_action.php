@@ -35,9 +35,19 @@ try {
         exit;
     }
 
-    // Get the user to be deleted
+    // Get the user to be deleted from either table
     $customer_class = new customer_class();
+    $provider_class = new provider_class();
+
+    // Try to get from pb_customer first
     $user = $customer_class->get_customer_by_id($user_id);
+    $is_provider = false;
+
+    // If not found in pb_customer, try pb_service_providers
+    if (!$user) {
+        $user = $provider_class->get_provider_by_id($user_id);
+        $is_provider = true;
+    }
 
     if (!$user) {
         echo json_encode(['success' => false, 'message' => 'User not found']);
@@ -56,8 +66,17 @@ try {
         // For now, we'll allow admin deletion since this is a small platform
     }
 
-    // Delete the user
-    if ($customer_class->delete_customer($user_id)) {
+    // Delete the user from appropriate table
+    $deleted = false;
+    if ($is_provider) {
+        // Delete service provider using provider_class delete_provider method or direct DB call
+        $deleted = $provider_class->delete_provider($user_id);
+    } else {
+        // Delete customer using customer_class
+        $deleted = $customer_class->delete_customer($user_id);
+    }
+
+    if ($deleted) {
         echo json_encode([
             'success' => true,
             'message' => 'User deleted successfully',

@@ -21,7 +21,7 @@ if (!isset($_SESSION['user_role']) || intval($_SESSION['user_role']) !== 1) {
 
 try {
     $customer_class = new customer_class();
-    $users = $customer_class->get_all_customers();
+    $users = $customer_class->get_all_users();
 
     if ($users === false) {
         echo json_encode([
