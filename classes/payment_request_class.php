@@ -138,12 +138,12 @@ class payment_request_class extends db_connection {
             return false;
         }
 
-        $sql = "SELECT pr.*, 
+        $sql = "SELECT pr.*,
                        sp.business_name, sp.email,
                        c.name as provider_name
                 FROM pb_payment_requests pr
                 LEFT JOIN pb_service_providers sp ON pr.provider_id = sp.provider_id
-                LEFT JOIN pb_customer c ON pr.provider_id = c.id
+                LEFT JOIN pb_customer c ON sp.customer_id = c.id
                 WHERE 1=1";
         
         if ($status) {
@@ -165,12 +165,12 @@ class payment_request_class extends db_connection {
         }
 
         $request_id = intval($request_id);
-        $sql = "SELECT pr.*, 
+        $sql = "SELECT pr.*,
                        sp.business_name, sp.email,
                        c.name as provider_name
                 FROM pb_payment_requests pr
                 LEFT JOIN pb_service_providers sp ON pr.provider_id = sp.provider_id
-                LEFT JOIN pb_customer c ON pr.provider_id = c.id
+                LEFT JOIN pb_customer c ON sp.customer_id = c.id
                 WHERE pr.request_id = $request_id";
         
         return $this->db_fetch_one($sql);
