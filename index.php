@@ -76,7 +76,7 @@ $cssPath = SITE_URL . '/css/style.css';
             <div class="section-header">
                 <h2>Our Work</h2>
                 <p style="color: var(--text-secondary); font-size: 1.05rem; max-width: 600px; margin: var(--spacing-md) auto 0;">
-                    Explore stunning photography from our talented creators
+                    Explore stunning photography and equipment showcases
                 </p>
             </div>
             <div class="gallery-grid">
