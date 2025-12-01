@@ -255,6 +255,7 @@ require_once __DIR__ . '/../settings/core.php';
                 <input type="hidden" name="order_id" id="order_id" value="">
                 <input type="hidden" name="provider_id" id="provider_id" value="">
                 <input type="hidden" name="rating" id="rating" value="">
+                <input type="hidden" name="csrf_token" id="csrf_token" value="">
             </div>
 
             <div class="form-group">

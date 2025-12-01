@@ -197,6 +197,13 @@ function openReviewModal(bookingId, providerId) {
 
     document.getElementById('booking_id').value = bookingId;
     document.getElementById('provider_id').value = providerId;
+
+    // Set CSRF token
+    const csrfTokenInput = document.getElementById('csrf_token');
+    if (csrfTokenInput) {
+        csrfTokenInput.value = window.csrfToken || '';
+    }
+
     resetReviewForm();
     hideReviewMessages();
 

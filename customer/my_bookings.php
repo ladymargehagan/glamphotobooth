@@ -371,6 +371,12 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             document.getElementById('charCount').textContent = '0';
             document.getElementById('ratingLabel').textContent = 'Click to rate';
 
+            // Set CSRF token
+            const csrfTokenInput = document.getElementById('csrf_token');
+            if (csrfTokenInput) {
+                csrfTokenInput.value = window.csrfToken || '';
+            }
+
             // Reset stars
             document.querySelectorAll('.star').forEach(star => {
                 star.classList.remove('active', 'hover');
@@ -392,6 +398,12 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             document.getElementById('rating').value = rating;
             document.getElementById('comment').value = comment;
             document.getElementById('charCount').textContent = comment.length;
+
+            // Set CSRF token
+            const csrfTokenInput = document.getElementById('csrf_token');
+            if (csrfTokenInput) {
+                csrfTokenInput.value = window.csrfToken || '';
+            }
 
             // Update star display
             const stars = document.querySelectorAll('.star');
