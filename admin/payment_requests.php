@@ -99,120 +99,140 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             gap: var(--spacing-md);
             align-items: center;
         }
+
         .status-filter {
             padding: 0.75rem 1rem;
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
             font-family: var(--font-sans);
             font-size: 0.95rem;
+            background: var(--white);
+            transition: var(--transition);
         }
+
+        .status-filter:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 33, 82, 0.1);
+        }
+
         .orders-table {
             width: 100%;
             border-collapse: collapse;
         }
+
         .orders-table th {
-            background: rgba(226, 196, 146, 0.05);
+            background: rgba(226, 196, 146, 0.1);
             padding: var(--spacing-md);
             text-align: left;
             font-weight: 600;
             color: var(--primary);
-            border-bottom: 2px solid rgba(226, 196, 146, 0.2);
-            font-size: 0.9rem;
+            border-bottom: 2px solid rgba(226, 196, 146, 0.3);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
+
         .orders-table td {
             padding: var(--spacing-md);
-            border-bottom: 1px solid rgba(226, 196, 146, 0.1);
+            border-bottom: 1px solid rgba(226, 196, 146, 0.15);
             color: var(--text-primary);
             font-size: 0.9rem;
         }
+
+        .orders-table tr:hover {
+            background: rgba(226, 196, 146, 0.03);
+        }
+
         .status-badge {
             display: inline-block;
-            padding: 0.3rem 0.8rem;
+            padding: 0.4rem 0.9rem;
             border-radius: 4px;
             font-size: 0.8rem;
             font-weight: 600;
             text-transform: capitalize;
         }
-        .status-pending { background: rgba(255, 152, 0, 0.15); color: #f57f17; }
-        .status-approved { background: rgba(33, 150, 243, 0.15); color: #0d47a1; }
-        .status-paid { background: rgba(76, 175, 80, 0.15); color: #2e7d32; }
-        .status-rejected { background: rgba(244, 67, 54, 0.15); color: #b71c1c; }
+
+        .status-pending {
+            background: rgba(255, 152, 0, 0.15);
+            color: #f57f17;
+        }
+
+        .status-approved {
+            background: rgba(33, 150, 243, 0.15);
+            color: #0d47a1;
+        }
+
+        .status-paid {
+            background: rgba(76, 175, 80, 0.15);
+            color: #2e7d32;
+        }
+
+        .status-rejected {
+            background: rgba(244, 67, 54, 0.15);
+            color: #b71c1c;
+        }
+
         .action-btn {
-            padding: 0.4rem 0.9rem;
-            margin: 0 0.15rem;
+            padding: 0.5rem 1rem;
+            margin: 0.2rem;
             border: none;
             border-radius: var(--border-radius);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
+            white-space: nowrap;
         }
+
         .btn-approve {
             background: #2196f3;
             color: white;
         }
+
+        .btn-approve:hover {
+            background: #1976d2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+
         .btn-pay {
             background: #4caf50;
             color: white;
         }
+
+        .btn-pay:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
         .btn-reject {
             background: #f44336;
             color: white;
         }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
+
+        .btn-reject:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
         }
-        .modal.active {
-            display: flex;
-        }
-        .modal-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: -1;
-        }
-        .modal-content {
-            background: var(--white);
-            border-radius: var(--border-radius);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-            position: relative;
-            z-index: 1001;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--spacing-lg);
-            border-bottom: 1px solid var(--border-color);
-        }
-        .modal-close {
-            background: none;
-            border: none;
-            cursor: pointer;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-        }
-        .modal-body {
-            padding: var(--spacing-lg);
+
+        /* Responsive table wrapper */
+        @media (max-width: 1024px) {
+            .orders-table {
+                font-size: 0.85rem;
+            }
+
+            .orders-table th,
+            .orders-table td {
+                padding: var(--spacing-sm);
+            }
+
+            .action-btn {
+                padding: 0.4rem 0.7rem;
+                font-size: 0.75rem;
+            }
         }
     </style>
 

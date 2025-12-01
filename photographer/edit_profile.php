@@ -39,12 +39,13 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         .profile-edit-container {
             max-width: 600px;
             margin: 0 auto;
-            padding: var(--spacing-xxl) var(--spacing-xl);
+            padding: var(--spacing-xl);
         }
 
         .profile-edit-header {
             text-align: center;
-            margin-bottom: var(--spacing-xxl);
+            margin-bottom: var(--spacing-xl);
+            animation: slideUp 0.6s ease-out;
         }
 
         .profile-edit-header h1 {
@@ -62,59 +63,8 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         .profile-card {
             background: var(--white);
             border-radius: var(--border-radius);
-            padding: var(--spacing-xl);
+            padding: var(--spacing-lg);
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-        }
-
-        .form-group {
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: var(--spacing-xs);
-            color: var(--text-primary);
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            font-size: 0.95rem;
-            font-family: var(--font-sans);
-            transition: var(--transition);
-            background: var(--white);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
-            font-family: var(--font-sans);
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(16, 33, 82, 0.1);
-        }
-
-        .form-error {
-            display: block;
-            color: #d32f2f;
-            font-size: 0.8rem;
-            margin-top: 4px;
-        }
-
-        .form-hint {
-            display: block;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin-top: 4px;
         }
 
         .form-actions {
@@ -165,38 +115,6 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
         .btn-cancel:hover {
             background: #e8e6e1;
-        }
-
-        .message {
-            padding: var(--spacing-md);
-            border-radius: var(--border-radius);
-            margin-bottom: var(--spacing-lg);
-            display: none;
-            align-items: center;
-            gap: var(--spacing-sm);
-            font-weight: 500;
-        }
-
-        .message.show {
-            display: flex;
-        }
-
-        .message.success {
-            background: rgba(76, 175, 80, 0.1);
-            color: #2e7d32;
-            border: 1px solid rgba(76, 175, 80, 0.3);
-        }
-
-        .message.error {
-            background: rgba(211, 47, 47, 0.1);
-            color: #c62828;
-            border: 1px solid rgba(211, 47, 47, 0.3);
-        }
-
-        .message svg {
-            width: 20px;
-            height: 20px;
-            flex-shrink: 0;
         }
 
         @media (max-width: 768px) {

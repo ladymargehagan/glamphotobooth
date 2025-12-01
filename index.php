@@ -70,6 +70,32 @@ $cssPath = SITE_URL . '/css/style.css';
         </div>
     </section>
 
+    <!-- Gallery Showcase -->
+    <section class="section-spacing gallery-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Work</h2>
+                <p style="color: var(--text-secondary); font-size: 1.05rem; max-width: 600px; margin: var(--spacing-md) auto 0;">
+                    Explore stunning photography from our talented creators
+                </p>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect fill='%23102152' width='400' height='400'/%3E%3C/svg%3E" alt="Gallery Image 1">
+                </div>
+                <div class="gallery-item">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect fill='%230d1838' width='400' height='400'/%3E%3C/svg%3E" alt="Gallery Image 2">
+                </div>
+                <div class="gallery-item">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect fill='%23E2C492' width='400' height='400'/%3E%3C/svg%3E" alt="Gallery Image 3">
+                </div>
+                <div class="gallery-item">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect fill='%23D9CEC3' width='400' height='400'/%3E%3C/svg%3E" alt="Gallery Image 4">
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Mission & Vision -->
     <section class="section-spacing mission-section">
         <div class="container">
@@ -86,7 +112,6 @@ $cssPath = SITE_URL . '/css/style.css';
             </div>
         </div>
     </section>
-
 
     <!-- Call to Action -->
     <section class="section-spacing cta-section" id="services">

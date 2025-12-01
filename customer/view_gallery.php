@@ -52,18 +52,19 @@ $cssPath = SITE_URL . '/css/style.css';
         .gallery-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: var(--spacing-xxl) var(--spacing-xl);
+            padding: var(--spacing-xl);
         }
 
         .gallery-header {
             text-align: center;
-            margin-bottom: var(--spacing-xxl);
+            margin-bottom: var(--spacing-xl);
+            animation: slideUp 0.6s ease-out;
         }
 
         .gallery-header h1 {
             color: var(--primary);
             font-family: var(--font-serif);
-            font-size: 2.5rem;
+            font-size: 2rem;
             margin-bottom: var(--spacing-sm);
         }
 

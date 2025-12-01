@@ -102,27 +102,29 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         .confirmation-container {
             max-width: 800px;
             margin: 0 auto;
-            padding: var(--spacing-xxl) var(--spacing-xl);
+            padding: var(--spacing-xl);
         }
 
         .confirmation-card {
             background: var(--white);
             border-radius: var(--border-radius);
-            padding: var(--spacing-xxl);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
             text-align: center;
+            animation: slideUp 0.6s ease-out;
         }
 
         .success-icon {
             width: 80px;
             height: 80px;
             margin: 0 auto var(--spacing-lg);
-            background: rgba(76, 175, 80, 0.1);
+            background: rgba(76, 175, 80, 0.15);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 2.5rem;
+            border: 2px solid rgba(76, 175, 80, 0.3);
         }
 
         .confirmation-card h1 {
@@ -134,20 +136,23 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
         .confirmation-message {
             color: var(--text-secondary);
-            font-size: 1.05rem;
-            margin-bottom: var(--spacing-xxl);
+            font-size: 1rem;
+            margin-bottom: var(--spacing-xl);
             line-height: 1.6;
         }
 
-        .order-details {
+        .order-details,
+        .order-items,
+        .review-section {
             background: rgba(226, 196, 146, 0.05);
             padding: var(--spacing-lg);
             border-radius: var(--border-radius);
-            margin-bottom: var(--spacing-xxl);
+            margin-bottom: var(--spacing-lg);
             text-align: left;
         }
 
-        .detail-row {
+        .detail-row,
+        .item-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: var(--spacing-md);
@@ -155,7 +160,8 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             border-bottom: 1px solid rgba(226, 196, 146, 0.2);
         }
 
-        .detail-row:last-child {
+        .detail-row:last-child,
+        .item-row:last-child {
             border-bottom: none;
             margin-bottom: 0;
             padding-bottom: 0;
@@ -166,17 +172,10 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             font-weight: 500;
         }
 
-        .detail-value {
+        .detail-value,
+        .item-price {
             color: var(--text-primary);
             font-weight: 600;
-        }
-
-        .order-items {
-            background: rgba(226, 196, 146, 0.05);
-            padding: var(--spacing-lg);
-            border-radius: var(--border-radius);
-            margin-bottom: var(--spacing-xxl);
-            text-align: left;
         }
 
         .items-title {
@@ -187,33 +186,16 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         }
 
         .item-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: var(--spacing-md);
-            padding-bottom: var(--spacing-md);
-            border-bottom: 1px solid rgba(226, 196, 146, 0.2);
             font-size: 0.95rem;
-        }
-
-        .item-row:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
         }
 
         .item-name {
             color: var(--text-primary);
         }
 
-        .item-price {
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .btn-continue-shopping {
-            padding: 1rem 2rem;
-            background: var(--primary);
-            color: var(--white);
+        .btn-continue-shopping,
+        .btn-view-orders {
+            padding: 0.875rem 1.75rem;
             border: none;
             border-radius: var(--border-radius);
             font-weight: 600;
@@ -222,6 +204,12 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
             font-size: 0.95rem;
             text-decoration: none;
             display: inline-block;
+        }
+
+        .btn-continue-shopping {
+            background: var(--primary);
+            color: var(--white);
+            margin-right: var(--spacing-md);
         }
 
         .btn-continue-shopping:hover {
@@ -231,18 +219,8 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
         }
 
         .btn-view-orders {
-            padding: 1rem 2rem;
             background: var(--light-gray);
             color: var(--text-primary);
-            border: none;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 0.95rem;
-            text-decoration: none;
-            display: inline-block;
-            margin-left: var(--spacing-md);
         }
 
         .btn-view-orders:hover {
@@ -251,38 +229,33 @@ $dashboardCss = SITE_URL . '/css/dashboard.css';
 
         .button-group {
             margin-top: var(--spacing-lg);
+            text-align: center;
         }
 
         .btn-review {
             background: #ff9800;
             color: white;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
+            padding: 0.65rem 1.35rem;
+            border-radius: var(--border-radius);
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
             margin-top: var(--spacing-md);
+            transition: var(--transition);
         }
 
         .btn-review:hover {
             background: #f57c00;
-        }
-
-        .review-section {
-            background: rgba(226, 196, 146, 0.05);
-            padding: var(--spacing-lg);
-            border-radius: var(--border-radius);
-            margin-bottom: var(--spacing-lg);
-            text-align: left;
+            transform: translateY(-2px);
         }
 
         .review-header {
             display: flex;
             justify-content: space-between;
-            align-items: start;
+            align-items: flex-start;
             margin-bottom: var(--spacing-md);
         }
 
