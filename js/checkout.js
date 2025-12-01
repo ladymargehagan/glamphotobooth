@@ -3,14 +3,17 @@
  * js/checkout.js
  */
 
-window.proceedToPayment = function() {
-    const form = document.getElementById('checkoutForm');
+window.proceedToPayment = function(clickEvent) {
     const firstName = document.getElementById('firstName').value.trim();
     const lastName = document.getElementById('lastName').value.trim();
     const email = document.getElementById('email').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const address = document.getElementById('address').value.trim();
     const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+
+    // Get selected payment method and channel
+    const selectedPaymentRadio = document.querySelector('input[name="paymentMethod"]:checked');
+    const paymentChannel = selectedPaymentRadio ? selectedPaymentRadio.getAttribute('data-channel') : 'card';
 
     // Validate form
     if (!firstName || !lastName || !email || !phone || !address) {
@@ -24,13 +27,14 @@ window.proceedToPayment = function() {
         return;
     }
 
-    const button = event.target;
+    const button = clickEvent ? clickEvent.target : document.querySelector('.btn-checkout');
     button.disabled = true;
     button.textContent = 'Creating order...';
 
     // Create order
     const formData = new FormData();
     formData.append('csrf_token', csrfToken);
+    formData.append('payment_channel', paymentChannel);
 
     fetch(window.siteUrl + '/actions/create_order_action.php', {
         method: 'POST',
@@ -72,6 +76,7 @@ window.proceedToPayment = function() {
             sessionStorage.setItem('customerName', firstName + ' ' + lastName);
             sessionStorage.setItem('customerEmail', email);
             sessionStorage.setItem('customerPhone', phone);
+            sessionStorage.setItem('paymentChannel', paymentChannel);
 
             // Redirect to payment initialization
             window.location.href = window.siteUrl + '/customer/payment.php?order_id=' + data.order_id;

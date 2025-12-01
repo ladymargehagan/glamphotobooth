@@ -265,6 +265,10 @@ $cssPath = SITE_URL . '/css/style.css';
             const email = document.getElementById('customerEmail').value;
             const publicKey = document.getElementById('paystackPublicKey').value;
 
+            // Get payment channel from sessionStorage or default to all channels
+            const selectedChannel = sessionStorage.getItem('paymentChannel');
+            const channels = selectedChannel ? [selectedChannel] : ['card', 'bank', 'mobile_money'];
+
             button.disabled = true;
             button.textContent = 'Opening Paystack...';
 
@@ -275,9 +279,10 @@ $cssPath = SITE_URL . '/css/style.css';
                 amount: amount * 100, // Convert to pesewas/kobo
                 currency: 'GHS',
                 ref: 'ord_' + orderId + '_' + Math.floor((Math.random() * 1000000000) + 1),
-                channels: ['card', 'bank', 'mobile_money'],
+                channels: channels,
                 metadata: {
                     order_id: orderId,
+                    payment_channel: selectedChannel || 'all',
                     custom_fields: [
                         {
                             display_name: "Order ID",
