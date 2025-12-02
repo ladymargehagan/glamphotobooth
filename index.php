@@ -81,16 +81,16 @@ $cssPath = SITE_URL . '/css/style.css';
             </div>
             <div class="gallery-grid">
                 <div class="gallery-item">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect fill='%23102152' width='400' height='400'/%3E%3C/svg%3E" alt="Gallery Image 1">
+                    <img src="https://images.pexels.com/photos/389663/pexels-photo-389663.jpeg" alt="Gallery Image 1">
                 </div>
                 <div class="gallery-item">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect fill='%230d1838' width='400' height='400'/%3E%3C/svg%3E" alt="Gallery Image 2">
+                    <img src="https://images.pexels.com/photos/25636568/pexels-photo-25636568.jpeg" alt="Gallery Image 2">
                 </div>
                 <div class="gallery-item">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect fill='%23E2C492' width='400' height='400'/%3E%3C/svg%3E" alt="Gallery Image 3">
+                    <img src="https://images.pexels.com/photos/4890733/pexels-photo-4890733.jpeg" alt="Gallery Image 3">
                 </div>
                 <div class="gallery-item">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect fill='%23D9CEC3' width='400' height='400'/%3E%3C/svg%3E" alt="Gallery Image 4">
+                    <img src="https://images.pexels.com/photos/18853071/pexels-photo-18853071.jpeg" alt="Gallery Image 4">
                 </div>
             </div>
         </div>
