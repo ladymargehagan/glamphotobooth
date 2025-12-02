@@ -32,7 +32,7 @@
         <div class="footer-divider mb-lg"></div>
 
         <div class="flex-between text-muted text-sm">
-            <p>&copy; 2024 GlamPhotobooth Accra Ghana. All rights reserved.</p>
+            <p>&copy; 2025 GlamPhotobooth Accra Ghana. All rights reserved.</p>
             <p>Crafted with elegance for creative minds.</p>
         </div>
     </div>
